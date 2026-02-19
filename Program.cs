@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ITask7.Data;
+using ITask7.Localization;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,11 +20,22 @@ builder.Services.AddDefaultIdentity<IdentityUser>(
             options.SignIn.RequireConfirmedEmail = false;
         })
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddControllersWithViews().
+    AddViewLocalization();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
+builder.Services.AddLocalization(options =>  options.ResourcesPath = "Resources");
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.SetDefaultCulture(Languages.Default)
+        .AddSupportedCultures(Languages.All.ToArray())
+        .AddSupportedUICultures(Languages.All.ToArray());
 });
 
 builder.Services.AddAuthentication()
@@ -68,6 +80,8 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseRequestLocalization();
 
 app.UseRouting();
 

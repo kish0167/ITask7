@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using ITask7.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -28,6 +30,23 @@
                 </ul>
                 <partial name="_LoginPartial"/>
             </div>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-between
+                        gap-2 text-dark bg-light border rounded px-3 py-2" href="#" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 150px; height: 32px;">
+                        <i class="bi bi-globe"></i>
+                            <span class="ms-1">@Languages.GetLanguageName(System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName)</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @foreach (string lang in Languages.All)
+                        {
+                            <li><a class="dropdown-item" asp-controller="Localization" asp-action="Index"
+                                 asp-route-culture=@lang>@Languages.GetLanguageName(lang)</a></li>
+                        }
+                    </ul>
+                </li>
+            </ul>
         </div>
     </nav>
 </header>
