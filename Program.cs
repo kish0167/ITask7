@@ -41,6 +41,12 @@ builder.Services.AddAuthentication()
                             throw new Exception("facebook client secret not found");
     });
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
+
 var app = builder.Build();
 
 app.UseForwardedHeaders();
@@ -60,6 +66,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
