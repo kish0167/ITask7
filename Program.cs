@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ITask7.Data;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("LocalConnectionString") ??
-                       Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("connection string not found");
+                       Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
+                       throw new Exception("db connection string not found");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -14,23 +16,34 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] 
-                           ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")!;
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] 
-                               ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")!;
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? 
+                           Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ??
+                           throw new Exception("google client id not found");
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? 
+                               Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ??
+                               throw new Exception("google client secret not found");
     })
     .AddFacebook(options =>
     {
-        options.AppId = builder.Configuration["Authentication:Facebook:AppId"] 
-                        ?? Environment.GetEnvironmentVariable("FACEBOOK_APP_ID")!;
-        options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"] 
-                            ?? Environment.GetEnvironmentVariable("FACEBOOK_APP_SECRET")!;
+        options.AppId = builder.Configuration["Authentication:Facebook:AppId"] ?? 
+                        Environment.GetEnvironmentVariable("FACEBOOK_APP_ID") ??
+                        throw new Exception("facebook client id not found");
+        options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"] ??
+                            Environment.GetEnvironmentVariable("FACEBOOK_APP_SECRET") ??
+                            throw new Exception("facebook client secret not found");
     });
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {
