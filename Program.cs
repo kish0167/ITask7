@@ -5,7 +5,7 @@ using ITask7.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("LocalConnectionString") ??
-                       Environment.GetEnvironmentVariable("CONNECTION_STRING");
+                       Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("connection string not found");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -13,6 +13,22 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] 
+                           ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")!;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] 
+                               ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")!;
+    })
+    .AddFacebook(options =>
+    {
+        options.AppId = builder.Configuration["Authentication:Facebook:AppId"] 
+                        ?? Environment.GetEnvironmentVariable("FACEBOOK_APP_ID")!;
+        options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"] 
+                            ?? Environment.GetEnvironmentVariable("FACEBOOK_APP_SECRET")!;
+    });
 
 var app = builder.Build();
 
