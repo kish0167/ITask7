@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ITask7.Data;
 using ITask7.Localization;
+using ITask7.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(
             options.SignIn.RequireConfirmedAccount = false;
             options.SignIn.RequireConfirmedEmail = false;
         })
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager<ApplicationSignInManager>();
+builder.Services.AddScoped<IUserStore<IdentityUser>, RoleAssigningUserStore>();
 
 builder.Services.AddControllersWithViews().
     AddViewLocalization();
@@ -98,6 +102,19 @@ if (Environment.GetEnvironmentVariable("ENABLE_AUTO_MIGRATION") == "true")
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    RoleManager<IdentityRole> roleManager =
+        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    foreach (string role in UserRoles.List)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
 }
 
 app.Run();
