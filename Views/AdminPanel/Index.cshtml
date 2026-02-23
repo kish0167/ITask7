@@ -84,7 +84,7 @@
             
             if (!confirm(`${action} ${selectedIds.length} users?`)) return;
             
-            const endpoint = `/Dashboard/Bulk${capitalize(action)}`;
+            const endpoint = `/AdminPanel/Bulk${capitalize(action)}`;
             const success = await postData(endpoint, selectedIds);
             
             if (success) {
