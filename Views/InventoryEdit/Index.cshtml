@@ -1,0 +1,221 @@
+﻿@model ITask7.ViewModels.Inventories.InventoryViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="d-flex align-items-center mb-4">
+        <h1 class="mb-0 me-3">@Model.Name</h1>
+        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+            <i class="bi bi-check-circle-fill me-1"></i>Nothing is saved, but it's ok
+        </span>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs border-bottom" id="inventoryTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#items" type="button" role="tab">
+                Items
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab">
+                Chat
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+                Settings
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="customid-tab" data-bs-toggle="tab" data-bs-target="#customid" type="button" role="tab">
+                Custom ID
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="fields-tab" data-bs-toggle="tab" data-bs-target="#fields" type="button" role="tab">
+                Fields
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="access-tab" data-bs-toggle="tab" data-bs-target="#access" type="button" role="tab">
+                Access
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content py-4" id="inventoryTabsContent">
+        <div class="tab-pane fade show active" id="items" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Inventory Items</h5>
+                <button class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Add Item
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Custom ID</th>
+                        <th>Created By</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Fields Count</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="font-monospace fw-bold text-primary">@item.CustomId</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                                            @(item.CreatedByUserName?.Substring(0, 1).ToUpper() ?? "?")
+                                        </div>
+                                        @item.CreatedByUserName
+                                    </div>
+                                </td>
+                                <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>@item.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    <span class="badge bg-info">@(item.Fields?.Count ?? 0)</span>
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-primary me-1" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary me-1" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                No items found
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="chat" role="tabpanel">
+            <p class="text-muted">Chat content goes here...</p>
+        </div>
+        <div class="tab-pane fade" id="settings" role="tabpanel">
+            <p class="text-muted">Settings content goes here...</p>
+        </div>
+        <div class="tab-pane fade show active" id="customid" role="tabpanel">
+            <p class="text-muted">Custom Id's content goes here...</p>
+        </div>
+        <div class="tab-pane fade" id="fields" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Field Definitions</h5>
+                <button class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Add Field
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th style="width: 50px;">Order</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th class="text-center">Required</th>
+                        <th class="text-center">Display in Table</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model.Fields != null && Model.Fields.Any())
+                    {
+                        @foreach (var field in Model.Fields.OrderBy(f => f.SortOrder))
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">@field.SortOrder</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold">@field.Title</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted text-truncate d-inline-block" style="max-width: 300px;" title="@field.Description">
+                                        @(string.IsNullOrEmpty(field.Description) ? "-" : field.Description)
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        @field.Type
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    @if (field.IsRequired)
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-circle text-muted fs-5"></i>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (field.DisplayInTable)
+                                    {
+                                        <i class="bi bi-table text-primary fs-5"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-eye-slash text-muted fs-5"></i>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-secondary me-1" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-layout-text-window-reverse fs-1 d-block mb-2"></i>
+                                No field definitions found
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="access" role="tabpanel">
+            <p class="text-muted">Access content goes here...</p>
+        </div>
+    </div>
+</div>
