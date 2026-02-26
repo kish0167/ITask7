@@ -97,7 +97,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-if (Environment.GetEnvironmentVariable("ENABLE_AUTO_MIGRATION") == "true")
+if (Environment.GetEnvironmentVariable("ENABLE_AUTO_MIGRATION") == "true" || true)
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

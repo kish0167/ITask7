@@ -24,9 +24,9 @@ public class ApplicationSignInManager(
         return ! await UserManager.IsInRoleAsync(user, UserRoles.Blocked) && await base.CanSignInAsync(user);
     }
 
-    public override Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent)
+    public override Task SignInAsync(IdentityUser user, bool isPersistent, string? authenticationMethod = null)
     {
         
-        return base.ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent);
+        return base.SignInAsync(user, isPersistent, authenticationMethod);
     }
 }
