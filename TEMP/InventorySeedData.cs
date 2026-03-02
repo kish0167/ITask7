@@ -32,9 +32,16 @@ public static class InventorySeedData
             Id = itInventoryId,
             Name = "IT Equipment",
             Description = "Track laptops, monitors, peripherals, and other IT assets",
+            IsPublic = false,
             CreatedBy = adminUserId,
             CreatedAt = now,
             UpdatedAt = now
+        });
+        
+        modelBuilder.Entity<InventoryAccess>().HasData(new InventoryAccess
+        {
+            UserId = adminUserId,
+            InventoryId = itInventoryId,
         });
 
         var itFields = new[]
@@ -200,6 +207,7 @@ public static class InventorySeedData
             Id = officeInventoryId,
             Name = "Office Supplies",
             Description = "Track stationery, printer supplies, and office consumables",
+            IsPublic = true,
             CreatedBy = adminUserId,
             CreatedAt = now.AddDays(-5),
             UpdatedAt = now.AddDays(-5)

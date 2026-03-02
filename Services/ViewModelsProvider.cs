@@ -24,8 +24,10 @@ public class ViewModelsProvider(DbApiService dbApiService)
             Id = inventory.Id,
             Name = inventory.Name,
             Description = inventory.Description,
+            IsPublic = inventory.IsPublic,
             Fields = GetFields(inventory),
-            Items = GetItems(inventory)
+            Items = GetItems(inventory),
+            WriteAccessUsernames = inventory.Accesses.Select(a=>a.User.UserName ?? "noname").ToList()
         };
     }
 
@@ -82,7 +84,6 @@ public class ViewModelsProvider(DbApiService dbApiService)
             CreatedByUserName = item.Inventory.Creator?.UserName ?? "creator not found",
             CreatedAt = item.CreatedAt,
             UpdatedAt = item.UpdatedAt,
-            Fields = new Dictionary<Guid, FieldValueViewModel>()
         };
     }
     

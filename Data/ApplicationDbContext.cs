@@ -12,6 +12,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<InventoryField> InventoryFields { get; set; }
     public DbSet<Item> Items { get; set; }
     public DbSet<ItemFieldValue> ItemFieldValues { get; set; }
+    public DbSet<InventoryAccess> InventoriesAccesses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,6 +23,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.ToTable("inventories");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
+            entity.Property(e => e.IsPublic).HasDefaultValue("FALSE");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
 
@@ -89,6 +91,21 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(e => e.Field)
                 .WithMany(f => f.Values)
                 .HasForeignKey(e => e.FieldId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<InventoryAccess>(entity =>
+        {
+            entity.ToTable("inventories_accesses");
+            entity.HasKey(e => new { e.UserId, e.InventoryId });
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.Accesses)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Inventory)
+                .WithMany(i => i.Accesses)
+                .HasForeignKey(e => e.InventoryId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
         

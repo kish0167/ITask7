@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ITask7.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260302125305_NullableInventoryCreator")]
-    partial class NullableInventoryCreator
+    [Migration("20260302194322_Current")]
+    partial class Current
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,6 +44,11 @@ namespace ITask7.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsPublic")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -63,30 +68,48 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             Description = "Track laptops, monitors, peripherals, and other IT assets",
+                            IsPublic = false,
                             Name = "IT Equipment",
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         },
                         new
                         {
                             Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            CreatedAt = new DateTime(2026, 2, 25, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 2, 25, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             Description = "Track stationery, printer supplies, and office consumables",
+                            IsPublic = false,
                             Name = "Office Supplies",
-                            UpdatedAt = new DateTime(2026, 2, 25, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 2, 25, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         },
                         new
                         {
                             Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            CreatedAt = new DateTime(2026, 2, 20, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 2, 20, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             Description = "Company vehicles and maintenance records",
+                            IsPublic = false,
                             Name = "Vehicle Fleet",
-                            UpdatedAt = new DateTime(2026, 2, 20, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 2, 20, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         });
+                });
+
+            modelBuilder.Entity("ITask7.Models.Inventories.InventoryAccess", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("InventoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("UserId", "InventoryId");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("inventories_accesses", (string)null);
                 });
 
             modelBuilder.Entity("ITask7.Models.Inventories.InventoryField", b =>
@@ -143,7 +166,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Physical asset tag number",
                             DisplayInTable = true,
                             FieldType = "SingleLine",
@@ -156,7 +179,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("a2222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Manufacturer serial number",
                             DisplayInTable = true,
                             FieldType = "SingleLine",
@@ -169,7 +192,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("a3333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Original purchase price in USD",
                             DisplayInTable = true,
                             FieldType = "Numeric",
@@ -182,7 +205,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("a4444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Warranty expiration date",
                             DisplayInTable = false,
                             FieldType = "SingleLine",
@@ -195,7 +218,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("a5555555-5555-5555-5555-555555555555"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Currently assigned to employee",
                             DisplayInTable = true,
                             FieldType = "Boolean",
@@ -208,7 +231,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("a6666666-6666-6666-6666-666666666666"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Additional information",
                             DisplayInTable = false,
                             FieldType = "MultiLine",
@@ -221,7 +244,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("a7777777-7777-7777-7777-777777777777"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Upload purchase documentation",
                             DisplayInTable = false,
                             FieldType = "Document",
@@ -234,7 +257,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("c1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Name of the supply item",
                             DisplayInTable = true,
                             FieldType = "SingleLine",
@@ -247,7 +270,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("c2222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Current stock count",
                             DisplayInTable = true,
                             FieldType = "Numeric",
@@ -260,7 +283,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("c3333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Minimum stock before reorder",
                             DisplayInTable = true,
                             FieldType = "Numeric",
@@ -273,7 +296,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("c4444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Supplier contact and ordering details",
                             DisplayInTable = false,
                             FieldType = "MultiLine",
@@ -286,7 +309,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("e1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Vehicle registration number",
                             DisplayInTable = true,
                             FieldType = "SingleLine",
@@ -299,7 +322,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("e2222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Odometer reading",
                             DisplayInTable = true,
                             FieldType = "Numeric",
@@ -312,7 +335,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("e3333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Current insurance status",
                             DisplayInTable = true,
                             FieldType = "Boolean",
@@ -325,7 +348,7 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("e4444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             Description = "Annual inspection reports",
                             DisplayInTable = false,
                             FieldType = "Document",
@@ -381,56 +404,56 @@ namespace ITask7.Migrations
                         new
                         {
                             Id = new Guid("b1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             CustomId = "IT-LAPTOP-001",
                             InventoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         },
                         new
                         {
                             Id = new Guid("b2222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 3, 2, 10, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 2, 17, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             CustomId = "IT-LAPTOP-002",
                             InventoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 10, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 3, 2, 17, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         },
                         new
                         {
                             Id = new Guid("b3333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 3, 1, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 3, 1, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             CustomId = "IT-MON-001",
                             InventoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            UpdatedAt = new DateTime(2026, 3, 1, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 3, 1, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         },
                         new
                         {
                             Id = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 2, 27, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 2, 27, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             CustomId = "SUP-A4-PAPER",
                             InventoryId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            UpdatedAt = new DateTime(2026, 3, 1, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 3, 1, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         },
                         new
                         {
                             Id = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 2, 26, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 2, 26, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             CustomId = "SUP-TONER-BLK",
                             InventoryId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            UpdatedAt = new DateTime(2026, 2, 28, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 2, 28, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         },
                         new
                         {
                             Id = new Guid("f1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 2, 23, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            CreatedAt = new DateTime(2026, 2, 23, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             CreatedBy = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             CustomId = "VH-001",
                             InventoryId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 7, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332)
+                            UpdatedAt = new DateTime(2026, 3, 2, 14, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198)
                         });
                 });
 
@@ -481,236 +504,236 @@ namespace ITask7.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("fab72190-d46b-4cd5-a443-c9cbd68708ed"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("18d61117-07b7-46a8-bd61-a2433533550e"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a1111111-1111-1111-1111-111111111111"),
                             ItemId = new Guid("b1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "AST-2024-001"
                         },
                         new
                         {
-                            Id = new Guid("7cfca272-f8dc-4158-8326-dd40491c1d42"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("03e1af4a-e747-49c5-bd41-21921fcae76e"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a2222222-2222-2222-2222-222222222222"),
                             ItemId = new Guid("b1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "SN123456789"
                         },
                         new
                         {
-                            Id = new Guid("3b404075-a7d6-42de-99f1-0e0b3049c5a5"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("24845f7d-2a50-4ae7-be6d-66627aec2c5b"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a3333333-3333-3333-3333-333333333333"),
                             ItemId = new Guid("b1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueNumeric = 1299.99m
                         },
                         new
                         {
-                            Id = new Guid("a1c64120-f527-464a-80d6-06330aaf9c37"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("87e88b53-0ce7-45a0-a46a-c2690c10b46d"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a4444444-4444-4444-4444-444444444444"),
                             ItemId = new Guid("b1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "2027-03-15"
                         },
                         new
                         {
-                            Id = new Guid("ca4ee84a-db1c-4dd9-9e5b-66fff6b9bbe8"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("615a386b-9b31-4d6c-b7ec-13f583d3dab6"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a5555555-5555-5555-5555-555555555555"),
                             ItemId = new Guid("b1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueBoolean = true
                         },
                         new
                         {
-                            Id = new Guid("24a31199-1fee-4169-817e-769a02b3ad95"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("5f42a60d-5a01-4a0d-b604-d3d0a9394af6"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a6666666-6666-6666-6666-666666666666"),
                             ItemId = new Guid("b1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "Assigned to Engineering team lead"
                         },
                         new
                         {
-                            Id = new Guid("7509da18-a6b1-4f2b-9ff5-d9c64b95bbbd"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("428d9378-cfa7-435a-a9ed-34ee2563c9f5"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a1111111-1111-1111-1111-111111111111"),
                             ItemId = new Guid("b2222222-2222-2222-2222-222222222222"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "AST-2024-002"
                         },
                         new
                         {
-                            Id = new Guid("6d38ddab-4e39-48cb-bfb8-d98ebef55216"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("1dce9092-e108-4720-ba51-fd30250317f0"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a2222222-2222-2222-2222-222222222222"),
                             ItemId = new Guid("b2222222-2222-2222-2222-222222222222"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "SN987654321"
                         },
                         new
                         {
-                            Id = new Guid("2beb8618-6639-438e-b2e9-f338727a6cc8"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("831ed8b4-2f3c-427e-94df-df058e44443d"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a3333333-3333-3333-3333-333333333333"),
                             ItemId = new Guid("b2222222-2222-2222-2222-222222222222"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueNumeric = 1599.50m
                         },
                         new
                         {
-                            Id = new Guid("3ca02a68-3be0-42be-b5c9-965ce61ad667"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("622b849f-a9ab-4871-8c03-bd424db09f4a"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a4444444-4444-4444-4444-444444444444"),
                             ItemId = new Guid("b2222222-2222-2222-2222-222222222222"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "2027-06-20"
                         },
                         new
                         {
-                            Id = new Guid("4ff04b58-3d2b-4dd8-b361-3a48bf02dfe3"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("1efe8d79-cec2-4fff-8498-28a525cfaf96"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a5555555-5555-5555-5555-555555555555"),
                             ItemId = new Guid("b2222222-2222-2222-2222-222222222222"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueBoolean = false
                         },
                         new
                         {
-                            Id = new Guid("040b8f0e-6f4a-40f3-ad67-a4ca470ab7f1"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("187f4b82-8adb-4079-b9dc-a5e9fcabe3cd"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a1111111-1111-1111-1111-111111111111"),
                             ItemId = new Guid("b3333333-3333-3333-3333-333333333333"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "AST-2023-045"
                         },
                         new
                         {
-                            Id = new Guid("321b71f2-9350-4c67-a2c9-c9cbf1e78595"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("5e829980-3c57-44a1-8fb8-c245bf7e5bb5"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a2222222-2222-2222-2222-222222222222"),
                             ItemId = new Guid("b3333333-3333-3333-3333-333333333333"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "DELL-SN-778899"
                         },
                         new
                         {
-                            Id = new Guid("7d385fdd-5dff-4c16-b296-ee44732858b2"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("66ad5337-a3e0-4d79-a924-0bebde202ad9"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a3333333-3333-3333-3333-333333333333"),
                             ItemId = new Guid("b3333333-3333-3333-3333-333333333333"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueNumeric = 349.00m
                         },
                         new
                         {
-                            Id = new Guid("67919566-fb0f-4af8-98d8-01a63967ef30"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("48e60de2-698a-44ff-8793-4c58279aad48"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("a5555555-5555-5555-5555-555555555555"),
                             ItemId = new Guid("b3333333-3333-3333-3333-333333333333"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueBoolean = true
                         },
                         new
                         {
-                            Id = new Guid("8ae8cf58-42ec-43a9-ad46-aa4eb1019e3a"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("c483168c-b50e-4b1c-a616-fd4f86d62474"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("c1111111-1111-1111-1111-111111111111"),
                             ItemId = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "A4 Copy Paper (500 sheets)"
                         },
                         new
                         {
-                            Id = new Guid("794a94a5-fb97-40c8-b474-5177f2873e4a"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("fbfc2126-6b16-4880-a925-179deffc7589"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("c2222222-2222-2222-2222-222222222222"),
                             ItemId = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 1, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 1, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueNumeric = 45m
                         },
                         new
                         {
-                            Id = new Guid("6d507067-8c0f-4d29-aed1-f8fa14e00c14"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("620468dd-a6fe-4351-bf85-41fe052581b8"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("c3333333-3333-3333-3333-333333333333"),
                             ItemId = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueNumeric = 10m
                         },
                         new
                         {
-                            Id = new Guid("c7e538eb-fa83-47a5-8531-cbc87bb1b40c"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("46a496e2-852b-4571-b15c-a8c072694c19"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("c4444444-4444-4444-4444-444444444444"),
                             ItemId = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "Staples Inc. - staples.com - Account #12345"
                         },
                         new
                         {
-                            Id = new Guid("c800e8ea-237a-4710-a696-90b3b2648aed"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("6c789b79-9a16-4f26-946e-1e3608ec91b6"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("c1111111-1111-1111-1111-111111111111"),
                             ItemId = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "HP LaserJet Black Toner 85A"
                         },
                         new
                         {
-                            Id = new Guid("04d3775c-ac6d-4993-ac39-4a1d561e412e"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("e622eb36-d6ba-4a7c-9a2d-0aa34d059720"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("c2222222-2222-2222-2222-222222222222"),
                             ItemId = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            UpdatedAt = new DateTime(2026, 2, 28, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 2, 28, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueNumeric = 3m
                         },
                         new
                         {
-                            Id = new Guid("d90b3e6d-8a0f-401d-a76c-f23e43653b1c"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("2885c2cb-001d-4c9c-9a3b-d5bde6cc56d2"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("c3333333-3333-3333-3333-333333333333"),
                             ItemId = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueNumeric = 2m
                         },
                         new
                         {
-                            Id = new Guid("e7355608-f784-4dac-9efe-ae615a887fdb"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("4f7c7238-de58-41a9-b0ac-4af1bfbaac4c"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("e1111111-1111-1111-1111-111111111111"),
                             ItemId = new Guid("f1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueText = "ABC-1234"
                         },
                         new
                         {
-                            Id = new Guid("3df43404-d116-4c83-a59f-fb0b9210e12e"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("1c4b97bf-7a13-495a-bcd7-6cdd1b6bfd68"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("e2222222-2222-2222-2222-222222222222"),
                             ItemId = new Guid("f1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 7, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 14, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueNumeric = 45230m
                         },
                         new
                         {
-                            Id = new Guid("cc6ffb49-9ca7-4f6e-9c9c-66df1e501211"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("5bfb3345-4e3f-474c-a35e-ebe71db68346"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("e3333333-3333-3333-3333-333333333333"),
                             ItemId = new Guid("f1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueBoolean = true
                         },
                         new
                         {
-                            Id = new Guid("41bfaf5c-a4bd-4f87-a1b4-1c8fc1965aea"),
-                            CreatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            Id = new Guid("643ad983-6f65-4247-bf32-6a661546bfb4"),
+                            CreatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             FieldId = new Guid("e4444444-4444-4444-4444-444444444444"),
                             ItemId = new Guid("f1111111-1111-1111-1111-111111111111"),
-                            UpdatedAt = new DateTime(2026, 3, 2, 12, 53, 5, 96, DateTimeKind.Utc).AddTicks(4332),
+                            UpdatedAt = new DateTime(2026, 3, 2, 19, 43, 21, 272, DateTimeKind.Utc).AddTicks(2198),
                             ValueDocumentUrl = "/docs/inspections/van-2024.pdf"
                         });
                 });
@@ -783,14 +806,14 @@ namespace ITask7.Migrations
                         {
                             Id = "99997999-7b3e-418f-9f53-38ec31c09abb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "898b0fb2-5ba5-40f2-988d-4128ad6fb60a",
+                            ConcurrencyStamp = "4468f516-58c0-4a25-af81-a811fa7559e9",
                             Email = "admin@company.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@COMPANY.COM",
                             NormalizedUserName = "ADMIN@COMPANY.COM",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b2b85423-7b4e-49f4-9975-ef235f365243",
+                            SecurityStamp = "3c2e3517-2d99-495c-a2ce-2e8740351765",
                             TwoFactorEnabled = false,
                             UserName = "admin@company.com"
                         });
@@ -942,6 +965,25 @@ namespace ITask7.Migrations
                     b.Navigation("Creator");
                 });
 
+            modelBuilder.Entity("ITask7.Models.Inventories.InventoryAccess", b =>
+                {
+                    b.HasOne("ITask7.Models.Inventories.Inventory", "Inventory")
+                        .WithMany("Accesses")
+                        .HasForeignKey("InventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ITask7.Users.ApplicationUser", "User")
+                        .WithMany("Accesses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inventory");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ITask7.Models.Inventories.InventoryField", b =>
                 {
                     b.HasOne("ITask7.Models.Inventories.Inventory", "Inventory")
@@ -1036,6 +1078,8 @@ namespace ITask7.Migrations
 
             modelBuilder.Entity("ITask7.Models.Inventories.Inventory", b =>
                 {
+                    b.Navigation("Accesses");
+
                     b.Navigation("Fields");
 
                     b.Navigation("Items");
@@ -1053,6 +1097,8 @@ namespace ITask7.Migrations
 
             modelBuilder.Entity("ITask7.Users.ApplicationUser", b =>
                 {
+                    b.Navigation("Accesses");
+
                     b.Navigation("CreatedInventories");
                 });
 #pragma warning restore 612, 618

@@ -9,6 +9,7 @@ public class Inventory
     public string Name { get; set; }
     public string Description { get; set; }
     public string? CreatedBy { get; set; }
+    public bool IsPublic { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     // Custom id's
@@ -17,4 +18,5 @@ public class Inventory
     public ApplicationUser? Creator { get; set; }
     public ICollection<InventoryField> Fields { get; set; } = new List<InventoryField>();
     public ICollection<Item> Items { get; set; } = new List<Item>();
+    public ICollection<InventoryAccess> Accesses { get; set; } = new List<InventoryAccess>();
 }

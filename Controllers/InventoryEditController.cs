@@ -11,4 +11,10 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider) : Co
         InventoryViewModel inventory = await viewModelsProvider.GetInventoryViewModel(inventoryId);
         return View(inventory);
     }
+
+    [HttpPost]
+    public IActionResult EditInventoryProperties(InventoryViewModel model)
+    {
+        return Ok();
+    }
 }

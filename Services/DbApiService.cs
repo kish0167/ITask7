@@ -18,6 +18,8 @@ public class DbApiService(ApplicationDbContext dbContext)
             .ThenInclude(item => item.FieldValues)
             .ThenInclude(value => value.Field)
             .Include(i => i.Creator)
+            .Include(i => i.Accesses)
+            .ThenInclude(access => access.User)
             .FirstOrDefaultAsync();
         return inventory ?? new Inventory();
     }

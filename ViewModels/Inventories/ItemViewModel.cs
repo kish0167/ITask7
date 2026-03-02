@@ -7,5 +7,5 @@ public class ItemViewModel
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public string CreatedByUserName { get; set; }
-    public Dictionary<Guid, FieldValueViewModel> Fields { get; set; }
+    public Dictionary<Guid, FieldValueViewModel> Fields { get; set; } = new();
 }
