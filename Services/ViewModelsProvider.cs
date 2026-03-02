@@ -10,7 +10,7 @@ public class ViewModelsProvider(DbApiService dbApiService)
 {
     private readonly DbApiService _dbApiService = dbApiService;
     
-    public async Task<InventoryViewModel> GetInventory(Guid inventoryId)
+    public async Task<InventoryViewModel> GetInventoryViewModel(Guid inventoryId)
     {
         Inventory inventory = await _dbApiService.GetInventory(inventoryId);
         InventoryViewModel viewModel = InventoryViewModelFromInventory(inventory);
@@ -58,12 +58,12 @@ public class ViewModelsProvider(DbApiService dbApiService)
         List<ItemViewModel> items = new();
         foreach (Item item in inventory.Items)
         {
-            items.Add(GetItemViewModel(item, inventory));
+            items.Add(GetItemViewModel(item));
         }
         return items;
     }
 
-    private ItemViewModel GetItemViewModel(Item item, Inventory inventory)
+    private ItemViewModel GetItemViewModel(Item item)
     {
         ItemViewModel viewModel = ItemViewModelFromItem(item);
         foreach (ItemFieldValue value in item.FieldValues)  
@@ -81,7 +81,8 @@ public class ViewModelsProvider(DbApiService dbApiService)
             CustomId = item.CustomId,
             CreatedByUserName = item.Inventory.Creator?.UserName ?? "creator not found",
             CreatedAt = item.CreatedAt,
-            UpdatedAt = item.UpdatedAt
+            UpdatedAt = item.UpdatedAt,
+            Fields = new Dictionary<Guid, FieldValueViewModel>()
         };
     }
     
@@ -89,27 +90,7 @@ public class ViewModelsProvider(DbApiService dbApiService)
     {
         FieldValueViewModel viewModel = new();
         viewModel.Type = value.Field.FieldType;
-        switch (viewModel.Type)
-        {
-            case FieldType.Boolean:
-                viewModel.Value = value.ValueBoolean;
-                break;
-            case FieldType.Numeric:
-                viewModel.Value = value.ValueNumeric;
-                break;
-            case FieldType.MultiLine:
-                viewModel.Value = value.ValueText;
-                break;
-            case FieldType.SingleLine:
-                viewModel.Value = value.ValueText;
-                break;
-            case FieldType.Document:
-                viewModel.Value = value.ValueDocumentUrl;
-                break;
-            default: 
-                viewModel.Value = "error";
-                break;
-        }
+        viewModel.Value = value.GetValue();
         return viewModel;
     }
 }

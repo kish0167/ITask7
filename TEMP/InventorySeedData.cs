@@ -1,6 +1,6 @@
-﻿using ITask7.Migrations;
-using ITask7.Models.Inventories;
+﻿using ITask7.Models.Inventories;
 using Microsoft.EntityFrameworkCore;
+using ITask7.Users;
 
 namespace ITask7.TEMP;
 
@@ -9,8 +9,21 @@ public static class InventorySeedData
     public static void Seed(ModelBuilder modelBuilder)
     {
         var now = DateTime.UtcNow;
-        var adminUserId = "9f4376d7-7b3e-418f-9f53-38ec31c09abb";
-
+        var adminUserId = "99997999-7b3e-418f-9f53-38ec31c09abb";
+        
+        var adminUser = new ApplicationUser
+        {
+            Id = adminUserId,
+            UserName = "admin@company.com",
+            NormalizedUserName = "ADMIN@COMPANY.COM",
+            Email = "admin@company.com",
+            NormalizedEmail = "ADMIN@COMPANY.COM",
+            EmailConfirmed = true,
+            SecurityStamp = Guid.NewGuid().ToString("D"),
+            ConcurrencyStamp = Guid.NewGuid().ToString("D")
+        };
+        modelBuilder.Entity<ApplicationUser>().HasData(adminUser);
+        
         // ========== INVENTORY 1: IT Asset Management ==========
         var itInventoryId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         

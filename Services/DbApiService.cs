@@ -16,6 +16,7 @@ public class DbApiService(ApplicationDbContext dbContext)
             .Include(i => i.Fields.OrderBy(f => f.SortOrder))
             .Include(i => i.Items)
             .ThenInclude(item => item.FieldValues)
+            .ThenInclude(value => value.Field)
             .Include(i => i.Creator)
             .FirstOrDefaultAsync();
         return inventory ?? new Inventory();

@@ -19,13 +19,14 @@ public class ItemFieldValue
     
     public object GetValue()
     {
-        return Field.FieldType switch
+        object? value = Field.FieldType switch
         {
             FieldType.SingleLine or FieldType.MultiLine => ValueText,
             FieldType.Numeric => ValueNumeric,
             FieldType.Boolean => ValueBoolean,
             FieldType.Document => ValueDocumentUrl,
-            _ => null
+            _ => "Field type error"
         };
+        return value ?? "null";
     }
 }

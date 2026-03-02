@@ -8,7 +8,7 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider) : Co
 {
     public async Task<IActionResult> Index(Guid inventoryId)
     {
-        InventoryViewModel inventory = await viewModelsProvider.GetInventory(inventoryId);
+        InventoryViewModel inventory = await viewModelsProvider.GetInventoryViewModel(inventoryId);
         return View(inventory);
     }
 }

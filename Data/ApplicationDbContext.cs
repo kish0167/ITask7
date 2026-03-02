@@ -15,13 +15,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasPostgresEnum<FieldType>("field_type");
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<ApplicationUser>(entity =>
-        {
-            
-        });
         
         modelBuilder.Entity<Inventory>(entity =>
         {
@@ -34,7 +28,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasOne(e => e.Creator)
                 .WithMany(u => u.CreatedInventories)
                 .HasForeignKey(e => e.CreatedBy)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
         });
         
         modelBuilder.Entity<InventoryField>(entity =>
@@ -76,8 +70,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(e => e.InventoryId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-
-        // ItemFieldValue configuration
+        
         modelBuilder.Entity<ItemFieldValue>(entity =>
         {
             entity.ToTable("item_field_values");
