@@ -1,4 +1,5 @@
 ﻿using ITask7.Data;
+using ITask7.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -6,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 namespace ITask7.Services;
 
 public class RoleAssigningUserStore(ApplicationDbContext context, IdentityErrorDescriber? describer = null)
-    : UserStore<IdentityUser, IdentityRole, ApplicationDbContext>(context, describer)
+    : UserStore<ApplicationUser, IdentityRole, ApplicationDbContext>(context, describer)
 {
     
-    public override async Task<IdentityResult> CreateAsync(IdentityUser user, CancellationToken cancellationToken = new CancellationToken())
+    public override async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = new CancellationToken())
     {
         Task<IdentityResult> result = base.CreateAsync(user, cancellationToken);
         
@@ -22,7 +23,7 @@ public class RoleAssigningUserStore(ApplicationDbContext context, IdentityErrorD
         return await result;
     }
 
-    public override Task SetEmailAsync(IdentityUser user, string? email, CancellationToken cancellationToken = new CancellationToken())
+    public override Task SetEmailAsync(ApplicationUser user, string? email, CancellationToken cancellationToken = new CancellationToken())
     {
         return base.SetEmailAsync(user, email, cancellationToken);
     }

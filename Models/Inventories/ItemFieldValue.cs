@@ -6,10 +6,10 @@ public class ItemFieldValue
     public Guid ItemId { get; set; }
     public Guid FieldId { get; set; }
     
-    public string ValueText { get; set; }
+    public string? ValueText { get; set; }
     public decimal? ValueNumeric { get; set; }
     public bool? ValueBoolean { get; set; }
-    public string ValueDocumentUrl { get; set; }
+    public string? ValueDocumentUrl { get; set; }
     
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -19,7 +19,7 @@ public class ItemFieldValue
     
     public object GetValue()
     {
-        return Field?.FieldType switch
+        return Field.FieldType switch
         {
             FieldType.SingleLine or FieldType.MultiLine => ValueText,
             FieldType.Numeric => ValueNumeric,

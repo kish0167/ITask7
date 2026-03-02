@@ -1,13 +1,14 @@
-﻿using ITask7.ViewModels.Inventories;
+﻿using ITask7.Services;
+using ITask7.ViewModels.Inventories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers;
 
-public class InventoryEditController : Controller
+public class InventoryEditController(ViewModelsProvider viewModelsProvider) : Controller
 {
-    public IActionResult Index(Guid inventoryId)
+    public async Task<IActionResult> Index(Guid inventoryId)
     {
-        // _dbApiService.GetInventory(inventoryId);
-        return View(new InventoryViewModel());
+        InventoryViewModel inventory = await viewModelsProvider.GetInventory(inventoryId);
+        return View(inventory);
     }
 }

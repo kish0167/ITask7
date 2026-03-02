@@ -1,10 +1,12 @@
 ﻿using ITask7.Models.Inventories;
+using ITask7.TEMP;
+using ITask7.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Inventory> Inventories { get; set; }
     public DbSet<InventoryField> InventoryFields { get; set; }
@@ -15,6 +17,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         modelBuilder.HasPostgresEnum<FieldType>("field_type");
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            
+        });
         
         modelBuilder.Entity<Inventory>(entity =>
         {
@@ -23,6 +30,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
+
+            entity.HasOne(e => e.Creator)
+                .WithMany(u => u.CreatedInventories)
+                .HasForeignKey(e => e.CreatedBy)
+                .OnDelete(DeleteBehavior.NoAction);
         });
         
         modelBuilder.Entity<InventoryField>(entity =>
@@ -86,5 +98,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(e => e.FieldId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+        
+        InventorySeedData.Seed(modelBuilder);
     }
 }

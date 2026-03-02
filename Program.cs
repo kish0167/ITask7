@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ITask7.Data;
 using ITask7.Localization;
 using ITask7.Services;
+using ITask7.Users;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(
+builder.Services.AddDefaultIdentity<ApplicationUser>(
         options =>
         {
             options.SignIn.RequireConfirmedAccount = false;
@@ -23,7 +24,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager<ApplicationSignInManager>();
-builder.Services.AddScoped<IUserStore<IdentityUser>, RoleAssigningUserStore>();
+builder.Services.AddScoped<IUserStore<ApplicationUser>, RoleAssigningUserStore>();
 
 builder.Services.AddControllersWithViews().
     AddViewLocalization();
@@ -67,6 +68,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
+
+builder.Services.AddScoped<DbApiService>();
+builder.Services.AddScoped<ViewModelsProvider>();
 
 var app = builder.Build();
 

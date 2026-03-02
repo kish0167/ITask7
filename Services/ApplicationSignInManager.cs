@@ -1,30 +1,31 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using ITask7.Users;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
 namespace ITask7.Services;
 
 public class ApplicationSignInManager(
-    UserManager<IdentityUser> userManager,
+    UserManager<ApplicationUser> userManager,
     IHttpContextAccessor contextAccessor,
-    IUserClaimsPrincipalFactory<IdentityUser> claimsFactory,
+    IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory,
     IOptions<IdentityOptions> optionsAccessor,
-    ILogger<SignInManager<IdentityUser>> logger,
+    ILogger<SignInManager<ApplicationUser>> logger,
     IAuthenticationSchemeProvider schemes,
-    IUserConfirmation<IdentityUser> confirmation)
-    : SignInManager<IdentityUser>(userManager,
+    IUserConfirmation<ApplicationUser> confirmation)
+    : SignInManager<ApplicationUser>(userManager,
         contextAccessor,
         claimsFactory,
         optionsAccessor,
         logger, schemes,
         confirmation)
 {
-    public override async Task<bool> CanSignInAsync(IdentityUser user)
+    public override async Task<bool> CanSignInAsync(ApplicationUser user)
     {
         return ! await UserManager.IsInRoleAsync(user, UserRoles.Blocked) && await base.CanSignInAsync(user);
     }
 
-    public override Task SignInAsync(IdentityUser user, bool isPersistent, string? authenticationMethod = null)
+    public override Task SignInAsync(ApplicationUser user, bool isPersistent, string? authenticationMethod = null)
     {
         
         return base.SignInAsync(user, isPersistent, authenticationMethod);
