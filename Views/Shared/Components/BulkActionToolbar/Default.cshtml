@@ -1,10 +1,13 @@
 ﻿@model ITask7.ViewModels.UI.BulkActionToolbarViewModel
 
-<div class="btn-group mt-3 gap-2" id="bulk-toolbar" data-selection-mode="multiple">
+@{
+    var toolbarId = $"bulk-toolbar-{Guid.NewGuid():N}";
+}
+
+<div class="btn-group mt-3 gap-2" id="@toolbarId" data-selection-mode="multiple">
     @foreach (var action in Model.Actions)
     {
         <button class="btn @action.ButtonClass" 
-                onclick="bulkAction('@action.Name')" 
                 title="@action.Title"
                 data-action="@action.Name"
                 data-endpoint="@action.Endpoint">
@@ -16,11 +19,13 @@
 
 <script>
 (function() {
-    const toolbar = document.getElementById('bulk-toolbar');
+    const toolbar = document.getElementById('@toolbarId');
     if (!toolbar) return;
     
+    const context = toolbar.closest('[data-bulk-context]') || document;
+    
     window.getSelectedIds = function() {
-        return Array.from(document.querySelectorAll('.selectable-item:checked')).map(cb => cb.value);
+        return Array.from(context.querySelectorAll('.selectable-item:checked')).map(cb => cb.value);
     };
     
     window.bulkAction = async function(actionName) {
@@ -31,17 +36,37 @@
             return;
         }
         
-        const btn = document.querySelector(`[data-action="${actionName}"]`);
+        const btn = context.querySelector(`[data-action="${actionName}"]`);
         const endpoint = btn.dataset.endpoint;
         
         if (!confirm(`${actionName} ${selectedIds.length} items?`)) return;
         
         const success = await postData(endpoint, selectedIds);
         if (success) {
-            document.dispatchEvent(new CustomEvent('bulkActionSuccess', {
-                detail: { action: actionName, ids: selectedIds }
+            context.dispatchEvent(new CustomEvent('bulkActionSuccess', {
+                detail: { action: actionName, ids: selectedIds, toolbarId: '@toolbarId'}
             }));
         }
     };
+    
+    toolbar.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => bulkAction(btn.dataset.action));
+    });
 })();
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.selectable-item');
+    checkboxes.forEach(cb => {cb.checked = selectAll.checked; toggleItemHighlight(cb)});
+}
+    
+function toggleItem(item) {
+    const checkbox = item.querySelector('.selectable-item');
+    checkbox.checked = !checkbox.checked;
+    toggleItemHighlight(checkbox);
+}
+
+function toggleItemHighlight(checkbox) {
+    checkbox.closest('tr').classList.toggle('table-active', checkbox.checked);
+}
 </script>

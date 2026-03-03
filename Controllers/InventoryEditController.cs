@@ -13,8 +13,15 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider) : Co
     }
 
     [HttpPost]
-    public IActionResult EditInventoryProperties(InventoryViewModel model)
+    public IActionResult EditProperties(InventoryViewModel model)
     {
         return Ok();
     }
+    
+    [HttpPost]
+    public IActionResult DeleteAccesses([FromBody] List<string> userIds)
+    {
+        return Ok();
+    }
+
 }

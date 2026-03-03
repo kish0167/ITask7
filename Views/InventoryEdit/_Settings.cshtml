@@ -1,0 +1,104 @@
+﻿@model ITask7.ViewModels.Inventories.InventoryViewModel
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Inventory Settings</h5>
+        <button type="button" class="btn btn-sm btn-outline-primary" id="editSettingsBtn" onclick="toggleEdit()">
+            <i class="bi bi-pencil"></i> Edit
+        </button>
+    </div>
+    <div class="card-body">
+        <form id="settingsForm" method="post" asp-action="EditProperties">
+            <input type="hidden" asp-for="Id"/>
+
+            <!-- Title/Name -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Title</label>
+                <div class="view-mode">
+                    <p class="form-control-plaintext border p-2 rounded bg-light" id="nameDisplay">@Model.Name</p>
+                </div>
+                <div class="edit-mode d-none">
+                    <input type="text" class="form-control" asp-for="Name" id="nameInput" value="@Model.Name" required/>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Description</label>
+                <div class="view-mode">
+                    <p class="form-control-plaintext border p-2 rounded bg-light" id="descDisplay">@Model.Description</p>
+                </div>
+                <div class="edit-mode d-none">
+                    <textarea class="form-control" asp-for="Description" id="descInput" rows="3">@Model.Description</textarea>
+                </div>
+            </div>
+
+            <!-- IsPublic -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Visibility</label>
+                <div class="view-mode">
+                    <p class="form-control-plaintext border p-2 rounded bg-light" id="publicDisplay">
+                        @(Model.IsPublic ? "🌐 Public" : "🔒 Private")
+                    </p>
+                </div>
+                <div class="edit-mode d-none">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" asp-for="IsPublic" id="publicInput"/>
+                        <label class="form-check-label" for="publicInput" id="publicLabel">
+                            @(Model.IsPublic ? "Public" : "Private")
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save/Cancel Buttons (hidden in view mode) -->
+            <div class="edit-mode d-none mt-4">
+                <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+                <button type="button" class="btn btn-secondary" onclick="toggleEdit()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let isEditing = false;
+    
+    function toggleEdit() {
+        isEditing = !isEditing;
+        const viewModes = document.querySelectorAll('.view-mode');
+        const editModes = document.querySelectorAll('.edit-mode');
+        const btn = document.getElementById('editSettingsBtn');
+    
+        viewModes.forEach(el => el.classList.toggle('d-none', isEditing));
+        editModes.forEach(el => el.classList.toggle('d-none', !isEditing));
+    
+        if (isEditing) {
+            btn.innerHTML = '<i class="bi bi-x"></i> Cancel';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-outline-secondary');
+        } else {
+            btn.innerHTML = '<i class="bi bi-pencil"></i> Edit';
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-outline-primary');
+                
+            // Reset form values if canceling
+            if (event && event.target.innerText.includes('Cancel')) {
+                document.getElementById('settingsForm').reset();
+                updatePublicLabel();
+            }
+        }
+    }
+    
+    // Update label when toggle changes
+    document.getElementById('publicInput')?.addEventListener('change', function() {
+        document.getElementById('publicLabel').textContent = this.checked ? 'Public' : 'Private';
+    });
+    
+    function updatePublicLabel() {
+        const checkbox = document.getElementById('publicInput');
+        const label = document.getElementById('publicLabel');
+        if (checkbox && label) {
+            label.textContent = checkbox.checked ? 'Public' : 'Private';
+        }
+    }
+</script>

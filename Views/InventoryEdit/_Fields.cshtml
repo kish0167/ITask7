@@ -1,0 +1,87 @@
+﻿@model ITask7.ViewModels.Inventories.InventoryViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Field Definitions</h5>
+    <button class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Add Field
+    </button>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-striped align-middle">
+        <thead class="table-light">
+        <tr>
+            <th style="width: 50px;">Order</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th class="text-center">Required</th>
+            <th class="text-center">Display in Table</th>
+            <th class="text-end">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (Model.Fields != null && Model.Fields.Any())
+        {
+            @foreach (var field in Model.Fields.OrderBy(f => f.SortOrder))
+            {
+                <tr>
+                    <td>
+                        <span class="badge bg-secondary">@field.SortOrder</span>
+                    </td>
+                    <td>
+                        <span class="fw-bold">@field.Title</span>
+                    </td>
+                    <td>
+                        <span class="text-muted text-truncate d-inline-block" style="max-width: 300px;" title="@field.Description">
+                            @(string.IsNullOrEmpty(field.Description) ? "-" : field.Description)
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">
+                            @field.Type
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        @if (field.IsRequired)
+                        {
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-circle text-muted fs-5"></i>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (field.DisplayInTable)
+                        {
+                            <i class="bi bi-table text-primary fs-5"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-eye-slash text-muted fs-5"></i>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-secondary me-1" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                    <i class="bi bi-layout-text-window-reverse fs-1 d-block mb-2"></i>
+                    No field definitions found
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

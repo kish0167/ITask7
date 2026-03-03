@@ -10,5 +10,5 @@ public class InventoryViewModel
     public bool IsPublic { get; set; }
     public List<FieldDefinitionViewModel> Fields { get; set; } = new();
     public List<ItemViewModel> Items { get; set; } = new();
-    public List<string> WriteAccessUsernames { get; set; } = new();
+    public List<UserViewModel> WriteAccessUsers { get; set; } = new();
 }

@@ -7,7 +7,7 @@ public class UserViewModel
 {
     public string Id;
     public string? Email;
-    public List<string?> Roles;
+    public List<string?> Roles = new(); // TODO: Remove this
     public string Status
     {
         get

@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using ITask7.Data;
 using ITask7.Models.Inventories;
+using ITask7.Users;
+using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +29,7 @@ public class ViewModelsProvider(DbApiService dbApiService)
             IsPublic = inventory.IsPublic,
             Fields = GetFields(inventory),
             Items = GetItems(inventory),
-            WriteAccessUsernames = inventory.Accesses.Select(a=>a.User.UserName ?? "noname").ToList()
+            WriteAccessUsers = inventory.Accesses.Select(a=> UserViewModelFromUser(a.User)).ToList()
         };
     }
 
@@ -93,5 +95,14 @@ public class ViewModelsProvider(DbApiService dbApiService)
         viewModel.Type = value.Field.FieldType;
         viewModel.Value = value.GetValue();
         return viewModel;
+    }
+
+    private UserViewModel UserViewModelFromUser(ApplicationUser user)
+    {
+        return new UserViewModel()
+        {
+            Id = user.Id,
+            Email = user.Email
+        };
     }
 }

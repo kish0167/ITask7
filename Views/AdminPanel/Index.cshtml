@@ -4,9 +4,6 @@
 @{
     ViewBag.Title = "Admin panel";
     Layout = "_Layout";
-}
-@{
-    ViewBag.Title = "Admin panel";
     var toolbarModel = new BulkActionToolbarViewModel
     {
         Actions = new()
@@ -39,13 +36,13 @@
     <tbody>
     @foreach (var user in Model)
     {
-        <tr onclick="toggleRow(this)" style="cursor: pointer;" data-user-id="@user.Id">
+        <tr onclick="toggleItem(this)" style="cursor: pointer;" data-user-id="@user.Id">
             <td onclick="event.stopPropagation()">
                 <input class="form-check-input selectable-item"
                        type="checkbox"
                        value="@user.Id"
                        data-user-id="@user.Id"
-                       onchange="toggleRowHighlight(this)">
+                       onchange="toggleItemHighlight(this)">
             </td>
             <td>@user.Email</td>
             <td class="user-status">@user.Status</td>
@@ -55,23 +52,8 @@
 </table>
 
 <script>
-    function toggleSelectAll() {
-        const selectAll = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.selectable-item');
-        checkboxes.forEach(cb => {cb.checked = selectAll.checked; toggleRowHighlight(cb)});
-    }
-    
-    function toggleRowHighlight(checkbox) {
-        checkbox.closest('tr').classList.toggle('table-active', checkbox.checked);
-    }
-    
-    function toggleRow(row) {
-        const checkbox = row.querySelector('.selectable-item');
-        checkbox.checked = !checkbox.checked;
-        toggleRowHighlight(checkbox);
-    }
 
-    // ==================== API ACTIONS ====================
+    // ==================== TOOLBAR REQS ====================
     
     document.addEventListener('bulkActionSuccess', function(e) {
         const { action, ids } = e.detail; 
