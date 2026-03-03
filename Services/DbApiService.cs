@@ -25,17 +25,17 @@ public class DbApiService(ApplicationDbContext dbContext)
         return inventory ?? new Inventory();
     }
 
-    public async Task<bool> AddAccess(string username, Guid inventoryId)
+    public async Task<string?> AddAccess(string username, Guid inventoryId)
     {
         ApplicationUser? user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.UserName == username);
-        if (user == null) return false;
+        if (user == null) return null;
         bool inventoryExists = await _dbContext.Inventories
             .AnyAsync(i => i.Id == inventoryId);
-        if (!inventoryExists) return false; 
+        if (!inventoryExists) return null; 
         bool accessExists = await _dbContext.InventoriesAccesses
             .AnyAsync(a => a.UserId == user.Id && a.InventoryId == inventoryId);
-        if (accessExists) return false;
+        if (accessExists) return null;
         var inventoryAccess = new InventoryAccess
         {
             UserId = user.Id,
@@ -43,6 +43,24 @@ public class DbApiService(ApplicationDbContext dbContext)
         };
         await _dbContext.InventoriesAccesses.AddAsync(inventoryAccess);
         await _dbContext.SaveChangesAsync();
-        return true;
+        return user.Id;
+    }
+
+    public async Task<bool> RemoveAccesses(List<string> userIds, Guid inventoryId)
+    {
+        if (userIds == null || !userIds.Any())
+            return false;
+        
+        List<InventoryAccess> accessesToRemove = await _dbContext.InventoriesAccesses
+            .Where(a => a.InventoryId == inventoryId && userIds.Contains(a.UserId))
+            .ToListAsync();
+
+        if (!accessesToRemove.Any())
+            return false;
+
+        _dbContext.InventoriesAccesses.RemoveRange(accessesToRemove);
+        int result = await _dbContext.SaveChangesAsync();
+
+        return result > 0;
     }
 }

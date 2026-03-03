@@ -1,5 +1,4 @@
 ﻿@using ITask7.ViewModels.UI
-@using ITask7.ViewModels
 @model ITask7.ViewModels.Inventories.InventoryViewModel
 
 @{
@@ -10,7 +9,7 @@
             new()
             {
                 Name = "delete", Title = "Delete", Icon = "bi-trash-fill",
-                ButtonClass = "btn-danger", Endpoint = "/InventoryEdit/DeleteAccesses" // TODO!!!
+                ButtonClass = "btn-outline-danger", Endpoint = "/InventoryEdit/DeleteAccesses" // TODO!!!
             }
         }
     };
@@ -20,9 +19,6 @@
     @if (!Model.IsPublic)
     {
         <h5 class="mb-0">Users with write access</h5>
-        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
-            <i class="bi bi-plus-lg me-1"></i>Add user
-        </button>
     }
     else
     {
@@ -30,10 +26,15 @@
     }
 </div>
 
-<div class="table-responsive @(Model.IsPublic ? "opacity-50" : "")" data-bulk-context="access">
+<div class="table-responsive @(Model.IsPublic ? "opacity-50" : "")" data-bulk-context="access" data-context-id="@Model.Id">
     @if (!Model.IsPublic)
     {
-        <partial name="Components/BulkActionToolbar/Default" model="toolbarModel"/>
+        <div class="d-flex justify-content-between align-items-center mb-3 px-3">
+            <partial name="Components/BulkActionToolbar/Default" model="toolbarModel"/>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="bi bi-plus-lg me-1"></i>Add user
+            </button>
+        </div>
         <table class="table table-hover table-striped align-middle">
             <thead class="@(Model.IsPublic ? "table-dark" : "table-light")">
             <tr>
@@ -46,7 +47,7 @@
                 <th>Username</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="userTableBody">
             @foreach (var user in Model.WriteAccessUsers)
             {
                 <tr onclick="toggleItem(this)" style="cursor: pointer;" data-user-id="@user.Id">
@@ -93,7 +94,7 @@
         
         // ==================== UI UPDATES ====================
         function handleActionSuccess(action, userIds) {
-            alert('Success!');
+            //alert('Success!');
                 
             if (action === 'delete'){
                 removeRows(userIds);
@@ -119,18 +120,18 @@
                 <div class="modal-body">
                     <div class="mb-3 position-relative">
                         <label for="usernameInput" class="form-label">Username</label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="usernameInput" 
-                               placeholder="Start typing username..." 
+                        <input type="text"
+                               class="form-control"
+                               id="usernameInput"
+                               placeholder="Start typing username..."
                                autocomplete="off"
                                oninput="onUsernameInput(this.value)"
                                onfocus="onUsernameInput(this.value)"
                                onkeydown="onUsernameKeydown(event)">
-                        
+
                         <!-- Autocomplete dropdown -->
-                        <ul class="dropdown-menu w-100 show" 
-                            id="autocompleteDropdown" 
+                        <ul class="dropdown-menu w-100 show"
+                            id="autocompleteDropdown"
                             style="max-height: 200px; overflow-y: auto; display: none; position: absolute; top: 100%; left: 0; z-index: 1050;">
                             <!-- Items injected here -->
                         </ul>
@@ -160,7 +161,7 @@
             return;
         }
 
-        
+        AddUserToTable(username, success)
         const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
         modal.hide();
         document.getElementById('usernameInput').value = '';
@@ -289,4 +290,22 @@
     
     //------------- UI UPDATE ------------
     
+    function AddUserToTable(username, id){
+        const tb = document.getElementById('userTableBody');
+        const rowHtml = `
+                <tr onclick="toggleItem(this)" style="cursor: pointer;" data-user-id="${id}">
+                    <td onclick="event.stopPropagation()">
+                        <input class="form-check-input selectable-item"
+                               type="checkbox"
+                               value="${id}"
+                               data-user-id="${id}"
+                               onchange="toggleItemHighlight(this)">
+                    </td>
+                    <td>
+                        <span class="fw-bold">${username}</span>
+                    </td>
+                </tr>
+            `;
+        tb.insertAdjacentHTML('beforeend', rowHtml);
+    }
 </script>

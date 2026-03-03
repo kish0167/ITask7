@@ -22,15 +22,16 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider, DbAp
     }
     
     [HttpPost]
-    public IActionResult DeleteAccesses([FromBody] List<string> userIds)
+    public async Task<IActionResult> DeleteAccesses([FromBody] List<string> userIds, [FromQuery] Guid contextId)
     {
-        return Ok();
+        bool success = await dbApiService.RemoveAccesses(userIds, contextId);
+        return Ok(success);
     }
     
     [HttpPost]
     public async Task<IActionResult> AddAccess([FromQuery] string username, [FromBody] Guid inventoryId)
     {
-        bool success = await dbApiService.AddAccess(username, inventoryId);
+        string? success = await dbApiService.AddAccess(username, inventoryId);
         return Ok(success);
     }
 }

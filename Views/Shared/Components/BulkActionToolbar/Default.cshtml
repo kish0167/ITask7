@@ -41,7 +41,8 @@
         
         if (!confirm(`${actionName} ${selectedIds.length} items?`)) return;
         
-        const success = await postData(endpoint, selectedIds);
+        const contextId = context.dataset?.contextId;
+        const success = await postData(endpoint + (contextId ? `?contextId=${contextId}`: ''), selectedIds);
         if (success) {
             context.dispatchEvent(new CustomEvent('bulkActionSuccess', {
                 detail: { action: actionName, ids: selectedIds, toolbarId: '@toolbarId'}
