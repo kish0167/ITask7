@@ -1,4 +1,5 @@
 ﻿@using ITask7.ViewModels.UI
+@using ITask7.ViewModels
 @model ITask7.ViewModels.Inventories.InventoryViewModel
 
 @{
@@ -33,7 +34,7 @@
     @if (!Model.IsPublic)
     {
         <partial name="Components/BulkActionToolbar/Default" model="toolbarModel"/>
-        <table class="table table-hover table-striped align-middle @(Model.IsPublic ? "table-secondary" : "")">
+        <table class="table table-hover table-striped align-middle">
             <thead class="@(Model.IsPublic ? "table-dark" : "table-light")">
             <tr>
                 <th style="width: 40px;">
@@ -64,6 +65,7 @@
             @if (!Model.WriteAccessUsers.Any())
             {
                 <tr>
+                    <td></td>
                     <td>
                         <span class="fw-bold">No users with write access</span>
                     </td>
@@ -152,8 +154,12 @@
             return;
         }
         
-        const success = await postData('/InventoryEdit/AddAccess',username);
-        if (!success) return;
+        const success = await postData(`/InventoryEdit/AddAccess?username=${username}`, '@Model.Id');
+        if (!success) {
+            alert("Couldn't grant access");
+            return;
+        }
+
         
         const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
         modal.hide();
@@ -168,7 +174,6 @@
         const dropdown = document.getElementById('autocompleteDropdown');
         const display = document.getElementById('selectedUserDisplay');
         
-        // Reset selection if user types after selection
         if (selectedUserId) {
             selectedUserId = null;
             display.style.display = 'none';
@@ -180,14 +185,13 @@
             return;
         }
         
-        // Debounce API call
         clearTimeout(window.autocompleteTimeout);
         window.autocompleteTimeout = setTimeout(() => fetchUsers(value), 150);
     }
     
     async function fetchUsers(prefix) {
         try {
-            const response = await fetch(`/InventoryEdit/SearchUsers?prefix=${encodeURIComponent(prefix)}`);
+            const response = await fetch(`/Search/Users?prefix=${encodeURIComponent(prefix)}`);
             const users = await response.json();
             autocompleteItems = users;
             highlightedIndex = -1;
@@ -269,7 +273,6 @@
         }
     }
     
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
         const container = document.getElementById('usernameInput')?.closest('.position-relative');
         if (container && !container.contains(e.target)) {
@@ -283,4 +286,7 @@
         document.getElementById('autocompleteDropdown').style.display = 'none';
         selectedUserId = null;
     }
+    
+    //------------- UI UPDATE ------------
+    
 </script>

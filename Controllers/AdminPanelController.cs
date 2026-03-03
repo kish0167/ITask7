@@ -7,10 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Controllers;
 
-public class AdminPanelController(ApplicationDbContext dbContext)
+public class AdminPanelController(ApplicationDbContext dbContext, DbApiService dbApiService)
     : Controller
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly DbApiService _dbApiService = dbApiService;
 
     //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> Index()
