@@ -19,7 +19,7 @@
     @if (!Model.IsPublic)
     {
         <h5 class="mb-0">Users with write access</h5>
-        <button class="btn btn-primary btn-sm">
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
             <i class="bi bi-plus-lg me-1"></i>Add user
         </button>
     }
@@ -54,7 +54,8 @@
                                type="checkbox"
                                value="@user.Id"
                                data-user-id="@user.Id"
-                               onchange="toggleItemHighlight(this)"></td>
+                               onchange="toggleItemHighlight(this)">
+                    </td>
                     <td>
                         <span class="fw-bold">@user.Email</span>
                     </td>
@@ -104,9 +105,182 @@
             });
         }    
     </script>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 position-relative">
+                        <label for="usernameInput" class="form-label">Username</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="usernameInput" 
+                               placeholder="Start typing username..." 
+                               autocomplete="off"
+                               oninput="onUsernameInput(this.value)"
+                               onfocus="onUsernameInput(this.value)"
+                               onkeydown="onUsernameKeydown(event)">
+                        
+                        <!-- Autocomplete dropdown -->
+                        <ul class="dropdown-menu w-100 show" 
+                            id="autocompleteDropdown" 
+                            style="max-height: 200px; overflow-y: auto; display: none; position: absolute; top: 100%; left: 0; z-index: 1050;">
+                            <!-- Items injected here -->
+                        </ul>
+                    </div>
+                    <div id="selectedUserDisplay" class="small text-success fw-bold" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="submitAddUser()">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
+    async function submitAddUser() {
+        const username = document.getElementById('usernameInput').value.trim();
+        if (!username) {
+            alert('Please enter a username');
+            return;
+        }
+        
+        const success = await postData('/InventoryEdit/AddAccess',username);
+        if (!success) return;
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+        modal.hide();
+        document.getElementById('usernameInput').value = '';
+    }
     
-</script>
+    let selectedUserId = null;
+    let autocompleteItems = [];
+    let highlightedIndex = -1;
+    
+    function onUsernameInput(value) {
+        const dropdown = document.getElementById('autocompleteDropdown');
+        const display = document.getElementById('selectedUserDisplay');
+        
+        // Reset selection if user types after selection
+        if (selectedUserId) {
+            selectedUserId = null;
+            display.style.display = 'none';
+            display.textContent = '';
+        }
+        
+        if (value.length < 2) {
+            dropdown.style.display = 'none';
+            return;
+        }
+        
+        // Debounce API call
+        clearTimeout(window.autocompleteTimeout);
+        window.autocompleteTimeout = setTimeout(() => fetchUsers(value), 150);
+    }
+    
+    async function fetchUsers(prefix) {
+        try {
+            const response = await fetch(`/InventoryEdit/SearchUsers?prefix=${encodeURIComponent(prefix)}`);
+            const users = await response.json();
+            autocompleteItems = users;
+            highlightedIndex = -1;
+            renderDropdown(users);
+        } catch (err) {
+            console.error('Autocomplete fetch failed:', err);
+        }
+    }
+    
+    function renderDropdown(users) {
+        const dropdown = document.getElementById('autocompleteDropdown');
+        
+        if (users.length === 0) {
+            dropdown.innerHTML = '<li><span class="dropdown-item text-muted">No users found</span></li>';
+            dropdown.style.display = 'block';
+            return;
+        }
+        
+        dropdown.innerHTML = users.map((user, index) => `
+            <li>
+                <a class="dropdown-item ${index === highlightedIndex ? 'active' : ''}" 
+                   href="#"
+                   onclick="selectUser('${user.id}', '${user.email}'); return false;"
+                   data-index="${index}">
+                    <div class="fw-bold">${highlightMatch(user.email)}</div>
+                </a>
+            </li>
+        `).join('');
+        
+        dropdown.style.display = 'block';
+    }
+    
+    function highlightMatch(email) {
+        const input = document.getElementById('usernameInput').value;
+        const regex = new RegExp(`(${escapeRegex(input)})`, 'gi');
+        return email.replace(regex, '<mark>$1</mark>');
+    }
+    
+    function escapeRegex(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    
+    function selectUser(id, email) {
+        selectedUserId = id;
+        document.getElementById('usernameInput').value = email;
+        document.getElementById('autocompleteDropdown').style.display = 'none';
+    }
+    
+    function onUsernameKeydown(event) {
+        const dropdown = document.getElementById('autocompleteDropdown');
+        if (dropdown.style.display === 'none') return;
+        
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            highlightedIndex = Math.min(highlightedIndex + 1, autocompleteItems.length - 1);
+            updateHighlight();
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            highlightedIndex = Math.max(highlightedIndex - 1, 0);
+            updateHighlight();
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            if (highlightedIndex >= 0 && autocompleteItems[highlightedIndex]) {
+                const user = autocompleteItems[highlightedIndex];
+                selectUser(user.id, user.email);
+            }
+        } else if (event.key === 'Escape') {
+            dropdown.style.display = 'none';
+        }
+    }
+    
+    function updateHighlight() {
+        const items = document.querySelectorAll('#autocompleteDropdown .dropdown-item');
+        items.forEach((item, idx) => {
+            item.classList.toggle('active', idx === highlightedIndex);
+        });
+        if (items[highlightedIndex]) {
+            items[highlightedIndex].scrollIntoView({ block: 'nearest' });
+        }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('usernameInput')?.closest('.position-relative');
+        if (container && !container.contains(e.target)) {
+            document.getElementById('autocompleteDropdown').style.display = 'none';
+        }
+    });
 
+    function resetModal() {
+        document.getElementById('usernameInput').value = '';
+        document.getElementById('selectedUserDisplay').style.display = 'none';
+        document.getElementById('autocompleteDropdown').style.display = 'none';
+        selectedUserId = null;
+    }
+</script>

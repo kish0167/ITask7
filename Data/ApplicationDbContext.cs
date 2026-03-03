@@ -109,6 +109,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
+        modelBuilder.Entity<ApplicationUser>()
+            .HasIndex(u => u.Email)
+            .HasMethod("BTree")
+            .HasOperators("varchar_pattern_ops");
+        
         InventorySeedData.Seed(modelBuilder);
     }
 }

@@ -12,7 +12,8 @@ public class RoleAssigningUserStore(ApplicationDbContext context, IdentityErrorD
     
     public override async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = new CancellationToken())
     {
-        Task<IdentityResult> result = base.CreateAsync(user, cancellationToken);
+        //Task<IdentityResult> result = base.CreateAsync(user, cancellationToken);
+        IdentityResult result = await base.CreateAsync(user, cancellationToken);
         
         Context.UserRoles.Add(new IdentityUserRole<string>
         {
@@ -20,7 +21,7 @@ public class RoleAssigningUserStore(ApplicationDbContext context, IdentityErrorD
             RoleId = (await Context.Roles.FirstAsync(r => r.Name == UserRoles.Active, cancellationToken)).Id
         });
         
-        return await result;
+        return result;
     }
 
     public override Task SetEmailAsync(ApplicationUser user, string? email, CancellationToken cancellationToken = new CancellationToken())
