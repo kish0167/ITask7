@@ -1,9 +1,6 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using ITask7.Data;
-using ITask7.Services;
+﻿using ITask7.Services;
 using ITask7.ViewModels.Inventories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Controllers;
 
@@ -16,8 +13,9 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider, DbAp
     }
 
     [HttpPost]
-    public IActionResult EditProperties(InventoryViewModel model)
+    public async Task<IActionResult> EditProperties(InventoryViewModel model)
     {
+        bool success = await dbApiService.EditProperties(model);
         return Ok();
     }
     

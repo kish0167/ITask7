@@ -1,6 +1,7 @@
 ﻿using ITask7.Data;
 using ITask7.Models.Inventories;
 using ITask7.Users;
+using ITask7.ViewModels.Inventories;
 using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Services;
@@ -62,5 +63,25 @@ public class DbApiService(ApplicationDbContext dbContext)
         int result = await _dbContext.SaveChangesAsync();
 
         return result > 0;
+    }
+
+    public async Task<bool> EditProperties(InventoryViewModel model)
+    {
+        var inventory = await _dbContext.Inventories.FindAsync(model.Id);
+        if (inventory == null) return false;
+        
+        if (inventory.Name != model.Name) inventory.Name = model.Name;
+        if (inventory.Description != model.Description) inventory.Description = model.Description;
+        if (inventory.IsPublic != model.IsPublic) inventory.IsPublic = model.IsPublic;
+        
+        try 
+        {
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return false;
+        }
     }
 }

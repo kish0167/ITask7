@@ -63,6 +63,23 @@
 <script>
     let isEditing = false;
     
+    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok){
+            updateFieldsValues();
+            toggleEdit();
+        }    
+    });
+    
     function toggleEdit() {
         isEditing = !isEditing;
         const viewModes = document.querySelectorAll('.view-mode');
@@ -89,6 +106,29 @@
         }
     }
     
+    function updateFieldsValues(){
+        // Update Title/Name
+        const nameInput = document.getElementById('nameInput');
+        const nameDisplay = document.getElementById('nameDisplay');
+        if (nameInput && nameDisplay) {
+            nameDisplay.textContent = nameInput.value;
+        }
+        
+        // Update Description
+        const descInput = document.getElementById('descInput');
+        const descDisplay = document.getElementById('descDisplay');
+        if (descInput && descDisplay) {
+            descDisplay.textContent = descInput.value;
+        }
+        
+        // Update Visibility/Public status
+        const publicInput = document.getElementById('publicInput');
+        const publicDisplay = document.getElementById('publicDisplay');
+        if (publicInput && publicDisplay) {
+            publicDisplay.textContent = publicInput.checked ? '🌐 Public' : '🔒 Private';
+        }
+    }
+    
     // Update label when toggle changes
     document.getElementById('publicInput')?.addEventListener('change', function() {
         document.getElementById('publicLabel').textContent = this.checked ? 'Public' : 'Private';
@@ -101,4 +141,6 @@
             label.textContent = checkbox.checked ? 'Public' : 'Private';
         }
     }
+    
+    
 </script>
