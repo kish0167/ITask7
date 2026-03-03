@@ -1,25 +1,28 @@
-﻿@model System.Collections.Generic.List<ITask7.ViewModels.UserViewModel>
+﻿@using ITask7.ViewModels.UI
+@model System.Collections.Generic.List<ITask7.ViewModels.UserViewModel>
 
 @{
     ViewBag.Title = "Admin panel";
     Layout = "_Layout";
 }
+@{
+    ViewBag.Title = "Admin panel";
+    var toolbarModel = new BulkActionToolbarViewModel
+    {
+        Actions = new()
+        {
+            new() { Name = "delete", Title = "Delete", Icon = "bi-trash-fill", 
+                    ButtonClass = "btn-danger", Endpoint = "/AdminPanel/BulkDelete" },
+            new() { Name = "block", Title = "Block", Icon = "bi-lock-fill", 
+                    ButtonClass = "btn-warning", Endpoint = "/AdminPanel/BulkBlock" },
+            new() { Name = "unblock", Title = "Unblock", Icon = "bi-unlock-fill", 
+                    ButtonClass = "btn-info", Endpoint = "/AdminPanel/BulkUnblock" }
+        }
+    };
+}
 
-<h1>Dashboard</h1>
-<div class="btn-group mt-3 gap-2">
-    <button class="btn btn-danger" onclick="bulkAction('delete')" title="Delete selected">
-        <i class="bi bi-trash-fill"></i>
-    </button>
-    <button class="btn btn-warning" onclick="bulkAction('block')" title="Block selected">
-        <i class="bi bi-lock-fill"></i>
-    </button>
-    <button class="btn btn-info" onclick="bulkAction('unblock')" title="Unblock selected">
-        <i class="bi bi-unlock-fill"></i>
-    </button>
-    <button class="btn btn-outline-danger" onclick="deleteUnverified()" title="Delete all unverified">
-        <i class="bi bi-person-x-fill"></i>
-    </button>
-</div>
+<h1>Admin panel</h1>
+<partial name="Components/BulkActionToolbar/Default" model="toolbarModel" />
 <table class="table table-hover mb-0 align-middle">
     <thead>
     <tr>
@@ -38,7 +41,7 @@
     {
         <tr onclick="toggleRow(this)" style="cursor: pointer;" data-user-id="@user.Id">
             <td onclick="event.stopPropagation()">
-                <input class="form-check-input user-checkbox"
+                <input class="form-check-input selectable-item"
                        type="checkbox"
                        value="@user.Id"
                        data-user-id="@user.Id"
@@ -54,7 +57,7 @@
 <script>
     function toggleSelectAll() {
         const selectAll = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.user-checkbox');
+        const checkboxes = document.querySelectorAll('.selectable-item');
         checkboxes.forEach(cb => {cb.checked = selectAll.checked; toggleRowHighlight(cb)});
     }
     
@@ -63,111 +66,51 @@
     }
     
     function toggleRow(row) {
-        const checkbox = row.querySelector('.user-checkbox');
+        const checkbox = row.querySelector('.selectable-item');
         checkbox.checked = !checkbox.checked;
         toggleRowHighlight(checkbox);
     }
-    
-    function getSelectedIds() {
-        return Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
-    }
-    
+
     // ==================== API ACTIONS ====================
     
-    async function bulkAction(action) {
-            const selectedIds = getSelectedIds();
-            
-            if (selectedIds.length === 0) {
-                alert('Please select at least one user');
-                return;
-            }
-            
-            if (!confirm(`${action} ${selectedIds.length} users?`)) return;
-            
-            const endpoint = `/AdminPanel/Bulk${capitalize(action)}`;
-            const success = await postData(endpoint, selectedIds);
-            
-            if (success) {
-                handleActionSuccess(action, selectedIds);
-            }
-        }
+    document.addEventListener('bulkActionSuccess', function(e) {
+        const { action, ids } = e.detail; 
+        handleActionSuccess(action, ids);
+    }); 
+
+    // ==================== UI UPDATES ====================
     
-    async function deleteUnverified() {
-        if (!confirm('Delete all unverified users?')) return; 
-        const success = await postData('/Dashboard/DeleteUnverified', null);
-        if (success) {
-            document.querySelectorAll('.user-status').forEach(el => {
-            if (el.textContent.includes('Unverified')) {
-                el.closest('tr').remove();
-            }
-            });
+    function handleActionSuccess(action, userIds) {
+        alert('Success!');
+            
+        if (action === 'delete'){
+            removeRows(userIds);
+        } else if (action === 'block'){
+            updateStatuses(userIds, 'Blocked');
+        } else if (action === 'unblock'){
+            updateStatuses(userIds, 'Active');
         }
     }
     
-    // ==================== HELPERS ====================
+    function removeRows(userIds) {
+        userIds.forEach(id => {
+            const row = document.querySelector(`tr[data-user-id="${id}"]`);
+            if (row) row.remove();
+        });
+    }
     
-        async function postData(url, data) {
-            try {
-                const options = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                };
-                
-                if (data !== null) {
-                    options.body = JSON.stringify(data);
-                }
-                
-                const response = await fetch(url, options);
-                
-                if (!response.ok) {
-                    alert('Error: ' + response.statusText);
-                    return false;
-                }
-                return true;
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to perform action');
-                return false;
+    function updateStatuses(userIds, newStatus) {
+        userIds.forEach(id => {
+            const statusCell = getStatusCell(id);
+            if (statusCell) {
+                statusCell.textContent = newStatus;
+                statusCell.setAttribute('data-user-status', newStatus);
             }
-        }
-    
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-    
-        function getStatusCell(userId) {
-            return document.querySelector(`tr[data-user-id="${userId}"] .user-status`);
-        }
-    
-        // ==================== UI UPDATES ====================
-    
-        function handleActionSuccess(action, userIds) {
-            alert('Success!');
-            
-            if (action === 'delete'){
-                removeRows(userIds);
-            } else if (action === 'block'){
-                updateStatuses(userIds, 'Blocked');
-            } else if (action === 'unblock'){
-                updateStatuses(userIds, 'Active');
-            }
-        }
-    
-        function removeRows(userIds) {
-            userIds.forEach(id => {
-                const row = document.querySelector(`tr[data-user-id="${id}"]`);
-                if (row) row.remove();
-            });
-        }
-    
-        function updateStatuses(userIds, newStatus) {
-            userIds.forEach(id => {
-                const statusCell = getStatusCell(id);
-                if (statusCell) {
-                    statusCell.textContent = newStatus;
-                    statusCell.setAttribute('data-user-status', newStatus);
-                }
-            });
-        }
+        });
+    }
+        
+    function getStatusCell(userId) {
+        return document.querySelector(`tr[data-user-id="${userId}"] .user-status`);
+    }        
+        
 </script>

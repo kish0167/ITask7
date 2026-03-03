@@ -1,0 +1,47 @@
+﻿@model ITask7.ViewModels.UI.BulkActionToolbarViewModel
+
+<div class="btn-group mt-3 gap-2" id="bulk-toolbar" data-selection-mode="multiple">
+    @foreach (var action in Model.Actions)
+    {
+        <button class="btn @action.ButtonClass" 
+                onclick="bulkAction('@action.Name')" 
+                title="@action.Title"
+                data-action="@action.Name"
+                data-endpoint="@action.Endpoint">
+            <i class="bi @action.Icon"></i>
+            <span class="d-none d-sm-inline ms-1">@action.Title</span>
+        </button>
+    }
+</div>
+
+<script>
+(function() {
+    const toolbar = document.getElementById('bulk-toolbar');
+    if (!toolbar) return;
+    
+    window.getSelectedIds = function() {
+        return Array.from(document.querySelectorAll('.selectable-item:checked')).map(cb => cb.value);
+    };
+    
+    window.bulkAction = async function(actionName) {
+        const selectedIds = getSelectedIds();
+        
+        if (selectedIds.length === 0) {
+            alert('Please select at least one item');
+            return;
+        }
+        
+        const btn = document.querySelector(`[data-action="${actionName}"]`);
+        const endpoint = btn.dataset.endpoint;
+        
+        if (!confirm(`${actionName} ${selectedIds.length} items?`)) return;
+        
+        const success = await postData(endpoint, selectedIds);
+        if (success) {
+            document.dispatchEvent(new CustomEvent('bulkActionSuccess', {
+                detail: { action: actionName, ids: selectedIds }
+            }));
+        }
+    };
+})();
+</script>

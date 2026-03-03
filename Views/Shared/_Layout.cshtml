@@ -65,6 +65,25 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+    async function postData(url, data) {
+        try {
+            const options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (data !== null) options.body = JSON.stringify(data);
+            
+            const response = await fetch(url, options);
+            if (!response.ok) throw new Error(response.statusText);
+            return true;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to perform action');
+            return false;
+        }
+    }
+</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
