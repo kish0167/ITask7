@@ -18,17 +18,32 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
 (function() {
-    const toolbar = document.getElementById('@toolbarId');
+    const toolbarId = '@toolbarId';
+    const toolbar = document.getElementById(toolbarId);
     if (!toolbar) return;
     
-    const context = toolbar.closest('[data-bulk-context]') || document;
+    const context = toolbar.closest('[data-bulk-context]') || document.body;
     
-    window.getSelectedIds = function() {
+    // Generate unique function names for this instance
+    const ns = `bulkToolbar_${toolbarId.replace(/-/g, '_')}`;
+    
+    // Helper to get checkboxes scoped to this context
+    function getCheckboxes() {
+        return context.querySelectorAll('.selectable-item');
+    }
+    
+    // Helper to get select-all checkbox scoped to this context
+    function getSelectAllCheckbox() {
+        return context.querySelector('.select-all');
+    }    
+    
+    function getSelectedIds() {
         return Array.from(context.querySelectorAll('.selectable-item:checked')).map(cb => cb.value);
-    };
+    }
     
-    window.bulkAction = async function(actionName) {
+    async function bulkAction(actionName) {
         const selectedIds = getSelectedIds();
         
         if (selectedIds.length === 0) {
@@ -45,29 +60,86 @@
         const success = await postData(endpoint + (contextId ? `?contextId=${contextId}`: ''), selectedIds);
         if (success) {
             context.dispatchEvent(new CustomEvent('bulkActionSuccess', {
-                detail: { action: actionName, ids: selectedIds, toolbarId: '@toolbarId'}
+                detail: { action: actionName, ids: selectedIds, toolbarId: '@toolbarId', context: context}
             }));
         }
     };
     
-    toolbar.querySelectorAll('button[data-action]').forEach(btn => {
-        btn.addEventListener('click', () => bulkAction(btn.dataset.action));
-    });
-})();
-
-function toggleSelectAll() {
-    const selectAll = document.getElementById('selectAll');
-    const checkboxes = document.querySelectorAll('.selectable-item');
-    checkboxes.forEach(cb => {cb.checked = selectAll.checked; toggleItemHighlight(cb)});
-}
+    // Toggle all items in this context
+    function toggleSelectAll() {
+        const selectAll = getSelectAllCheckbox();
+        if (!selectAll) return;
+        
+        const checkboxes = getCheckboxes();
+        checkboxes.forEach(cb => {
+            cb.checked = selectAll.checked;
+            toggleItemHighlight(cb);
+        });
+    }
     
-function toggleItem(item) {
-    const checkbox = item.querySelector('.selectable-item');
-    checkbox.checked = !checkbox.checked;
-    toggleItemHighlight(checkbox);
-}
-
-function toggleItemHighlight(checkbox) {
-    checkbox.closest('tr').classList.toggle('table-active', checkbox.checked);
-}
+    // Toggle single item (can be called from row click)
+    function toggleItem(item) {
+        const checkbox = item.querySelector('.selectable-item');
+        if (!checkbox) return;
+        
+        checkbox.checked = !checkbox.checked;
+        toggleItemHighlight(checkbox);
+        
+        // Update select-all checkbox state
+        updateSelectAllState();
+    }
+    
+    // Highlight row based on checkbox state
+    function toggleItemHighlight(checkbox) {
+        const row = checkbox.closest('tr');
+        if (row) {
+            row.classList.toggle('table-active', checkbox.checked);
+        }
+    }
+    
+    // Update select-all checkbox based on individual selections
+    function updateSelectAllState() {
+        const selectAll = getSelectAllCheckbox();
+        if (!selectAll) return;
+        
+        const checkboxes = Array.from(getCheckboxes());
+        const allChecked = checkboxes.length > 0 && checkboxes.every(cb => cb.checked);
+        const someChecked = checkboxes.some(cb => cb.checked);
+        
+        selectAll.checked = allChecked;
+        selectAll.indeterminate = someChecked && !allChecked;
+    }
+    
+    // Attach event listeners to toolbar buttons
+    toolbar.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            bulkAction(btn.dataset.action);
+        });
+    });
+    
+    // Listen for select-all changes within this context
+    const selectAllCheckbox = getSelectAllCheckbox();
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', toggleSelectAll);
+    }
+    
+    // Listen for individual checkbox changes to update highlighting and select-all state
+    getCheckboxes().forEach(cb => {
+        cb.addEventListener('change', () => {
+            toggleItemHighlight(cb);
+            updateSelectAllState();
+        });
+    });
+    
+    toolbar.bulkToolbarApi = {
+        getSelectedIds,
+        bulkAction,
+        toggleItem,
+        refresh: updateSelectAllState
+    };
+    
+    // Store reference to avoid memory leaks
+    toolbar.dataset.toolbarInstance = toolbarId;    
+})();});
 </script>

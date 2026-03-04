@@ -39,10 +39,8 @@
             <thead class="@(Model.IsPublic ? "table-dark" : "table-light")">
             <tr>
                 <th style="width: 40px;">
-                    <input class="form-check-input"
-                           type="checkbox"
-                           id="selectAll"
-                           onclick="toggleSelectAll()">
+                    <input class="form-check-input select-all"
+                           type="checkbox">
                 </th>
                 <th>Username</th>
             </tr>
@@ -50,13 +48,12 @@
             <tbody id="userTableBody">
             @foreach (var user in Model.WriteAccessUsers)
             {
-                <tr onclick="toggleItem(this)" style="cursor: pointer;" data-user-id="@user.Id">
-                    <td onclick="event.stopPropagation()">
+                <tr style="cursor: pointer;" data-user-id="@user.Id">
+                    <td>
                         <input class="form-check-input selectable-item"
                                type="checkbox"
                                value="@user.Id"
-                               data-user-id="@user.Id"
-                               onchange="toggleItemHighlight(this)">
+                               data-user-id="@user.Id">
                     </td>
                     <td>
                         <span class="fw-bold">@user.Email</span>
@@ -93,9 +90,7 @@
         });
         
         // ==================== UI UPDATES ====================
-        function handleActionSuccess(action, userIds) {
-            //alert('Success!');
-                
+        function handleActionSuccess(action, userIds) {  
             if (action === 'delete'){
                 removeRows(userIds);
             }
