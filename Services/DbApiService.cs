@@ -84,4 +84,9 @@ public class DbApiService(ApplicationDbContext dbContext)
             return false;
         }
     }
+
+    public async Task<bool> RemoveFields(List<string> fieldsIds, Guid contextId)
+    {
+        throw new NotImplementedException();
+    }
 }

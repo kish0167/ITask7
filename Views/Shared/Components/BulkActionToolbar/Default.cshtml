@@ -7,10 +7,11 @@
 <div class="btn-group mt-3 gap-2" id="@toolbarId" data-selection-mode="multiple">
     @foreach (var action in Model.Actions)
     {
-        <button class="btn @action.ButtonClass" 
+        <button class="btn btn-sm h-75 @action.ButtonClass" 
                 title="@action.Title"
                 data-action="@action.Name"
-                data-endpoint="@action.Endpoint">
+                data-endpoint="@action.Endpoint"
+                data-is-single="@action.IsSingle">
             <i class="bi @action.Icon"></i>
             <span class="d-none d-sm-inline ms-1">@action.Title</span>
         </button>
@@ -26,21 +27,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const context = toolbar.closest('[data-bulk-context]') || document.body;
     
-    // Generate unique function names for this instance
-    const ns = `bulkToolbar_${toolbarId.replace(/-/g, '_')}`;
-    
-    // Helper to get checkboxes scoped to this context
     function getCheckboxes() {
         return context.querySelectorAll('.selectable-item');
     }
     
-    // Helper to get select-all checkbox scoped to this context
     function getSelectAllCheckbox() {
         return context.querySelector('.select-all');
     }    
     
     function getSelectedIds() {
-        return Array.from(context.querySelectorAll('.selectable-item:checked')).map(cb => cb.value);
+        return getSelectedCheckboxes().map(cb => cb.value);
+    }
+    
+    function getSelectedCheckboxes() {
+        return Array.from(context.querySelectorAll('.selectable-item:checked'));
     }
     
     async function bulkAction(actionName) {
@@ -65,31 +65,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // Toggle all items in this context
     function toggleSelectAll() {
         const selectAll = getSelectAllCheckbox();
         if (!selectAll) return;
-        
         const checkboxes = getCheckboxes();
         checkboxes.forEach(cb => {
             cb.checked = selectAll.checked;
             toggleItemHighlight(cb);
         });
+        updateUi();
     }
     
-    // Toggle single item (can be called from row click)
     function toggleItem(item) {
         const checkbox = item.querySelector('.selectable-item');
         if (!checkbox) return;
-        
         checkbox.checked = !checkbox.checked;
-        toggleItemHighlight(checkbox);
-        
-        // Update select-all checkbox state
-        updateSelectAllState();
+        updateUi(checkbox);
     }
     
-    // Highlight row based on checkbox state
     function toggleItemHighlight(checkbox) {
         const row = checkbox.closest('tr');
         if (row) {
@@ -97,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Update select-all checkbox based on individual selections
     function updateSelectAllState() {
         const selectAll = getSelectAllCheckbox();
         if (!selectAll) return;
@@ -110,7 +102,39 @@ document.addEventListener('DOMContentLoaded', function() {
         selectAll.indeterminate = someChecked && !allChecked;
     }
     
-    // Attach event listeners to toolbar buttons
+    function updateActionsButtons(){
+        const selectedCheckboxes = getSelectedCheckboxes();
+        const buttons = toolbar.querySelectorAll('button[data-action]');
+        if (selectedCheckboxes.length === 0){
+            buttons.forEach(button => {
+                button.disabled = true;
+                button.classList.add('disabled');
+            });
+        } else if (selectedCheckboxes.length === 1){
+            buttons.forEach(button => {
+                button.disabled = false;
+                button.classList.remove('disabled');
+            });               
+        } else {
+             buttons.forEach(button => {
+                 const isSingle = button.getAttribute('data-is-single') === 'True';
+                 if (isSingle) {
+                     button.disabled = true;
+                     button.classList.add('disabled');
+                 } else {
+                     button.disabled = false;
+                     button.classList.remove('disabled');
+                 }
+             });
+        }
+    }
+    
+    function updateUi(checkbox){
+        if (checkbox) toggleItemHighlight(checkbox);
+        updateSelectAllState();
+        updateActionsButtons();
+    }        
+    
     toolbar.querySelectorAll('button[data-action]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -118,19 +142,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Listen for select-all changes within this context
     const selectAllCheckbox = getSelectAllCheckbox();
     if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener('change', toggleSelectAll);
     }
     
-    // Listen for individual checkbox changes to update highlighting and select-all state
     getCheckboxes().forEach(cb => {
         cb.addEventListener('change', () => {
-            toggleItemHighlight(cb);
-            updateSelectAllState();
+            updateUi(cb);
         });
     });
+    
+    updateUi();
     
     toolbar.bulkToolbarApi = {
         getSelectedIds,
@@ -139,7 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
         refresh: updateSelectAllState
     };
     
-    // Store reference to avoid memory leaks
     toolbar.dataset.toolbarInstance = toolbarId;    
 })();});
 </script>

@@ -9,25 +9,24 @@
         Actions = new()
         {
             new() { Name = "delete", Title = "Delete", Icon = "bi-trash-fill", 
-                    ButtonClass = "btn-danger", Endpoint = "/AdminPanel/BulkDelete" },
+                    ButtonClass = "btn-danger", Endpoint = "/AdminPanel/BulkDelete", IsSingle = false},
             new() { Name = "block", Title = "Block", Icon = "bi-lock-fill", 
-                    ButtonClass = "btn-warning", Endpoint = "/AdminPanel/BulkBlock" },
+                    ButtonClass = "btn-warning", Endpoint = "/AdminPanel/BulkBlock", IsSingle = false },
             new() { Name = "unblock", Title = "Unblock", Icon = "bi-unlock-fill", 
-                    ButtonClass = "btn-info", Endpoint = "/AdminPanel/BulkUnblock" }
+                    ButtonClass = "btn-info", Endpoint = "/AdminPanel/BulkUnblock", IsSingle = false }
         }
     };
 }
 
 <h1>Admin panel</h1>
+<div data-bulk-context="adminPanel" data-context-id="0">
 <partial name="Components/BulkActionToolbar/Default" model="toolbarModel" />
 <table class="table table-hover mb-0 align-middle">
     <thead>
     <tr>
         <th>
-            <input class="form-check-input"
-                   type="checkbox" 
-                   id="selectAll"
-                   onclick="toggleSelectAll()">
+            <input class="form-check-input select-all"
+                   type="checkbox">
         </th>
         <th>Email</th>
         <th>Status</th>
@@ -40,9 +39,7 @@
             <td onclick="event.stopPropagation()">
                 <input class="form-check-input selectable-item"
                        type="checkbox"
-                       value="@user.Id"
-                       data-user-id="@user.Id"
-                       onchange="toggleItemHighlight(this)">
+                       value="@user.Id">
             </td>
             <td>@user.Email</td>
             <td class="user-status">@user.Status</td>
@@ -50,21 +47,20 @@
     }
     </tbody>
 </table>
+</div>
 
 <script>
-
     // ==================== TOOLBAR REQS ====================
     
-    document.addEventListener('bulkActionSuccess', function(e) {
+    const context = document.querySelector('[data-bulk-context]') || document
+    context.addEventListener('bulkActionSuccess', function(e) {
         const { action, ids } = e.detail; 
         handleActionSuccess(action, ids);
     }); 
 
     // ==================== UI UPDATES ====================
     
-    function handleActionSuccess(action, userIds) {
-        alert('Success!');
-            
+    function handleActionSuccess(action, userIds) {     
         if (action === 'delete'){
             removeRows(userIds);
         } else if (action === 'block'){

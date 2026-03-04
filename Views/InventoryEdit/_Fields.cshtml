@@ -1,31 +1,59 @@
-﻿@model ITask7.ViewModels.Inventories.InventoryViewModel
+﻿@using ITask7.ViewModels.UI
+@model ITask7.ViewModels.Inventories.InventoryViewModel
+
+@{
+    var fieldsToolbarModel = new BulkActionToolbarViewModel
+    {
+        Actions = new()
+        {
+            new()
+            {
+                Name = "delete", Title = "Delete", Icon = "bi-trash-fill",
+                ButtonClass = "btn-outline-danger", Endpoint = "/InventoryEdit/DeleteFields",
+                IsSingle = false
+            }
+        }
+    };
+}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">Field Definitions</h5>
-    <button class="btn btn-primary btn-sm">
-        <i class="bi bi-plus-lg me-1"></i>Add Field
-    </button>
 </div>
 
-<div class="table-responsive">
+<div class="table-responsive" data-bulk-context="access" data-context-id="@Model.Id">
+    <div class="d-flex justify-content-between align-items-center mb-3 px-3">
+        <partial name="Components/BulkActionToolbar/Default" model="fieldsToolbarModel"/>
+        <button class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>Add Field
+        </button>
+    </div>
+
     <table class="table table-hover table-striped align-middle">
         <thead class="table-light">
         <tr>
+            <th style="width: 40px;">
+                <input class="form-check-input select-all"
+                       type="checkbox">
+            </th>
             <th style="width: 50px;">Order</th>
             <th>Title</th>
             <th>Description</th>
             <th>Type</th>
             <th class="text-center">Required</th>
             <th class="text-center">Display in Table</th>
-            <th class="text-end">Actions</th>
         </tr>
         </thead>
         <tbody>
-        @if (Model.Fields != null && Model.Fields.Any())
+        @if (Model.Fields.Any())
         {
             @foreach (var field in Model.Fields.OrderBy(f => f.SortOrder))
             {
                 <tr>
+                    <td>
+                        <input class="form-check-input selectable-item"
+                               type="checkbox"
+                               value="@field.Id">
+                    </td>
                     <td>
                         <span class="badge bg-secondary">@field.SortOrder</span>
                     </td>
@@ -61,14 +89,6 @@
                         {
                             <i class="bi bi-eye-slash text-muted fs-5"></i>
                         }
-                    </td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-secondary me-1" title="Edit">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" title="Delete">
-                            <i class="bi bi-trash"></i>
-                        </button>
                     </td>
                 </tr>
             }

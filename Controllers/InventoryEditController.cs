@@ -20,6 +20,13 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider, DbAp
     }
     
     [HttpPost]
+    public async Task<IActionResult> DeleteFields([FromBody] List<string> fieldsIds, [FromQuery] Guid contextId)
+    {
+        bool success = await dbApiService.RemoveFields(fieldsIds, contextId);
+        return Ok(success);
+    }
+    
+    [HttpPost]
     public async Task<IActionResult> DeleteAccesses([FromBody] List<string> userIds, [FromQuery] Guid contextId)
     {
         bool success = await dbApiService.RemoveAccesses(userIds, contextId);

@@ -2,14 +2,15 @@
 @model ITask7.ViewModels.Inventories.InventoryViewModel
 
 @{
-    var toolbarModel = new BulkActionToolbarViewModel
+    var accessToolbarModel = new BulkActionToolbarViewModel
     {
         Actions = new()
         {
             new()
             {
                 Name = "delete", Title = "Delete", Icon = "bi-trash-fill",
-                ButtonClass = "btn-outline-danger", Endpoint = "/InventoryEdit/DeleteAccesses" // TODO!!!
+                ButtonClass = "btn-outline-danger", Endpoint = "/InventoryEdit/DeleteAccesses",
+                IsSingle = false
             }
         }
     };
@@ -29,9 +30,9 @@
 <div class="table-responsive @(Model.IsPublic ? "opacity-50" : "")" data-bulk-context="access" data-context-id="@Model.Id">
     @if (!Model.IsPublic)
     {
-        <div class="d-flex justify-content-between align-items-center mb-3 px-3">
-            <partial name="Components/BulkActionToolbar/Default" model="toolbarModel"/>
-            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+        <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+            <partial name="Components/BulkActionToolbar/Default" model="accessToolbarModel"/>
+            <button class="btn btn-primary btn-sm h-75" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <i class="bi bi-plus-lg me-1"></i>Add user
             </button>
         </div>
@@ -52,8 +53,7 @@
                     <td>
                         <input class="form-check-input selectable-item"
                                type="checkbox"
-                               value="@user.Id"
-                               data-user-id="@user.Id">
+                               value="@user.Id">
                     </td>
                     <td>
                         <span class="fw-bold">@user.Email</span>
