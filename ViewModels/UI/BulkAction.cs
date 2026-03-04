@@ -7,5 +7,5 @@ public class BulkAction
     public bool IsSingle { get; set; } = false;
     public string Icon { get; set; } = null!;
     public string ButtonClass { get; set; } = "btn-outline-secondary";
-    public string Endpoint { get; set; } = null!;
+    public string? Endpoint { get; set; } = null!;
 }

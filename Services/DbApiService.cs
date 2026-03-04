@@ -89,4 +89,14 @@ public class DbApiService(ApplicationDbContext dbContext)
     {
         throw new NotImplementedException();
     }
+
+    public async Task<Guid?> AddField(FieldDefinitionViewModel field, Guid inventoryId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public async Task<Guid?> EditField(FieldDefinitionViewModel field, Guid inventoryId)
+    {
+        throw new NotImplementedException();
+    }
 }

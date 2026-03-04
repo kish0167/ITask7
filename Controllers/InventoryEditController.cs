@@ -1,4 +1,5 @@
-﻿using ITask7.Services;
+﻿using System.Text.Json;
+using ITask7.Services;
 using ITask7.ViewModels.Inventories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,13 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider, DbAp
     {
         bool success = await dbApiService.RemoveFields(fieldsIds, contextId);
         return Ok(success);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> AddField([FromQuery] Guid inventoryId, [FromBody] FieldDefinitionViewModel field)
+    {
+        Guid? success = await dbApiService.AddField(field, inventoryId);
+        return Ok();
     }
     
     [HttpPost]

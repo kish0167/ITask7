@@ -54,16 +54,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = context.querySelector(`[data-action="${actionName}"]`);
         const endpoint = btn.dataset.endpoint;
         
-        if (!confirm(`${actionName} ${selectedIds.length} items?`)) return;
+        // if (!confirm(`${actionName} ${selectedIds.length} items?`)) return;
         
-        const contextId = context.dataset?.contextId;
+        const contextId = context.dataset.contextId;
+        
+        if (endpoint == null) {
+            context.dispatchEvent(new CustomEvent('bulkActionSuccess', {
+                detail: { action: actionName, ids: selectedIds, toolbarId: '@toolbarId', context: context}
+            }));
+            return;
+        }
+        
         const success = await postData(endpoint + (contextId ? `?contextId=${contextId}`: ''), selectedIds);
         if (success) {
             context.dispatchEvent(new CustomEvent('bulkActionSuccess', {
                 detail: { action: actionName, ids: selectedIds, toolbarId: '@toolbarId', context: context}
             }));
         }
-    };
+    }
     
     function toggleSelectAll() {
         const selectAll = getSelectAllCheckbox();

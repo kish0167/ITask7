@@ -83,22 +83,22 @@
     <script>
         // ==================== TOOLBAR REQS ====================
     
-        const context = document.currentScript.closest('[data-bulk-context]') || document
-        context.addEventListener('bulkActionSuccess', function(e) {
+        const accessTbContext = document.currentScript.closest('[data-bulk-context]') || document
+        accessTbContext.addEventListener('bulkActionSuccess', function(e) {
             const { action, ids } = e.detail; 
-            handleActionSuccess(action, ids);
+            handleAccessActionSuccess(action, ids);
         });
         
         // ==================== UI UPDATES ====================
-        function handleActionSuccess(action, userIds) {  
+        function handleAccessActionSuccess(action, userIds) {  
             if (action === 'delete'){
-                removeRows(userIds);
+                removeAccessRows(userIds);
             }
         }    
         
-        function removeRows(userIds) {
+        function removeAccessRows(userIds) {
             userIds.forEach(id => {
-                const row = document.querySelector(`tr[data-user-id="${id}"]`);
+                const row = accessTbContext.querySelector(`tr[data-user-id="${id}"]`);
                 if (row) row.remove();
             });
         }    
@@ -288,13 +288,11 @@
     function AddUserToTable(username, id){
         const tb = document.getElementById('userTableBody');
         const rowHtml = `
-                <tr onclick="toggleItem(this)" style="cursor: pointer;" data-user-id="${id}">
-                    <td onclick="event.stopPropagation()">
+                <tr style="cursor: pointer;" data-user-id="${id}">
+                    <td>
                         <input class="form-check-input selectable-item"
                                type="checkbox"
-                               value="${id}"
-                               data-user-id="${id}"
-                               onchange="toggleItemHighlight(this)">
+                               value="${id}">
                     </td>
                     <td>
                         <span class="fw-bold">${username}</span>
