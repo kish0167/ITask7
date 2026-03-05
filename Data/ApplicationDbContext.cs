@@ -71,6 +71,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany(i => i.Items)
                 .HasForeignKey(e => e.InventoryId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.Creator)
+                .WithMany(c => c.CreatedItems)
+                .HasForeignKey(e => e.CreatedBy)
+                .OnDelete(DeleteBehavior.SetNull);
         });
         
         modelBuilder.Entity<ItemFieldValue>(entity =>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,5 +21,8 @@ public class LocalizationController : Controller
             CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
             new CookieOptions {Expires = DateTimeOffset.UtcNow.AddYears(1)}
         );
+        string threadCulture = culture + "-" + culture.ToUpper();
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo(threadCulture);
+        Thread.CurrentThread.CurrentCulture = new CultureInfo(threadCulture);
     }
 }

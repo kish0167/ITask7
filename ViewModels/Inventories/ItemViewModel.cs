@@ -1,4 +1,6 @@
-﻿namespace ITask7.ViewModels.Inventories;
+﻿using Humanizer;
+
+namespace ITask7.ViewModels.Inventories;
 
 public class ItemViewModel
 {
@@ -8,4 +10,6 @@ public class ItemViewModel
     public DateTime UpdatedAt { get; set; }
     public string CreatedByUserName { get; set; }
     public Dictionary<Guid, FieldValueViewModel> Fields { get; set; } = new();
+
+    public string CreatedAtString => CreatedAt.Humanize();
 }

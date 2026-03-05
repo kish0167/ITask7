@@ -21,6 +21,7 @@ public class ViewModelsConverter()
             Id = inventory.Id,
             Name = inventory.Name,
             Description = inventory.Description,
+            CreatedBy = inventory.Creator?.UserName ?? "creator not found",
             IsPublic = inventory.IsPublic,
             Fields = GetFields(inventory),
             Items = GetItems(inventory),
@@ -78,7 +79,7 @@ public class ViewModelsConverter()
         {
             Id = item.Id,
             CustomId = item.CustomId,
-            CreatedByUserName = item.Inventory.Creator?.UserName ?? "creator not found",
+            CreatedByUserName = item.Creator?.UserName ?? "creator not found",
             CreatedAt = item.CreatedAt,
             UpdatedAt = item.UpdatedAt,
         };
