@@ -160,6 +160,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    context.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('click', (e) => {
+            // Don't toggle if clicking directly on the checkbox or its label
+            if (e.target.closest('.selectable-item')) return;
+            
+            const checkbox = row.querySelector('.selectable-item');
+            if (!checkbox) return;
+            
+            checkbox.checked = !checkbox.checked;
+            updateUi(checkbox);
+        });
+    });    
+    
     updateUi();
     
     toolbar.bulkToolbarApi = {

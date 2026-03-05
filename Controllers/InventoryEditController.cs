@@ -18,7 +18,7 @@ public class InventoryEditController(DbApiService dbApiService) : Controller
     public async Task<IActionResult> EditProperties(InventoryViewModel model)
     {
         bool success = await dbApiService.EditInventoryProperties(model);
-        return Ok();
+        return Ok(success);
     }
     
     [HttpPost]
