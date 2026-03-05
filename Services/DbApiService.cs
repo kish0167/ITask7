@@ -16,6 +16,17 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         Inventory inventory = await GetInventory(inventoryId);
         return _viewModelsConverter.GetInventoryViewModel(inventory);
     }
+    
+    public async Task<ItemViewModel> GetItemViewModel(Guid itemId)
+    {
+        Item item = await GetItem(itemId);
+        return _viewModelsConverter.GetItemViewModel(item);
+    }
+
+    public async Task<ItemViewModel> GetNewItemViewModel(Guid inventoryId)
+    {
+        throw new NotImplementedException();
+    }
 
     public async Task<string?> AddAccess(string username, Guid inventoryId)
     {
@@ -56,7 +67,6 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     {
         var inventory = await _dbContext.Inventories.FindAsync(model.Id);
         if (inventory == null) return false;
-        
         if (inventory.Name != model.Name) inventory.Name = model.Name;
         if (inventory.Description != model.Description) inventory.Description = model.Description;
         if (inventory.IsPublic != model.IsPublic) inventory.IsPublic = model.IsPublic;
@@ -130,6 +140,18 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             .FirstOrDefaultAsync();
         return field ?? new InventoryField();
     }
+    
+    private async Task<Item> GetItem(Guid itemId)
+    {
+        Item? item = await _dbContext.Items
+            .Where(i => i.Id == itemId)
+            .Include(i => i.Inventory)
+            .Include(i => i.Creator)
+            .Include(i => i.FieldValues)
+            .ThenInclude(v => v.Field)
+            .FirstOrDefaultAsync();
+        return item ?? new Item();
+    }
 
     public async Task<bool> RemoveItems(List<Guid> itemsIds, Guid contextId)
     {
@@ -143,5 +165,13 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         _dbContext.Items.RemoveRange(itemsToRemove);
         int result = await _dbContext.SaveChangesAsync();
         return result > 0;
+    }
+
+    public async Task<Guid?> EditItem(ItemViewModel itemViewModel)
+    {
+        Item item = await GetItem(itemViewModel.Id);
+        _viewModelsConverter.EditItem(item, itemViewModel);
+        await _dbContext.SaveChangesAsync();
+        return item.Id;
     }
 }

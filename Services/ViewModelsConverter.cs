@@ -13,6 +13,44 @@ public class ViewModelsConverter()
         InventoryViewModel viewModel = InventoryViewModelFromInventory(inventory);
         return viewModel;
     }
+    
+    public ItemViewModel GetItemViewModel(Item item)
+    {
+        ItemViewModel viewModel = ItemViewModelFromItem(item);
+        foreach (ItemFieldValue value in item.FieldValues)  
+        {
+            viewModel.Fields.Add(value.Field.Id, FieldValueViewModelFromItemFieldValue(value));
+            viewModel.FieldDefinitions.Add(FieldViewModelFromField(value.Field));
+        }
+        return viewModel;
+    }
+    
+    public InventoryField GetNewField(FieldDefinitionViewModel fieldViewModel, Inventory inventory)
+    {
+        InventoryField field = new()
+        {
+            Id = new Guid(),
+            InventoryId = inventory.Id,
+            Title = fieldViewModel.Title,
+            Name = Regex.Replace(fieldViewModel.Title, @"(\B[A-Z])", "_$1").ToLower(),
+            FieldType = fieldViewModel.Type,
+            Description = fieldViewModel.Description,
+            CreatedAt = DateTime.UtcNow,
+            DisplayInTable = fieldViewModel.DisplayInTable,
+            IsRequired = fieldViewModel.IsRequired,
+            SortOrder = inventory.Fields.Select(f=>f.SortOrder).ToList().Max() + 1
+        };
+        return field;
+    }
+
+    public void EditFieldProperties(InventoryField field, FieldDefinitionViewModel fieldViewModel)
+    {
+        field.Title = fieldViewModel.Title;
+        field.Name = TitleToName(fieldViewModel.Title);
+        field.Description = fieldViewModel.Description;
+        field.DisplayInTable = fieldViewModel.DisplayInTable;
+        field.IsRequired = fieldViewModel.IsRequired;
+    }
 
     private InventoryViewModel InventoryViewModelFromInventory(Inventory inventory)
     {
@@ -63,16 +101,6 @@ public class ViewModelsConverter()
         return items;
     }
 
-    private ItemViewModel GetItemViewModel(Item item)
-    {
-        ItemViewModel viewModel = ItemViewModelFromItem(item);
-        foreach (ItemFieldValue value in item.FieldValues)  
-        {
-            viewModel.Fields.Add(value.Field.Id, FieldValueViewModelFromItemFieldValue(value));
-        }
-        return viewModel;
-    }
-
     private ItemViewModel ItemViewModelFromItem(Item item)
     {
         return new ItemViewModel()
@@ -103,36 +131,61 @@ public class ViewModelsConverter()
             Email = user.Email
         };
     }
-
-    public InventoryField GetNewField(FieldDefinitionViewModel fieldViewModel, Inventory inventory)
-    {
-        InventoryField field = new()
-        {
-            Id = new Guid(),
-            InventoryId = inventory.Id,
-            Title = fieldViewModel.Title,
-            Name = Regex.Replace(fieldViewModel.Title, @"(\B[A-Z])", "_$1").ToLower(),
-            FieldType = fieldViewModel.Type,
-            Description = fieldViewModel.Description,
-            CreatedAt = DateTime.UtcNow,
-            DisplayInTable = fieldViewModel.DisplayInTable,
-            IsRequired = fieldViewModel.IsRequired,
-            SortOrder = inventory.Fields.Select(f=>f.SortOrder).ToList().Max() + 1
-        };
-        return field;
-    }
-
-    public void EditFieldProperties(InventoryField field, FieldDefinitionViewModel fieldViewModel)
-    {
-        field.Title = fieldViewModel.Title;
-        field.Name = TitleToName(fieldViewModel.Title);
-        field.Description = fieldViewModel.Description;
-        field.DisplayInTable = fieldViewModel.DisplayInTable;
-        field.IsRequired = fieldViewModel.IsRequired;
-    }
-
+    
     private string TitleToName(string title)
     {
         return Regex.Replace(title, @"(\B[A-Z])", "_$1").ToLower();
+    }
+
+    public void EditItem(Item item, ItemViewModel itemViewModel)
+    {
+        item.UpdatedAt = DateTime.UtcNow;
+        item.CustomId = itemViewModel.CustomId;
+        foreach (ItemFieldValue value in item.FieldValues)
+        {
+            UpdateValue(value, itemViewModel.Fields[value.Id]);
+        }
+    }
+
+    private void UpdateValue(ItemFieldValue value, FieldValueViewModel valueViewModel)
+    {
+        switch (value.Field.FieldType)
+        {
+            case FieldType.SingleLine or FieldType.MultiLine or FieldType.Document:
+            {
+                value.ValueText = valueViewModel.Value?.ToString();
+                break;
+            }
+            case FieldType.Numeric:
+            {
+                value.ValueNumeric = valueViewModel.Value switch
+                {
+                    null => null,
+                    decimal d => d,
+                    double d => (decimal)d,
+                    float f => (decimal)f,
+                    int i => i,
+                    long l => l,
+                    string s when decimal.TryParse(s, out var result) => result,
+                    _ => throw new InvalidCastException($"Cannot convert {valueViewModel.Value?.GetType()} to decimal")
+                };
+                break;
+            }
+
+            case FieldType.Boolean:
+            {
+                value.ValueBoolean = valueViewModel.Value switch
+                {
+                    null => null,
+                    bool b => b,
+                    int i => i != 0,
+                    long l => l != 0,
+                    double d => d != 0 && !double.IsNaN(d),
+                    string s => bool.TryParse(s, out var result) ? result : null,
+                    _ => throw new InvalidCastException($"Cannot convert {valueViewModel.Value?.GetType()} to bool")
+                };
+                break;
+            }
+        }
     }
 }

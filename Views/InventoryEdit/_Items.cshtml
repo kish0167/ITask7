@@ -29,7 +29,7 @@
 <div class="table-responsive" data-bulk-context="items" data-context-id="@Model.Id">
     <div class="d-flex justify-content-between align-items-center mb-2 px-2">
         <partial name="Components/BulkActionToolbar/Default" model="fieldsToolbarModel"/>
-        <button class="btn btn-primary btn-sm">
+        <button class="btn btn-primary btn-sm" onclick="window.location.href = 'ItemEdit?itemId=@Guid.Empty';">
             <i class="bi bi-plus-lg me-1"></i>Add Item
         </button>
     </div>
@@ -106,8 +106,9 @@
         function handleItemsActionSuccess(action, ids){
             if (action === 'delete')
                 removeItemsRows(ids);
-            if (action === 'edit'){}
-        }   
+            if (action === 'edit')
+                window.location.href = `ItemEdit?itemId=${ids[0]}&inventoryId=@Model.Id`;
+        }
         
         function removeItemsRows(itemsIds) {
             itemsIds.forEach(id => {

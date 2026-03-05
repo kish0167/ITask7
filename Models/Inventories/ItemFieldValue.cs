@@ -9,7 +9,7 @@ public class ItemFieldValue
     public string? ValueText { get; set; }
     public decimal? ValueNumeric { get; set; }
     public bool? ValueBoolean { get; set; }
-    public string? ValueDocumentUrl { get; set; }
+    // public string? ValueDocumentUrl { get; set; }
     
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -21,10 +21,9 @@ public class ItemFieldValue
     {
         object? value = Field.FieldType switch
         {
-            FieldType.SingleLine or FieldType.MultiLine => ValueText,
+            FieldType.SingleLine or FieldType.MultiLine or FieldType.Document => ValueText,
             FieldType.Numeric => ValueNumeric,
             FieldType.Boolean => ValueBoolean,
-            FieldType.Document => ValueDocumentUrl,
             _ => "Field type error"
         };
         return value ?? "null";

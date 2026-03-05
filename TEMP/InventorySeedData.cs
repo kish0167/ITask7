@@ -396,8 +396,8 @@ public static class InventorySeedData
         modelBuilder.Entity<ItemFieldValue>().HasData(
             new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[0].Id, ValueText = "ABC-1234", CreatedAt = now, UpdatedAt = now },
             new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[1].Id, ValueNumeric = 45230, CreatedAt = now, UpdatedAt = now.AddHours(-5) },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[2].Id, ValueBoolean = true, CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[3].Id, ValueDocumentUrl = "/docs/inspections/van-2024.pdf", CreatedAt = now, UpdatedAt = now }
+            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[2].Id, ValueBoolean = true, CreatedAt = now, UpdatedAt = now }
+            // new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[3].Id, ValueDocumentUrl = "/docs/inspections/van-2024.pdf", CreatedAt = now, UpdatedAt = now }
         );
     }
 }
