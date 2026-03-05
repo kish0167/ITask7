@@ -55,4 +55,11 @@ public class InventoryEditController(DbApiService dbApiService) : Controller
         string? success = await dbApiService.AddAccess(username, inventoryId);
         return Ok(success);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> DeleteItems([FromBody] List<Guid> itemsIds, [FromQuery] Guid contextId)
+    {
+        bool success = await dbApiService.RemoveItems(itemsIds, contextId);
+        return Ok(success);
+    }
 }

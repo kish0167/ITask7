@@ -111,7 +111,7 @@
         }
         </tbody>
     </table>
-    
+
     <script>
         // ==================== TOOLBAR REQS ====================
     
@@ -126,8 +126,8 @@
         function handleFieldsActionSuccess(action, ids){
             if (action === 'delete')
                 removeFieldsRows(ids);
-            if (action === 'edit'){}
-                openEditFieldModal(ids[0])
+            if (action === 'edit')
+                openEditFieldModal(ids[0]);
         }
 
         async function openEditFieldModal(fieldId) {
@@ -151,7 +151,7 @@
             document.getElementById('editFieldSortOrderDisplay').value = sortOrder;
             document.getElementById('editFieldSortOrder').value = sortOrder;
             document.getElementById('editFieldDisplayInTable').checked = displayInTable;
-            document.getElementById('editFieldIsRequiredDisplay').checked = isRequired;
+            document.getElementById('editFieldIsRequired').checked = isRequired;
             
             // Show modal
             const modal = new bootstrap.Modal(document.getElementById('editFieldModal'));
@@ -165,7 +165,7 @@
             });
         }            
     </script>
-    
+
     <!-- Add Field Modal -->
     <div class="modal fade" id="addFieldModal" tabindex="-1" aria-labelledby="addFieldModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -216,7 +216,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Edit Field Modal -->
     <div class="modal fade" id="editFieldModal" tabindex="-1" aria-labelledby="editFieldModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -253,10 +253,10 @@
                                     <label class="form-check-label" for="editFieldDisplayInTable">Display in Table</label>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="editFieldIsRequiredDisplay" disabled>
-                                    <label class="form-check-label text-muted" for="editFieldIsRequiredDisplay">Required Field (read-only)</label>
+                            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                                <div class="form-check form-switch mt-3">
+                                    <input class="form-check-input" type="checkbox" id="editFieldIsRequired" name="IsRequired" value="true">
+                                    <label class="form-check-label" for="editFieldDisplayInTable">Is required</label>
                                 </div>
                             </div>
                         </div>
@@ -269,8 +269,8 @@
             </div>
         </div>
     </div>
-    
-    
+
+
 </div>
 
 <script>
@@ -326,6 +326,7 @@
             Title: document.getElementById('editFieldTitle').value,
             Description: document.getElementById('editFieldDescription').value,
             DisplayInTable: document.getElementById('editFieldDisplayInTable').checked,
+            IsRequired: document.getElementById('editFieldIsRequired').checked,
         };
     
         try {

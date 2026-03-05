@@ -128,6 +128,7 @@ public class ViewModelsConverter()
         field.Name = TitleToName(fieldViewModel.Title);
         field.Description = fieldViewModel.Description;
         field.DisplayInTable = fieldViewModel.DisplayInTable;
+        field.IsRequired = fieldViewModel.IsRequired;
     }
 
     private string TitleToName(string title)

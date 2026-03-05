@@ -76,12 +76,12 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     {
         if (!fieldsIds.Any())
             return false;
-        List<InventoryField> fieldToRemove = await _dbContext.InventoryFields
-            .Where(f => f.InventoryId == inventoryId && fieldsIds.Contains(f.Id))
+        List<InventoryField> fieldsToRemove = await _dbContext.InventoryFields
+            .Where(f => fieldsIds.Contains(f.Id))
             .ToListAsync();
-        if (!fieldToRemove.Any())
+        if (!fieldsToRemove.Any())
             return false;
-        _dbContext.InventoryFields.RemoveRange(fieldToRemove);
+        _dbContext.InventoryFields.RemoveRange(fieldsToRemove);
         int result = await _dbContext.SaveChangesAsync();
         return result > 0;
     }
@@ -97,7 +97,6 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     
     public async Task<Guid?> EditFieldProperties(FieldDefinitionViewModel fieldViewModel, Guid inventoryId)
     {
-        Inventory inventory = await GetInventory(inventoryId);
         InventoryField field = await GetField(fieldViewModel.Id);
         _viewModelsConverter.EditFieldProperties(field, fieldViewModel);
         await _dbContext.SaveChangesAsync();
@@ -130,5 +129,19 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             .ThenInclude(i => i.Fields)
             .FirstOrDefaultAsync();
         return field ?? new InventoryField();
+    }
+
+    public async Task<bool> RemoveItems(List<Guid> itemsIds, Guid contextId)
+    {
+        if (!itemsIds.Any())
+            return false;
+        List<Item> itemsToRemove = await _dbContext.Items
+            .Where(i => itemsIds.Contains(i.Id))
+            .ToListAsync();
+        if (!itemsToRemove.Any())
+            return false;
+        _dbContext.Items.RemoveRange(itemsToRemove);
+        int result = await _dbContext.SaveChangesAsync();
+        return result > 0;
     }
 }

@@ -1,16 +1,46 @@
 ﻿@using ITask7.ViewModels.Inventories
+@using ITask7.ViewModels.UI
 @model ITask7.ViewModels.Inventories.InventoryViewModel
+
+@{
+    var fieldsToolbarModel = new BulkActionToolbarViewModel
+    {
+        Actions = new()
+        {
+            new()
+            {
+                Name = "delete", Title = "Delete", Icon = "bi-trash-fill",
+                ButtonClass = "btn-outline-danger", Endpoint = "/InventoryEdit/DeleteItems",
+                IsSingle = false
+            },
+            new()
+            {
+                Name = "edit", Title = "Edit", Icon = "bi bi-pencil",
+                ButtonClass = "btn-outline-primary", Endpoint = null,
+                IsSingle = true
+            }
+        }
+    };
+}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">Inventory Items</h5>
-    <button class="btn btn-primary btn-sm">
-        <i class="bi bi-plus-lg me-1"></i>Add Item
-    </button>
 </div>
-<div class="table-responsive">
+<div class="table-responsive" data-bulk-context="items" data-context-id="@Model.Id">
+    <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+        <partial name="Components/BulkActionToolbar/Default" model="fieldsToolbarModel"/>
+        <button class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>Add Item
+        </button>
+    </div>
+
     <table class="table table-hover table-striped align-middle">
         <thead class="table-light">
         <tr>
+            <th style="width: 40px;">
+                <input class="form-check-input select-all"
+                       type="checkbox">
+            </th>
             @foreach (FieldDefinitionViewModel field in Model.Fields)
             {
                 if (!field.DisplayInTable) continue;
@@ -28,7 +58,12 @@
         {
             @foreach (var item in Model.Items)
             {
-                <tr>
+                <tr style="cursor: pointer;" data-item-id="@item.Id">
+                    <td>
+                        <input class="form-check-input selectable-item"
+                               type="checkbox"
+                               value="@item.Id">
+                    </td>
                     @foreach (FieldDefinitionViewModel field in Model.Fields)
                     {
                         if (!field.DisplayInTable) continue;
@@ -48,7 +83,7 @@
         else
         {
             <tr>
-                <td colspan="6" class="text-center text-muted py-4">
+                <td colspan="@(Model.Fields.Count + 4)" class="text-center text-muted py-4">
                     <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                     No items found
                 </td>
@@ -56,4 +91,29 @@
         }
         </tbody>
     </table>
+    
+    <script>
+        // ==================== TOOLBAR REQS ====================
+    
+        const itemsTbContext = document.currentScript.closest('[data-bulk-context]') || document
+        itemsTbContext.addEventListener('bulkActionSuccess', function(e) {
+            const { action, ids } = e.detail; 
+            handleItemsActionSuccess(action, ids);
+        });
+        
+        // ==================== UI UPDATES ====================
+        
+        function handleItemsActionSuccess(action, ids){
+            if (action === 'delete')
+                removeItemsRows(ids);
+            if (action === 'edit'){}
+        }   
+        
+        function removeItemsRows(itemsIds) {
+            itemsIds.forEach(id => {
+                const row = itemsTbContext.querySelector(`tr[data-item-id="${id}"]`);
+                if (row) row.remove();
+            });              
+        }
+    </script>
 </div>
