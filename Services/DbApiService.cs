@@ -6,11 +6,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Services;
 
-public class DbApiService(ApplicationDbContext dbContext)
+public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter viewModelsConverter)
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly ViewModelsConverter _viewModelsConverter = viewModelsConverter;
     
-    public async Task<Inventory> GetInventory(Guid inventoryId)
+    public async Task<InventoryViewModel> GetInventoryViewModel(Guid inventoryId)
+    {
+        Inventory inventory = await GetInventory(inventoryId);
+        return _viewModelsConverter.GetInventoryViewModel(inventory);
+    }
+    private async Task<Inventory> GetInventory(Guid inventoryId)
     {
         Inventory? inventory = await _dbContext.Inventories
             .AsNoTracking()
@@ -49,19 +55,15 @@ public class DbApiService(ApplicationDbContext dbContext)
 
     public async Task<bool> RemoveAccesses(List<string> userIds, Guid inventoryId)
     {
-        if (userIds == null || !userIds.Any())
+        if (!userIds.Any())
             return false;
-        
         List<InventoryAccess> accessesToRemove = await _dbContext.InventoriesAccesses
             .Where(a => a.InventoryId == inventoryId && userIds.Contains(a.UserId))
             .ToListAsync();
-
         if (!accessesToRemove.Any())
             return false;
-
         _dbContext.InventoriesAccesses.RemoveRange(accessesToRemove);
         int result = await _dbContext.SaveChangesAsync();
-
         return result > 0;
     }
 
@@ -85,14 +87,27 @@ public class DbApiService(ApplicationDbContext dbContext)
         }
     }
 
-    public async Task<bool> RemoveFields(List<string> fieldsIds, Guid contextId)
+    public async Task<bool> RemoveFields(List<Guid> fieldsIds, Guid inventoryId)
     {
-        throw new NotImplementedException();
+        if (!fieldsIds.Any())
+            return false;
+        List<InventoryField> fieldToRemove = await _dbContext.InventoryFields
+            .Where(f => f.InventoryId == inventoryId && fieldsIds.Contains(f.Id))
+            .ToListAsync();
+        if (!fieldToRemove.Any())
+            return false;
+        _dbContext.InventoryFields.RemoveRange(fieldToRemove);
+        int result = await _dbContext.SaveChangesAsync();
+        return result > 0;
     }
 
-    public async Task<Guid?> AddField(FieldDefinitionViewModel field, Guid inventoryId)
+    public async Task<Guid?> AddField(FieldDefinitionViewModel fieldViewModel, Guid inventoryId)
     {
-        throw new NotImplementedException();
+        Inventory inventory = await GetInventory(inventoryId);
+        InventoryField field = _viewModelsConverter.GetField(fieldViewModel, inventory);
+        await _dbContext.InventoryFields.AddAsync(field);
+        await _dbContext.SaveChangesAsync();
+        return field.Id;
     }
     
     public async Task<Guid?> EditField(FieldDefinitionViewModel field, Guid inventoryId)

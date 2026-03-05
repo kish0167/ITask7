@@ -70,7 +70,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<DbApiService>();
-builder.Services.AddScoped<ViewModelsProvider>();
+builder.Services.AddScoped<ViewModelsConverter>();
 
 var app = builder.Build();
 

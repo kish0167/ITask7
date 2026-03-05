@@ -1,20 +1,15 @@
-﻿using System.Diagnostics;
-using ITask7.Data;
+﻿using System.Text.RegularExpressions;
 using ITask7.Models.Inventories;
 using ITask7.Users;
 using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
-using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Services;
 
-public class ViewModelsProvider(DbApiService dbApiService)
+public class ViewModelsConverter()
 {
-    private readonly DbApiService _dbApiService = dbApiService;
-    
-    public async Task<InventoryViewModel> GetInventoryViewModel(Guid inventoryId)
+    public InventoryViewModel GetInventoryViewModel(Inventory inventory)
     {
-        Inventory inventory = await _dbApiService.GetInventory(inventoryId);
         InventoryViewModel viewModel = InventoryViewModelFromInventory(inventory);
         return viewModel;
     }
@@ -91,9 +86,11 @@ public class ViewModelsProvider(DbApiService dbApiService)
     
     private FieldValueViewModel FieldValueViewModelFromItemFieldValue(ItemFieldValue value)
     {
-        FieldValueViewModel viewModel = new();
-        viewModel.Type = value.Field.FieldType;
-        viewModel.Value = value.GetValue();
+        FieldValueViewModel viewModel = new()
+        {
+            Type = value.Field.FieldType,
+            Value = value.GetValue()
+        };
         return viewModel;
     }
 
@@ -104,5 +101,23 @@ public class ViewModelsProvider(DbApiService dbApiService)
             Id = user.Id,
             Email = user.Email
         };
+    }
+
+    public InventoryField GetField(FieldDefinitionViewModel fieldViewModel, Inventory inventory)
+    {
+        InventoryField field = new()
+        {
+            Id = new Guid(),
+            InventoryId = inventory.Id,
+            Title = fieldViewModel.Title,
+            Name = Regex.Replace(fieldViewModel.Title, @"(\B[A-Z])", "_$1").ToLower(),
+            FieldType = fieldViewModel.Type,
+            Description = fieldViewModel.Description,
+            CreatedAt = DateTime.UtcNow,
+            DisplayInTable = fieldViewModel.DisplayInTable,
+            IsRequired = fieldViewModel.IsRequired,
+            SortOrder = inventory.Fields.Select(f=>f.SortOrder).ToList().Max() + 1
+        };
+        return field;
     }
 }

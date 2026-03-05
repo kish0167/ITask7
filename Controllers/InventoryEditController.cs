@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers;
 
-public class InventoryEditController(ViewModelsProvider viewModelsProvider, DbApiService dbApiService) : Controller
+public class InventoryEditController(DbApiService dbApiService) : Controller
 {
-    public async Task<IActionResult> Index(Guid inventoryId)
+    public async Task<IActionResult> Index(Guid inventoryId, string? tabOpened)
     {
-        InventoryViewModel inventory = await viewModelsProvider.GetInventoryViewModel(inventoryId);
+        InventoryViewModel inventory = await dbApiService.GetInventoryViewModel(inventoryId);
+        if (tabOpened != null) inventory.TabOpened = tabOpened;
         return View(inventory);
     }
 
@@ -21,7 +22,7 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider, DbAp
     }
     
     [HttpPost]
-    public async Task<IActionResult> DeleteFields([FromBody] List<string> fieldsIds, [FromQuery] Guid contextId)
+    public async Task<IActionResult> DeleteFields([FromBody] List<Guid> fieldsIds, [FromQuery] Guid contextId)
     {
         bool success = await dbApiService.RemoveFields(fieldsIds, contextId);
         return Ok(success);
@@ -30,8 +31,8 @@ public class InventoryEditController(ViewModelsProvider viewModelsProvider, DbAp
     [HttpPost]
     public async Task<IActionResult> AddField([FromQuery] Guid inventoryId, [FromBody] FieldDefinitionViewModel field)
     {
-        Guid? success = await dbApiService.AddField(field, inventoryId);
-        return Ok();
+        Guid? id = await dbApiService.AddField(field, inventoryId);
+        return Ok(id);
     }
     
     [HttpPost]

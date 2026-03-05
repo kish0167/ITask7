@@ -11,4 +11,6 @@ public class InventoryViewModel
     public List<FieldDefinitionViewModel> Fields { get; set; } = new();
     public List<ItemViewModel> Items { get; set; } = new();
     public List<UserViewModel> WriteAccessUsers { get; set; } = new();
+    
+    public string? TabOpened { get; set; } = "items";
 }
