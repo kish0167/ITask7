@@ -16,21 +16,6 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         Inventory inventory = await GetInventory(inventoryId);
         return _viewModelsConverter.GetInventoryViewModel(inventory);
     }
-    private async Task<Inventory> GetInventory(Guid inventoryId)
-    {
-        Inventory? inventory = await _dbContext.Inventories
-            .AsNoTracking()
-            .Where(i => i.Id == inventoryId)
-            .Include(i => i.Fields.OrderBy(f => f.SortOrder))
-            .Include(i => i.Items)
-            .ThenInclude(item => item.FieldValues)
-            .ThenInclude(value => value.Field)
-            .Include(i => i.Creator)
-            .Include(i => i.Accesses)
-            .ThenInclude(access => access.User)
-            .FirstOrDefaultAsync();
-        return inventory ?? new Inventory();
-    }
 
     public async Task<string?> AddAccess(string username, Guid inventoryId)
     {
@@ -67,7 +52,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return result > 0;
     }
 
-    public async Task<bool> EditProperties(InventoryViewModel model)
+    public async Task<bool> EditInventoryProperties(InventoryViewModel model)
     {
         var inventory = await _dbContext.Inventories.FindAsync(model.Id);
         if (inventory == null) return false;
@@ -104,14 +89,44 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     public async Task<Guid?> AddField(FieldDefinitionViewModel fieldViewModel, Guid inventoryId)
     {
         Inventory inventory = await GetInventory(inventoryId);
-        InventoryField field = _viewModelsConverter.GetField(fieldViewModel, inventory);
+        InventoryField field = _viewModelsConverter.GetNewField(fieldViewModel, inventory);
         await _dbContext.InventoryFields.AddAsync(field);
         await _dbContext.SaveChangesAsync();
         return field.Id;
     }
     
-    public async Task<Guid?> EditField(FieldDefinitionViewModel field, Guid inventoryId)
+    public async Task<Guid?> EditFieldProperties(FieldDefinitionViewModel fieldViewModel, Guid inventoryId)
     {
-        throw new NotImplementedException();
+        Inventory inventory = await GetInventory(inventoryId);
+        InventoryField field = await GetField(fieldViewModel.Id);
+        _viewModelsConverter.EditFieldProperties(field, fieldViewModel);
+        await _dbContext.SaveChangesAsync();
+        return field.Id;
+    }
+    
+    private async Task<Inventory> GetInventory(Guid inventoryId)
+    {
+        Inventory? inventory = await _dbContext.Inventories
+            .AsNoTracking()
+            .Where(i => i.Id == inventoryId)
+            .Include(i => i.Fields.OrderBy(f => f.SortOrder))
+            .Include(i => i.Items)
+            .ThenInclude(item => item.FieldValues)
+            .ThenInclude(value => value.Field)
+            .Include(i => i.Creator)
+            .Include(i => i.Accesses)
+            .ThenInclude(access => access.User)
+            .FirstOrDefaultAsync();
+        return inventory ?? new Inventory();
+    }
+    
+    private async Task<InventoryField> GetField(Guid fieldId)
+    {
+        InventoryField? field = await _dbContext.InventoryFields
+            .Where(f => f.Id == fieldId)
+            .Include(f => f.Inventory)
+            .ThenInclude(i => i.Fields)
+            .FirstOrDefaultAsync();
+        return field ?? new InventoryField();
     }
 }

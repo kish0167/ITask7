@@ -54,8 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = context.querySelector(`[data-action="${actionName}"]`);
         const endpoint = btn.dataset.endpoint;
         
-        // if (!confirm(`${actionName} ${selectedIds.length} items?`)) return;
-        
         const contextId = context.dataset.contextId;
         
         if (endpoint == null) {
@@ -71,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 detail: { action: actionName, ids: selectedIds, toolbarId: '@toolbarId', context: context}
             }));
         }
+        updateUi();
     }
     
     function toggleSelectAll() {

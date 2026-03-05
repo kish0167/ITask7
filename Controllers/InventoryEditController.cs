@@ -17,7 +17,7 @@ public class InventoryEditController(DbApiService dbApiService) : Controller
     [HttpPost]
     public async Task<IActionResult> EditProperties(InventoryViewModel model)
     {
-        bool success = await dbApiService.EditProperties(model);
+        bool success = await dbApiService.EditInventoryProperties(model);
         return Ok();
     }
     
@@ -32,6 +32,13 @@ public class InventoryEditController(DbApiService dbApiService) : Controller
     public async Task<IActionResult> AddField([FromQuery] Guid inventoryId, [FromBody] FieldDefinitionViewModel field)
     {
         Guid? id = await dbApiService.AddField(field, inventoryId);
+        return Ok(id);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> EditField([FromQuery] Guid inventoryId, [FromBody] FieldDefinitionViewModel field)
+    {
+        Guid? id = await dbApiService.EditFieldProperties(field, inventoryId);
         return Ok(id);
     }
     

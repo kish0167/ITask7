@@ -1,7 +1,7 @@
 ﻿@model ITask7.ViewModels.Inventories.InventoryViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = Model.Name;
     Layout = "_Layout";
 }
 
@@ -17,32 +17,32 @@
     <!-- Tabs Navigation -->
     <ul class="nav nav-tabs border-bottom" id="inventoryTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link @(Model.TabOpened == "items" ? "active" : "")" id="items-tab" data-bs-toggle="tab" data-bs-target="#items" type="button" role="tab">
+            <button class="nav-link @(Model.TabOpened == "items" ? "active" : "")" onclick="setTabQueryParameter('items')" id="items-tab" data-bs-toggle="tab" data-bs-target="#items" type="button" role="tab">
                 Items
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link @(Model.TabOpened == "chat" ? "active" : "")" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab">
+            <button class="nav-link @(Model.TabOpened == "chat" ? "active" : "")" onclick="setTabQueryParameter('chat')" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab">
                 Chat
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link @(Model.TabOpened == "settings" ? "active" : "")" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+            <button class="nav-link @(Model.TabOpened == "settings" ? "active" : "")" onclick="setTabQueryParameter('settings')" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
                 Settings
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link @(Model.TabOpened == "customid" ? "active" : "")" id="customid-tab" data-bs-toggle="tab" data-bs-target="#customid" type="button" role="tab">
+            <button class="nav-link @(Model.TabOpened == "customid" ? "active" : "")" onclick="setTabQueryParameter('customid')" id="customid-tab" data-bs-toggle="tab" data-bs-target="#customid" type="button" role="tab">
                 Custom ID
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link @(Model.TabOpened == "fields" ? "active" : "")" id="fields-tab" data-bs-toggle="tab" data-bs-target="#fields" type="button" role="tab">
+            <button class="nav-link @(Model.TabOpened == "fields" ? "active" : "")" onclick="setTabQueryParameter('fields')" id="fields-tab" data-bs-toggle="tab" data-bs-target="#fields" type="button" role="tab">
                 Fields
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link @(Model.TabOpened == "access" ? "active" : "")" id="access-tab" data-bs-toggle="tab" data-bs-target="#access" type="button" role="tab">
+            <button class="nav-link @(Model.TabOpened == "access" ? "active" : "")" onclick="setTabQueryParameter('access')" id="access-tab" data-bs-toggle="tab" data-bs-target="#access" type="button" role="tab">
                 Access
             </button>
         </li>
@@ -76,3 +76,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    function reloadPage(tab){
+        setTabQueryParameter(tab);
+        location.reload();
+    }
+    
+    function setTabQueryParameter(tab){
+        const url = new URL(window.location.href);
+        url.searchParams.set('tabOpened', tab);
+        history.replaceState(null, '', url.toString());
+    }
+</script>

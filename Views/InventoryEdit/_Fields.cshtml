@@ -55,7 +55,7 @@
         {
             @foreach (var field in Model.Fields.OrderBy(f => f.SortOrder))
             {
-                <tr>
+                <tr style="cursor: pointer;" data-field-id="@field.Id">
                     <td>
                         <input class="form-check-input selectable-item"
                                type="checkbox"
@@ -121,9 +121,49 @@
             handleFieldsActionSuccess(action, ids);
         });
         
+        // ==================== UI UPDATES ====================
+        
         function handleFieldsActionSuccess(action, ids){
-            if (action === 'edit') alert('edit!');
+            if (action === 'delete')
+                removeFieldsRows(ids);
+            if (action === 'edit'){}
+                openEditFieldModal(ids[0])
         }
+
+        async function openEditFieldModal(fieldId) {
+            const row = fieldsTbContext.querySelector(`tr[data-field-id="${fieldId}"]`);
+            if (!row) return;
+            
+            // Extract data from row
+            const title = row.querySelector('td:nth-child(3) .fw-bold').textContent.trim();
+            const description = row.querySelector('td:nth-child(4) span').textContent.trim();
+            const typeText = row.querySelector('td:nth-child(5) .badge').textContent.trim();
+            const sortOrder = row.querySelector('td:nth-child(2) .badge').textContent.trim();
+            const isRequired = row.querySelector('td:nth-child(6) i').classList.contains('bi-check-circle-fill');
+            const displayInTable = row.querySelector('td:nth-child(7) i').classList.contains('bi-table');
+            
+            // Populate form
+            document.getElementById('editFieldId').value = fieldId;
+            document.getElementById('editFieldTitle').value = title;
+            document.getElementById('editFieldDescription').value = description === '-' ? '' : description;
+            document.getElementById('editFieldTypeDisplay').value = typeText;
+            document.getElementById('editFieldType').value = typeText;
+            document.getElementById('editFieldSortOrderDisplay').value = sortOrder;
+            document.getElementById('editFieldSortOrder').value = sortOrder;
+            document.getElementById('editFieldDisplayInTable').checked = displayInTable;
+            document.getElementById('editFieldIsRequiredDisplay').checked = isRequired;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('editFieldModal'));
+            modal.show();
+        }    
+        
+        function removeFieldsRows(fieldIds) {
+            fieldIds.forEach(id => {
+                const row = fieldsTbContext.querySelector(`tr[data-field-id="${id}"]`);
+                if (row) row.remove();
+            });
+        }            
     </script>
     
     <!-- Add Field Modal -->
@@ -176,6 +216,61 @@
             </div>
         </div>
     </div>
+    
+    <!-- Edit Field Modal -->
+    <div class="modal fade" id="editFieldModal" tabindex="-1" aria-labelledby="editFieldModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editFieldModalLabel">Edit Field</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editFieldForm">
+                        <input type="hidden" id="editFieldId" name="Id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="editFieldTitle" class="form-label">Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editFieldTitle" name="Title" required maxlength="100">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Type</label>
+                                <input type="text" class="form-control" id="editFieldTypeDisplay" disabled readonly>
+                                <input type="hidden" id="editFieldType" name="Type">
+                            </div>
+                            <div class="col-12">
+                                <label for="editFieldDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="editFieldDescription" name="Description" rows="2" maxlength="500"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Sort Order</label>
+                                <input type="text" class="form-control" id="editFieldSortOrderDisplay" disabled readonly>
+                                <input type="hidden" id="editFieldSortOrder" name="SortOrder">
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                                <div class="form-check form-switch mt-3">
+                                    <input class="form-check-input" type="checkbox" id="editFieldDisplayInTable" name="DisplayInTable" value="true">
+                                    <label class="form-check-label" for="editFieldDisplayInTable">Display in Table</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="editFieldIsRequiredDisplay" disabled>
+                                    <label class="form-check-label text-muted" for="editFieldIsRequiredDisplay">Required Field (read-only)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="editFieldForm" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
 </div>
 
 <script>
@@ -213,6 +308,38 @@
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Save Field';
+        }
+    });
+    
+    document.getElementById('editFieldForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const form = e.target;
+        const submitBtn = form.closest('.modal-content').querySelector('button[type="submit"]');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving...';
+        
+        const payload = {
+            Id: document.getElementById('editFieldId').value,
+            Title: document.getElementById('editFieldTitle').value,
+            Description: document.getElementById('editFieldDescription').value,
+            DisplayInTable: document.getElementById('editFieldDisplayInTable').checked,
+        };
+    
+        try {
+            const success = await postData(`/InventoryEdit/EditField?inventoryId=@Model.Id`, payload);
+            if (success) {
+                bootstrap.Modal.getInstance(document.getElementById('editFieldModal')).hide();
+                location.reload();
+            } else {
+                alert('Error saving field');
+            }
+        } catch (err) {
+            alert('Failed to save field');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Save Changes';
         }
     });
 </script>

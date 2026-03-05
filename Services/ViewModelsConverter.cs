@@ -103,7 +103,7 @@ public class ViewModelsConverter()
         };
     }
 
-    public InventoryField GetField(FieldDefinitionViewModel fieldViewModel, Inventory inventory)
+    public InventoryField GetNewField(FieldDefinitionViewModel fieldViewModel, Inventory inventory)
     {
         InventoryField field = new()
         {
@@ -119,5 +119,18 @@ public class ViewModelsConverter()
             SortOrder = inventory.Fields.Select(f=>f.SortOrder).ToList().Max() + 1
         };
         return field;
+    }
+
+    public void EditFieldProperties(InventoryField field, FieldDefinitionViewModel fieldViewModel)
+    {
+        field.Title = fieldViewModel.Title;
+        field.Name = TitleToName(fieldViewModel.Title);
+        field.Description = fieldViewModel.Description;
+        field.DisplayInTable = fieldViewModel.DisplayInTable;
+    }
+
+    private string TitleToName(string title)
+    {
+        return Regex.Replace(title, @"(\B[A-Z])", "_$1").ToLower();
     }
 }

@@ -90,7 +90,7 @@
         });
         
         // ==================== UI UPDATES ====================
-        function handleAccessActionSuccess(action, userIds) {  
+        function handleAccessActionSuccess(action, userIds) {
             if (action === 'delete'){
                 removeAccessRows(userIds);
             }
@@ -155,8 +155,11 @@
             alert("Couldn't grant access");
             return;
         }
-
-        AddUserToTable(username, success)
+        
+        location.reload();
+        return;
+        
+        AddUserToTable(username, success);
         const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
         modal.hide();
         document.getElementById('usernameInput').value = '';
