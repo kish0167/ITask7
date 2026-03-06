@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const contextId = context.dataset.contextId;
         
-        if (endpoint == null) {
+        if (endpoint == null || endpoint === "") {
             context.dispatchEvent(new CustomEvent('bulkActionSuccess', {
                 detail: { action: actionName, ids: selectedIds, toolbarId: '@toolbarId', context: context}
             }));

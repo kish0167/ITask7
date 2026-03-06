@@ -11,21 +11,32 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     private readonly ApplicationDbContext _dbContext = dbContext;
     private readonly ViewModelsConverter _viewModelsConverter = viewModelsConverter;
     
-    public async Task<InventoryViewModel> GetInventoryViewModel(Guid inventoryId)
+    public async Task<InventoryViewModel?> GetInventoryViewModel(Guid inventoryId)
     {
-        Inventory inventory = await GetInventory(inventoryId);
+        Inventory? inventory = await GetInventory(inventoryId);
+        if (inventory == null) return null;
         return _viewModelsConverter.GetInventoryViewModel(inventory);
     }
     
-    public async Task<ItemViewModel> GetItemViewModel(Guid itemId)
+    public async Task<ItemViewModel?> GetItemViewModel(Guid itemId)
     {
-        Item item = await GetItem(itemId);
+        Item? item = await GetItem(itemId);
+        if (item == null) return null;
         return _viewModelsConverter.GetInventoryAlignedItemViewModel(item);
     }
 
-    public async Task<ItemViewModel> GetNewItemViewModel(Guid inventoryId)
+    public async Task<Item?> CreateNewItem(Guid inventoryId, ApplicationUser user)
     {
-        throw new NotImplementedException();
+        Inventory? inventory = await GetInventory(inventoryId);
+        if (inventory == null) return null;
+        return new Item(inventory, user);
+    }
+    
+    public async Task<ItemViewModel?> GetEmptyItemViewModel(Guid inventoryId)
+    {
+        Inventory? inventory = await GetInventory(inventoryId);
+        if (inventory == null) return null;
+        return _viewModelsConverter.GetEmptyItemViewModel(inventory);
     }
 
     public async Task<string?> AddAccess(string username, Guid inventoryId)
@@ -98,7 +109,8 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
 
     public async Task<Guid?> AddField(FieldDefinitionViewModel fieldViewModel, Guid inventoryId)
     {
-        Inventory inventory = await GetInventory(inventoryId);
+        Inventory? inventory = await GetInventory(inventoryId);
+        if (inventory == null) return null;
         InventoryField field = _viewModelsConverter.GetNewField(fieldViewModel, inventory);
         await _dbContext.InventoryFields.AddAsync(field);
         await _dbContext.SaveChangesAsync();
@@ -113,10 +125,10 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return field.Id;
     }
     
-    private async Task<Inventory> GetInventory(Guid inventoryId)
+    private async Task<Inventory?> GetInventory(Guid inventoryId)
     {
         Inventory? inventory = await _dbContext.Inventories
-            .AsNoTracking()
+            //.AsNoTracking()
             .Where(i => i.Id == inventoryId)
             .Include(i => i.Fields.OrderBy(f => f.SortOrder))
             .Include(i => i.Items)
@@ -128,7 +140,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             .Include(i => i.Accesses)
             .ThenInclude(access => access.User)
             .FirstOrDefaultAsync();
-        return inventory ?? new Inventory();
+        return inventory;
     }
     
     private async Task<InventoryField> GetField(Guid fieldId)
@@ -141,16 +153,17 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return field ?? new InventoryField();
     }
     
-    private async Task<Item> GetItem(Guid itemId)
+    private async Task<Item?> GetItem(Guid itemId)
     {
         Item? item = await _dbContext.Items
             .Where(i => i.Id == itemId)
             .Include(i => i.Inventory)
+            .ThenInclude(inventory => inventory.Fields)
             .Include(i => i.Creator)
             .Include(i => i.FieldValues)
             .ThenInclude(v => v.Field)
             .FirstOrDefaultAsync();
-        return item ?? new Item();
+        return item;
     }
 
     public async Task<bool> RemoveItems(List<Guid> itemsIds, Guid contextId)
@@ -167,11 +180,13 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return result > 0;
     }
 
-    public async Task<Guid?> EditItem(ItemViewModel itemViewModel)
+    public async Task<Guid?> EditItem(ItemViewModel itemViewModel, ApplicationUser user)
     {
-        Item item = await GetItem(itemViewModel.Id);
-        _viewModelsConverter.EditItem(item, itemViewModel);
-        await _dbContext.SaveChangesAsync();
+        Item? item = await GetItem(itemViewModel.Id);
+        if (item == null)  item = await CreateNewItem(itemViewModel.InventoryId, user);
+        else _viewModelsConverter.EditItem(item, itemViewModel);
+        if (item == null) return null;
+        int rows = await _dbContext.SaveChangesAsync();
         return item.Id;
     }
 }

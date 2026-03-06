@@ -1,4 +1,5 @@
 ﻿using Humanizer;
+using ITask7.Models.Inventories;
 
 namespace ITask7.ViewModels.Inventories;
 
@@ -13,4 +14,13 @@ public class ItemViewModel
     public List<FieldDefinitionViewModel> FieldDefinitions { get; set; } = new();
     public Guid InventoryId { get; set; }
     public string CreatedAtString => CreatedAt.Humanize();
+
+    public void PopulateFields(Inventory inventory)
+    {
+        foreach (InventoryField field in inventory.Fields)
+        {
+            Fields.Add(field.Id, new(){Type = field.FieldType});
+            FieldDefinitions.Add(field.ToViewModel());
+        }
+    }
 }

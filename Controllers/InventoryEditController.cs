@@ -9,7 +9,8 @@ public class InventoryEditController(DbApiService dbApiService) : Controller
 {
     public async Task<IActionResult> Index(Guid inventoryId, string? tabOpened)
     {
-        InventoryViewModel inventory = await dbApiService.GetInventoryViewModel(inventoryId);
+        InventoryViewModel? inventory = await dbApiService.GetInventoryViewModel(inventoryId);
+        if (inventory == null) return BadRequest("Inventory does not exist");
         if (tabOpened != null) inventory.TabOpened = tabOpened;
         return View(inventory);
     }

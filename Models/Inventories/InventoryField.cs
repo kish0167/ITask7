@@ -1,4 +1,6 @@
-﻿namespace ITask7.Models.Inventories;
+﻿using ITask7.ViewModels.Inventories;
+
+namespace ITask7.Models.Inventories;
 
 public class InventoryField
 {
@@ -20,4 +22,18 @@ public class InventoryField
 
     public Inventory Inventory { get; set; }
     public ICollection<ItemFieldValue> Values { get; set; } = new List<ItemFieldValue>();
+
+    public FieldDefinitionViewModel ToViewModel()
+    {
+        return new ()
+        {
+            Id = Id,
+            Title = Title,
+            Description = Description,
+            DisplayInTable = DisplayInTable,
+            IsRequired = IsRequired,
+            SortOrder = SortOrder,
+            Type = FieldType
+        };
+    }
 }

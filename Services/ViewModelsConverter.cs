@@ -21,7 +21,7 @@ public class ViewModelsConverter()
         foreach (ItemFieldValue value in item.FieldValues)
         {
             viewModel.Fields.Add(value.Field.Id, FieldValueViewModelFromValue(value));
-            viewModel.FieldDefinitions.Add(FieldViewModelFromField(value.Field));
+            viewModel.FieldDefinitions.Add(value.Field.ToViewModel());
         }
         return viewModel;
     }
@@ -33,7 +33,7 @@ public class ViewModelsConverter()
         {
             ItemFieldValue value = TryGetValueFromItem(item, field.Id) ?? GetNewValue(field, item);
             viewModel.Fields.Add(field.Id, FieldValueViewModelFromValue(value));
-            viewModel.FieldDefinitions.Add(FieldViewModelFromField(field));
+            viewModel.FieldDefinitions.Add(field.ToViewModel());
         }
         return viewModel;
     }
@@ -42,7 +42,7 @@ public class ViewModelsConverter()
     {
         return new ItemFieldValue()
         {
-            Id = new Guid(),
+            Id = Guid.NewGuid(),
             Field = field,
             FieldId = field.Id,
             Item = item,
@@ -54,7 +54,7 @@ public class ViewModelsConverter()
     {
         InventoryField field = new()
         {
-            Id = new Guid(),
+            Id = Guid.NewGuid(),
             InventoryId = inventory.Id,
             Title = fieldViewModel.Title,
             Name = Regex.Replace(fieldViewModel.Title, @"(\B[A-Z])", "_$1").ToLower(),
@@ -97,25 +97,11 @@ public class ViewModelsConverter()
         List<FieldDefinitionViewModel> fields = new();
         foreach (InventoryField field in inventory.Fields)
         {
-            fields.Add(FieldViewModelFromField(field));
+            fields.Add(field.ToViewModel());
         }
         return fields;
     }
-
-    private static FieldDefinitionViewModel FieldViewModelFromField(InventoryField field)
-    {
-        return new ()
-        {
-            Id = field.Id,
-            Title = field.Title,
-            Description = field.Description,
-            DisplayInTable = field.DisplayInTable,
-            IsRequired = field.IsRequired,
-            SortOrder = field.SortOrder,
-            Type = field.FieldType
-        };
-    }
-
+    
     private List<ItemViewModel> GetItems(Inventory inventory)
     {
         List<ItemViewModel> items = new();
@@ -172,31 +158,24 @@ public class ViewModelsConverter()
     {
         item.UpdatedAt = DateTime.UtcNow;
         item.CustomId = itemViewModel.CustomId;
-        foreach (ItemFieldValue value in item.FieldValues)
+        foreach (InventoryField field in item.Inventory.Fields)
         {
-            UpdateValue(value, itemViewModel.Fields[value.FieldId]);
+            item.SetFieldValue(field, itemViewModel.Fields[field.Id].Value);
         }
     }
 
-    private void UpdateValue(ItemFieldValue value, FieldValueViewModel valueViewModel)
+    public ItemViewModel GetEmptyItemViewModel(Inventory inventory)
     {
-        switch (value.Field.FieldType)
+        ItemViewModel itemViewModel = new()
         {
-            case FieldType.SingleLine or FieldType.MultiLine or FieldType.Document:
-            {
-                value.ValueText = RawValueConverter.ConvertToString(valueViewModel.Value);
-                break;
-            }
-            case FieldType.Numeric:
-            {
-                value.ValueNumeric = RawValueConverter.ConvertToDecimal(valueViewModel.Value);
-                break;
-            }
-            case FieldType.Boolean:
-            {
-                value.ValueBoolean = RawValueConverter.ConvertToBool(valueViewModel.Value);
-                break;
-            }
-        }
+            Id = Guid.Empty,
+            InventoryId = inventory.Id,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            CreatedByUserName = "none",
+            CustomId = "none"
+        };
+        itemViewModel.PopulateFields(inventory);
+        return itemViewModel;
     }
 }

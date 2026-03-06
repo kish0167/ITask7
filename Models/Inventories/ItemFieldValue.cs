@@ -1,4 +1,6 @@
-﻿namespace ITask7.Models.Inventories;
+﻿using ITask7.Services;
+
+namespace ITask7.Models.Inventories;
 
 public class ItemFieldValue
 {
@@ -17,6 +19,20 @@ public class ItemFieldValue
     public Item Item { get; set; }
     public InventoryField Field { get; set; }
     
+    public ItemFieldValue(){}
+
+    public ItemFieldValue(InventoryField field, Item item, object? value)
+    {
+        // Id = Guid.NewGuid();
+        ItemId = item.Id;
+        FieldId = field.Id;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+        Item = item;
+        Field = field;
+        SetValue(value);
+    }
+
     public object GetValue()
     {
         object? value = Field.FieldType switch
@@ -26,6 +42,28 @@ public class ItemFieldValue
             FieldType.Boolean => ValueBoolean,
             _ => "Field type error"
         };
-        return value ?? "null";
+        return value ?? "no value";
+    }
+
+    public void SetValue(object? newValue)
+    {
+        switch (Field.FieldType)
+        {
+            case FieldType.SingleLine or FieldType.MultiLine or FieldType.Document:
+            {
+                ValueText = RawValueConverter.ConvertToString(newValue);
+                break;
+            }
+            case FieldType.Numeric:
+            {
+                ValueNumeric = RawValueConverter.ConvertToDecimal(newValue);
+                break;
+            }
+            case FieldType.Boolean:
+            {
+                ValueBoolean = RawValueConverter.ConvertToBool(newValue);
+                break;
+            }
+        }
     }
 }
