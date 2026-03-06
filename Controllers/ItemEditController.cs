@@ -15,8 +15,9 @@ public class ItemEditController(DbApiService dbApiService) : Controller
     }
     
     [HttpPost]
-    public async Task<IActionResult> SubmitChanges(ItemViewModel model)
+    public async Task<IActionResult> SubmitChanges([FromBody] ItemViewModel? model)
     {
+        if (model == null) return BadRequest();
         Guid? success = await dbApiService.EditItem(model);
         return Ok(success);
     }

@@ -1,12 +1,13 @@
-﻿@using Humanizer
-@using ITask7.Models.Inventories
+﻿@using ITask7.Models.Inventories
+@using ITask7.ViewModels.Inventories
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model ITask7.ViewModels.Inventories.ItemViewModel
 
 @{
     ViewBag.Title = Model.Id == Guid.Empty ? "New Item" : "Edit Item";
     Layout = "_Layout";
-    var isNewItem = Model.Id == Guid.Empty;
+    bool isNewItem = Model.Id == Guid.Empty;
+    string inventoryUrl = @Url.Action("Index", "InventoryEdit", new { inventoryId = Model.InventoryId }) ?? "#";
 }
 
 <div class="container-fluid py-4">
@@ -14,368 +15,527 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">
-                <i class="bi @(isNewItem ? "bi-plus-circle" : "bi-pencil-square") me-2"></i>
+                <i class="bi bi-box-seam me-2"></i>
                 @(isNewItem ? "Create New Item" : "Edit Item")
             </h2>
             @if (!isNewItem)
             {
                 <small class="text-muted">
-                    <i class="bi bi-upc-scan me-1"></i>@Model.CustomId
+                    <i class="bi bi-clock-history me-1"></i>
+                    Created @Model.CreatedAtString by @Model.CreatedByUserName
                 </small>
             }
         </div>
-        <div class="d-flex gap-2">
-            <a href="#" class="btn btn-outline-secondary">
-                <i class="bi bi-x-lg me-1"></i>Cancel
+        <div class="btn-group">
+            <a href="@inventoryUrl" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back
             </a>
             <button type="button" id="saveBtn" class="btn btn-primary">
-                <i class="bi bi-check-lg me-1"></i>@(isNewItem ? "Create Item" : "Save Changes")
+                <i class="bi bi-check-lg me-1"></i>@(isNewItem ? "Create" : "Save Changes")
             </button>
         </div>
     </div>
 
-    <!-- Main Form -->
-    <form id="itemForm" method="post" action="@Url.Action("SubmitChanges", "ItemEdit")">
+    <form id="itemForm" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id"/>
         <input type="hidden" asp-for="CreatedAt"/>
         <input type="hidden" asp-for="UpdatedAt"/>
-        <input type="hidden" asp-for="CreatedByUserName"/>
 
         <div class="row">
-            <!-- Left Column: Metadata -->
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm h-100">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- System Fields Card -->
+                <div class="card shadow-sm mb-4">
                     <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Information</h5>
+                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>System Information</h5>
                     </div>
                     <div class="card-body">
-                        @if (!isNewItem)
-                        {
-                            <div class="mb-3">
-                                <label class="form-label text-muted small mb-1">Item ID</label>
-                                <div class="form-control-plaintext fw-mono text-break">@Model.Id</div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomId" class="form-label fw-bold">Custom ID</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-upc-scan"></i>
+                                    </span>
+                                    <input asp-for="CustomId" class="form-control" placeholder="Enter custom identifier..."/>
+                                </div>
+                                <span asp-validation-for="CustomId" class="text-danger small"></span>
                             </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text-muted small mb-1">Custom ID</label>
-                                <input type="text" class="form-control" asp-for="CustomId" placeholder="Enter custom identifier"/>
-                            </div>
-
-                            <hr class="my-3"/>
-
-                            <div class="mb-2 d-flex justify-content-between">
-                                <span class="text-muted small">Created</span>
-                                <span class="small">@Model.CreatedAtString by @Model.CreatedByUserName</span>
-                            </div>
-                            <div class="mb-0 d-flex justify-content-between">
-                                <span class="text-muted small">Last Updated</span>
-                                <span class="small text-muted">@Model.UpdatedAt.Humanize()</span>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold" asp-for="CustomId">Custom ID</label>
-                                <input type="text" class="form-control form-control-lg" asp-for="CustomId"
-                                       placeholder="Enter a unique identifier" autofocus/>
-                                <div class="form-text">Optional custom identifier for this item</div>
-                            </div>
-
-                            <div class="alert alert-info d-flex align-items-center mb-0">
-                                <i class="bi bi-lightbulb me-2 fs-5"></i>
-                                <div class="small">Fill in the custom fields on the right to define your new item.</div>
-                            </div>
-                        }
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Column: Dynamic Fields -->
-            <div class="col-lg-8">
+                <!-- Dynamic Fields Card -->
                 <div class="card shadow-sm">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="bi bi-ui-checks-grid me-2"></i>Fields</h5>
-                        <span class="badge bg-secondary">@Model.FieldDefinitions.Count field(s)</span>
+                        <h5 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>Item Fields</h5>
+                        <span class="badge bg-secondary" id="fieldCountBadge">@Model.FieldDefinitions.Count fields</span>
                     </div>
                     <div class="card-body">
-                        @if (!Model.FieldDefinitions.Any())
-                        {
-                            <div class="text-center py-5 text-muted">
-                                <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
-                                <p>No field definitions available for this item type.</p>
-                            </div>
-                        }
-                        else
+                        @if (Model.FieldDefinitions.Any())
                         {
                             <div class="row g-3">
                                 @foreach (var fieldDef in Model.FieldDefinitions.OrderBy(f => f.SortOrder))
                                 {
                                     var fieldValue = Model.Fields.ContainsKey(fieldDef.Id)
                                         ? Model.Fields[fieldDef.Id]
-                                        : null;
-                                    var inputName = $"Fields[{fieldDef.Id}]";
-                                    var inputId = $"field_{fieldDef.Id}";
-                                    var isRequired = fieldDef.IsRequired ? "required" : "";
-                                    var requiredMark = fieldDef.IsRequired ? "<span class='text-danger'>*</span>" : "";
+                                        : new FieldValueViewModel { Value = "no value", Type = fieldDef.Type };
 
-                                    <div class="col-md-@(fieldDef.Type == FieldType.MultiLine || fieldDef.Type == FieldType.Document ? "12" : "6")">
-                                        <div class="field-wrapper">
-                                            <label class="form-label fw-semibold" for="@inputId">
-                                                @fieldDef.Title @Html.Raw(requiredMark)
-                                                @if (!string.IsNullOrEmpty(fieldDef.Description))
-                                                {
-                                                    <i class="bi bi-question-circle text-muted ms-1"
-                                                       data-bs-toggle="tooltip"
-                                                       title="@fieldDef.Description">
-                                                    </i>
-                                                }
-                                            </label>
+                                    <div class="col-md-@(fieldDef.Type == FieldType.MultiLine ? "12" : "6") field-container"
+                                         data-field-id="@fieldDef.Id"
+                                         data-field-type="@fieldDef.Type">
 
-                                            @switch (fieldDef.Type)
+                                        <label class="form-label fw-bold">
+                                            @fieldDef.Title
+                                            @if (fieldDef.IsRequired)
                                             {
-                                                case FieldType.SingleLine:
-                                                    <input type="text"
-                                                           class="form-control"
-                                                           id="@inputId"
+                                                <span class="text-danger">*</span>
+                                            }
+                                        </label>
+
+                                        @if (!string.IsNullOrEmpty(fieldDef.Description))
+                                        {
+                                            <div class="form-text mb-1">@fieldDef.Description</div>
+                                        }
+
+                                        @{
+                                            string inputName = $"Fields[{fieldDef.Id}].Value";
+                                            string inputId = $"field_{fieldDef.Id}";
+                                            string currentValue = fieldValue.DisplayValue;
+                                        }
+
+                                        @switch (fieldDef.Type)
+                                        {
+                                            case FieldType.SingleLine:
+                                                <input type="text"
+                                                       name="@inputName"
+                                                       id="@inputId"
+                                                       value="@currentValue"
+                                                       class="form-control"
+                                                       placeholder="Enter @fieldDef.Title..."
+                                                       @(fieldDef.IsRequired ? "required" : "")/>
+                                                break;
+
+                                            case FieldType.MultiLine:
+                                                <textarea name="@inputName" 
+                                                          id="@inputId"
+                                                          class="form-control" 
+                                                          rows="4"
+                                                          placeholder="Enter @fieldDef.Title..."
+                                                          @(fieldDef.IsRequired ? "required" : "")>@currentValue</textarea>
+                                                break;
+
+                                            case FieldType.Numeric:
+                                                <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <i class="bi bi-123"></i>
+                                                    </span>
+                                                    <input type="number"
                                                            name="@inputName"
-                                                           value="@(fieldValue?.Value ?? "")"
-                                                           @isRequired
-                                                           placeholder="Enter @fieldDef.Title.ToLower()"/>
-                                                    break;
-
-                                                case FieldType.MultiLine:
-                                                    <textarea class="form-control" 
-                                                              id="@inputId" 
-                                                              name="@inputName" 
-                                                              rows="4" 
-                                                              @isRequired
-                                                              placeholder="Enter @fieldDef.Title.ToLower()">@(fieldValue?.Value ?? "")</textarea>
-                                                    break;
-
-                                                case FieldType.Numeric:
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">
-                                                            <i class="bi bi-123"></i>
-                                                        </span>
-                                                        <input type="number"
-                                                               class="form-control"
-                                                               id="@inputId"
-                                                               name="@inputName"
-                                                               value="@(fieldValue?.Value ?? "")"
-                                                               @isRequired
-                                                               step="any"
-                                                               placeholder="0.00"/>
-                                                    </div>
-                                                    break;
-
-                                                case FieldType.Boolean:
-                                                    <div class="form-check form-switch mt-2">
-                                                        <input type="hidden" name="@inputName" value="false"/>
-                                                        <input class="form-check-input"
-                                                               type="checkbox"
-                                                               id="@inputId"
-                                                               name="@inputName"
-                                                               value="true"
-                                                               @(fieldValue?.Value?.ToString().ToLower() == "true" ? "checked" : "")/>
-                                                        <label class="form-check-label text-muted" for="@inputId">Yes / No</label>
-                                                    </div>
-                                                    break;
-
-                                                case FieldType.Document:
-                                                    <div class="document-field border rounded p-3 bg-light">
-                                                        @if (fieldValue?.Value != null)
-                                                        {
-                                                            <div class="d-flex align-items-center mb-2">
-                                                                <i class="bi bi-file-earmark-text fs-4 me-2 text-primary"></i>
-                                                                <div class="flex-grow-1">
-                                                                    <div class="fw-semibold text-truncate">@fieldValue.Value</div>
-                                                                    <small class="text-muted">Previously uploaded document</small>
-                                                                </div>
-                                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearDocument('@fieldDef.Id')">
-                                                                    <i class="bi bi-trash"></i>
-                                                                </button>
-                                                            </div>
-                                                        }
-                                                        <input type="file"
-                                                               class="form-control"
-                                                               id="@inputId"
-                                                               name="@(inputName)_file"
-                                                               @isRequired
-                                                               accept=".pdf,.doc,.docx,.txt,.xls,.xlsx"/>
-                                                        <input type="hidden" name="@inputName" id="@(inputId)_value" value="@(fieldValue?.Value ?? "")"/>
-                                                        <div class="form-text small mt-1">
-                                                            <i class="bi bi-paperclip me-1"></i>PDF, Word, Excel, or Text files
-                                                        </div>
-                                                    </div>
-                                                    break;
-                                            }
-
-                                            @if (fieldDef.DisplayInTable)
-                                            {
-                                                <div class="form-text small">
-                                                    <i class="bi bi-table me-1"></i>Displayed in list view
+                                                           id="@inputId"
+                                                           value="@currentValue"
+                                                           class="form-control"
+                                                           step="any"
+                                                           placeholder="0.00"
+                                                           @(fieldDef.IsRequired ? "required" : "")/>
                                                 </div>
-                                            }
-                                        </div>
+                                                break;
+
+                                            case FieldType.Boolean:
+                                                <div class="form-check form-switch mt-2">
+                                                    <input type="hidden" name="@inputName" value="false"/>
+                                                    <input type="checkbox"
+                                                           name="@inputName"
+                                                           id="@inputId"
+                                                           value="true"
+                                                           class="form-check-input"
+                                                           style="width: 3em; height: 1.5em;"
+                                                           @(currentValue.ToLower() == "true" ? "checked" : "")
+                                                           @(fieldDef.IsRequired ? "required" : "")/>
+                                                    <label class="form-check-label ms-2" for="@inputId">Yes / No</label>
+                                                </div>
+                                                break;
+
+                                            case FieldType.Document:
+                                                <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <i class="bi bi-paperclip"></i>
+                                                    </span>
+                                                    <input type="file"
+                                                           name="@inputName"
+                                                           id="@inputId"
+                                                           class="form-control"
+                                                           @(fieldDef.IsRequired ? "required" : "")/>
+                                                </div>
+                                                @if (!string.IsNullOrEmpty(currentValue))
+                                                {
+                                                    <div class="mt-2">
+                                                        <a href="@currentValue" target="_blank" class="btn btn-sm btn-outline-info">
+                                                            <i class="bi bi-eye me-1"></i>View Current Document
+                                                        </a>
+                                                    </div>
+                                                }
+
+                                                break;
+                                        }
+
+                                        <input type="hidden" name="Fields[@fieldDef.Id].FieldDefinitionId" value="@fieldDef.Id"/>
+                                        <div class="invalid-feedback">Please provide a valid value for @fieldDef.Title.</div>
                                     </div>
                                 }
                             </div>
                         }
+                        else
+                        {
+                            <div class="alert alert-info mb-0">
+                                <i class="bi bi-info-circle me-2"></i>No custom fields defined for this item type.
+                            </div>
+                        }
                     </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Metadata Card (only for existing items) -->
+                @if (!isNewItem)
+                {
+                    <div class="card shadow-sm mb-4 border-info">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Metadata</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">Item ID</span>
+                                    <code class="small">@Model.Id.ToString("N")[..8]...</code>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">Created</span>
+                                    <span>@Model.CreatedAt.ToString("g")</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">By</span>
+                                    <span class="badge bg-light text-dark">@Model.CreatedByUserName</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">Last Updated</span>
+                                    <span>@Model.UpdatedAt.ToString("g")</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-lightning-charge me-2"></i>Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+                                <i class="bi bi-printer me-2"></i>Print
+                            </button>
+                            @if (!isNewItem)
+                            {
+                                <button type="button" class="btn btn-outline-danger" id="deleteBtn">
+                                    <i class="bi bi-trash me-2"></i>Delete Item
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Summary -->
+                <div id="validationSummary" class="alert alert-danger mt-4 d-none">
+                    <h6><i class="bi bi-exclamation-triangle me-2"></i>Please correct the following errors:</h6>
+                    <ul class="mb-0 small" id="validationList"></ul>
                 </div>
             </div>
         </div>
     </form>
 </div>
 
-<!-- Toast Container for Notifications -->
-<div class="toast-container position-fixed top-0 end-0 p-3">
-    <div id="saveToast" class="toast align-items-center text-white bg-success border-0" role="alert">
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="bi bi-check-circle me-2"></i>
-                <span id="toastMessage">Changes saved successfully!</span>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    </div>
-</div>
+    <style>
+        .field-container {
+            transition: all 0.2s ease;
+        }
+        
+        .field-container:hover {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            margin: -0.5rem;
+        }
 
-@section Scripts {
-    <script>
-        $(document).ready(function() {
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
 
-            // Form submission
-            $('#saveBtn').on('click', function(e) {
-                e.preventDefault();
-                
-                var $btn = $(this);
-                var originalText = $btn.html();
-                
-                // Validate required fields
-                var isValid = true;
-                var firstInvalid = null;
-                
-                $('input[required], textarea[required], select[required]').each(function() {
-                    if (!$(this).val()) {
-                        isValid = false;
-                        $(this).addClass('is-invalid');
-                        if (!firstInvalid) firstInvalid = $(this);
-                    } else {
-                        $(this).removeClass('is-invalid');
-                    }
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+        }
+
+        .card-header {
+            border-bottom: 1px solid rgba(0,0,0,.125);
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+        }
+
+        /* Smooth transitions for validation states */
+        .form-control {
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .is-invalid {
+            animation: shake 0.5s;
+        }
+
+        @@keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+
+<script>
+    const form = document.getElementById('itemForm');
+    const saveBtn = document.getElementById('saveBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const validationSummary = document.getElementById('validationSummary');
+    const validationList = document.getElementById('validationList');
+    const modelId = '@Model.Id';
+    const inventoryId = '@Model.InventoryId';
+    const isNewItem = @(isNewItem.ToString().ToLower());
+    const submitUrl = '@Url.Action("SubmitChanges", "ItemEdit")';
+    document.addEventListener('DOMContentLoaded', function() {
+        saveBtn.addEventListener('click', async function() {
+            clearValidationErrors();
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                showValidationErrors(['Please fill in all required fields correctly.']);
+                return;
+            }
+
+            const formData = collectFormData();
+            
+            saveBtn.disabled = true;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+            try {
+                const response = await fetch(submitUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(formData)
                 });
 
-                if (!isValid) {
-                    if (firstInvalid) {
-                        firstInvalid.focus();
-                        $('html, body').animate({
-                            scrollTop: firstInvalid.offset().top - 100
-                        }, 300);
-                    }
+                if (response.ok) {
+                    const result = await response.json();
+                    showToast('Success', 'Item saved successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '@inventoryUrl';
+                    }, 1000);
+                } else {
+                    const errorText = await response.text();
+                    showValidationErrors(['Failed to save item. Please try again.']);
+                    console.error('Save failed:', errorText);
+                }
+            } catch (error) {
+                showValidationErrors(['An error occurred while saving. Please check your connection and try again.']);
+                console.error('Error:', error);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+        });
+
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async function() {
+                if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
                     return;
                 }
 
-                // Show loading state
-                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Saving...');
+                deleteBtn.disabled = true;
+                const originalText = deleteBtn.innerHTML;
+                deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting...';
 
-                // Prepare form data
-                var formData = new FormData($('#itemForm')[0]);
-
-                $.ajax({
-                    url: $('#itemForm').attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        if (response === true || response.success === true) {
-                            // Show success toast
-                            var toast = new bootstrap.Toast($('#saveToast')[0]);
-                            $('#toastMessage').text('@(isNewItem ? "Item created successfully!" : "Changes saved successfully!")');
-                            toast.show();
-
-                            // Redirect after short delay for new items
-                            @if (isNewItem)
-                            {
-                                <text>
-                                setTimeout(function() {
-                                    window.location.href = '#';
-                                }, 1500);
-                                </text>
-                            }
-                            else
-                            {
-                                <text>
-                                $btn.prop('disabled', false).html(originalText);
-                                </text>
-                            }
-                        } else {
-                            alert('Failed to save changes. Please try again.');
-                            $btn.prop('disabled', false).html(originalText);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                        alert('An error occurred while saving. Please check your connection and try again.');
-                        $btn.prop('disabled', false).html(originalText);
+                try {
+                    const idArray = ['@Model.Id'];
+                    const response2 = await postData('@Url.Action("DeleteItems", "InventoryEdit")', idArray);
+                    
+                    if (response2.ok) {
+                        showToast('Deleted', 'Item has been deleted.', 'success');
+                        setTimeout(() => {
+                            window.location.href = '@inventoryUrl';
+                        }, 1000);
+                    } else {
+                        showToast('Error', 'Failed to delete item.', 'danger');
                     }
-                });
+                } catch (error) {
+                    showToast('Error', 'An error occurred while deleting.', 'danger');
+                    console.error('Delete error:', error);
+                } finally {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = originalText;
+                }
+            });
+        }
+
+        function collectFormData() {
+            const data = {
+                Id: document.querySelector('input[name="Id"]').value || '@Guid.Empty',
+                CustomId: document.querySelector('input[name="CustomId"]').value,
+                InventoryId: inventoryId,
+                Fields: {},
+                FieldDefinitions: []
+            };
+
+            const fieldContainers = document.querySelectorAll('.field-container');
+            fieldContainers.forEach(container => {
+                const fieldId = container.dataset.fieldId;
+                const fieldType = container.dataset.fieldType;
+                const inputElement = container.querySelector('input:not([type="hidden"]), textarea, select');
+                
+                if (inputElement) {
+                    let value = inputElement.value;
+
+                    if (fieldType === 'Boolean') {
+                        value = inputElement.checked.toString();
+                    }
+                    
+                    if (fieldType === 'Document' && inputElement.type === 'file') {
+                        if (inputElement.files.length === 0) {
+                            const existingLink = container.querySelector('a[href]');
+                            value = existingLink ? existingLink.getAttribute('href') : '';
+                        } else {
+                            value = inputElement.files[0].name; 
+                        }
+                    }
+
+                    data.Fields[fieldId] = {
+                        //Type: parseInt(fieldType),
+                        Value: value
+                    };
+                }
             });
 
-            // Remove invalid class on input
-            $('input, textarea, select').on('input change', function() {
-                $(this).removeClass('is-invalid');
+            @foreach (var def in Model.FieldDefinitions)
+            {
+                <text>
+                data.FieldDefinitions.push({
+                    Id: '@def.Id' 
+                });
+                </text>
+            }
+
+            return data;
+        }
+
+        function showValidationErrors(errors) {
+            validationList.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
+            validationSummary.classList.remove('d-none');
+            validationSummary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function clearValidationErrors() {
+            validationSummary.classList.add('d-none');
+            validationList.innerHTML = '';
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        }
+
+        function showToast(title, message, type) {
+            const toastHtml = `
+                <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'danger' ? 'danger' : 'primary'} border-0 position-fixed top-0 end-0 m-3" role="alert" style="z-index: 1055;">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <strong>${title}</strong><br>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = toastHtml;
+            document.body.appendChild(wrapper);
+            
+            const toast = new bootstrap.Toast(wrapper.querySelector('.toast'));
+            toast.show();
+            
+            setTimeout(() => wrapper.remove(), 5000);
+        }
+
+        document.querySelectorAll('input, textarea, select').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.checkValidity()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else if (this.value !== '') {
+                    this.classList.add('is-invalid');
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid') && this.checkValidity()) {
+                    this.classList.remove('is-invalid');
+                }
             });
         });
 
-        // Clear document field
-        function clearDocument(fieldId) {
-            $('#field_' + fieldId + '_value').val('');
-            $('#field_' + fieldId).closest('.document-field').find('.d-flex').fadeOut(function() {
-                $(this).remove();
+        let autoSaveTimer;
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => {
+                    localStorage.setItem('itemDraft_@Model.Id', JSON.stringify(collectFormData()));
+                }, 2000);
             });
-        }
-    </script>
-}
+        });
 
-<style>
-        .fw-mono {
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
+        @if (isNewItem)
+        {
+            <text>
+            const draft = localStorage.getItem('itemDraft_@Model.Id');
+            if (draft && confirm('You have unsaved changes from a previous session. Would you like to restore them?')) {
+                try {
+                    const draftData = JSON.parse(draft);
+                    if (draftData.CustomId) {
+                        document.querySelector('input[name="CustomId"]').value = draftData.CustomId;
+                    }
+                    Object.keys(draftData.Fields).forEach(fieldId => {
+                        const field = draftData.Fields[fieldId];
+                        const input = document.getElementById(`field_${fieldId}`);
+                        if (input) {
+                            if (input.type === 'checkbox') {
+                                input.checked = field.Value.toLowerCase() === 'true';
+                            } else {
+                                input.value = field.Value;
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.error('Failed to restore draft:', e);
+                }
+            }
+            </text>
         }
-        
-        .field-wrapper {
-            transition: all 0.2s ease;
+
+        function clearDraft() {
+            localStorage.removeItem('itemDraft_@Model.Id');
         }
-        
-        .field-wrapper:focus-within {
-            transform: translateY(-2px);
-        }
-        
-        .form-control:focus, .form-select:focus {
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-        }
-        
-        .is-invalid {
-            border-color: #dc3545;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right calc(0.375em + 0.1875rem) center;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-        }
-        
-        .document-field {
-            transition: all 0.2s ease;
-        }
-        
-        .document-field:hover {
-            border-color: #0d6efd !important;
-        }
-    </style>
+    });
+</script>

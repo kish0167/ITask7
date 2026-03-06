@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using ITask7.Models.Inventories;
 using ITask7.Users;
 using ITask7.ViewModels;
@@ -17,14 +18,38 @@ public class ViewModelsConverter()
     public ItemViewModel GetItemViewModel(Item item)
     {
         ItemViewModel viewModel = ItemViewModelFromItem(item);
-        foreach (ItemFieldValue value in item.FieldValues)  
+        foreach (ItemFieldValue value in item.FieldValues)
         {
-            viewModel.Fields.Add(value.Field.Id, FieldValueViewModelFromItemFieldValue(value));
+            viewModel.Fields.Add(value.Field.Id, FieldValueViewModelFromValue(value));
             viewModel.FieldDefinitions.Add(FieldViewModelFromField(value.Field));
         }
         return viewModel;
     }
     
+    public ItemViewModel GetInventoryAlignedItemViewModel(Item item)
+    {
+        ItemViewModel viewModel = ItemViewModelFromItem(item);
+        foreach (InventoryField field in item.Inventory.Fields)
+        {
+            ItemFieldValue value = TryGetValueFromItem(item, field.Id) ?? GetNewValue(field, item);
+            viewModel.Fields.Add(field.Id, FieldValueViewModelFromValue(value));
+            viewModel.FieldDefinitions.Add(FieldViewModelFromField(field));
+        }
+        return viewModel;
+    }
+
+    private ItemFieldValue GetNewValue(InventoryField field, Item item)
+    {
+        return new ItemFieldValue()
+        {
+            Id = new Guid(),
+            Field = field,
+            FieldId = field.Id,
+            Item = item,
+            ItemId = item.Id
+        };
+    }
+
     public InventoryField GetNewField(FieldDefinitionViewModel fieldViewModel, Inventory inventory)
     {
         InventoryField field = new()
@@ -96,7 +121,7 @@ public class ViewModelsConverter()
         List<ItemViewModel> items = new();
         foreach (Item item in inventory.Items)
         {
-            items.Add(GetItemViewModel(item));
+            items.Add(GetInventoryAlignedItemViewModel(item));
         }
         return items;
     }
@@ -110,10 +135,16 @@ public class ViewModelsConverter()
             CreatedByUserName = item.Creator?.UserName ?? "creator not found",
             CreatedAt = item.CreatedAt,
             UpdatedAt = item.UpdatedAt,
+            InventoryId = item.InventoryId
         };
     }
     
-    private FieldValueViewModel FieldValueViewModelFromItemFieldValue(ItemFieldValue value)
+    private ItemFieldValue? TryGetValueFromItem(Item item, Guid fieldId)
+    {
+        return item.FieldValues.FirstOrDefault(v => v.Field.Id == fieldId);
+    }
+    
+    private FieldValueViewModel FieldValueViewModelFromValue(ItemFieldValue value)
     {
         FieldValueViewModel viewModel = new()
         {
@@ -143,7 +174,7 @@ public class ViewModelsConverter()
         item.CustomId = itemViewModel.CustomId;
         foreach (ItemFieldValue value in item.FieldValues)
         {
-            UpdateValue(value, itemViewModel.Fields[value.Id]);
+            UpdateValue(value, itemViewModel.Fields[value.FieldId]);
         }
     }
 
@@ -153,37 +184,17 @@ public class ViewModelsConverter()
         {
             case FieldType.SingleLine or FieldType.MultiLine or FieldType.Document:
             {
-                value.ValueText = valueViewModel.Value?.ToString();
+                value.ValueText = RawValueConverter.ConvertToString(valueViewModel.Value);
                 break;
             }
             case FieldType.Numeric:
             {
-                value.ValueNumeric = valueViewModel.Value switch
-                {
-                    null => null,
-                    decimal d => d,
-                    double d => (decimal)d,
-                    float f => (decimal)f,
-                    int i => i,
-                    long l => l,
-                    string s when decimal.TryParse(s, out var result) => result,
-                    _ => throw new InvalidCastException($"Cannot convert {valueViewModel.Value?.GetType()} to decimal")
-                };
+                value.ValueNumeric = RawValueConverter.ConvertToDecimal(valueViewModel.Value);
                 break;
             }
-
             case FieldType.Boolean:
             {
-                value.ValueBoolean = valueViewModel.Value switch
-                {
-                    null => null,
-                    bool b => b,
-                    int i => i != 0,
-                    long l => l != 0,
-                    double d => d != 0 && !double.IsNaN(d),
-                    string s => bool.TryParse(s, out var result) ? result : null,
-                    _ => throw new InvalidCastException($"Cannot convert {valueViewModel.Value?.GetType()} to bool")
-                };
+                value.ValueBoolean = RawValueConverter.ConvertToBool(valueViewModel.Value);
                 break;
             }
         }

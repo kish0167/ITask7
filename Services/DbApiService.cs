@@ -20,7 +20,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     public async Task<ItemViewModel> GetItemViewModel(Guid itemId)
     {
         Item item = await GetItem(itemId);
-        return _viewModelsConverter.GetItemViewModel(item);
+        return _viewModelsConverter.GetInventoryAlignedItemViewModel(item);
     }
 
     public async Task<ItemViewModel> GetNewItemViewModel(Guid inventoryId)

@@ -81,7 +81,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.Entity<ItemFieldValue>(entity =>
         {
             entity.ToTable("item_field_values");
-            entity.HasKey(e => e.Id);
+            entity.HasKey(e => e.Id); // TODO: has key {fieldId & itemId}
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");

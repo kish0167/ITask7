@@ -11,5 +11,6 @@ public class ItemViewModel
     public string? CreatedByUserName { get; set; }
     public Dictionary<Guid , FieldValueViewModel> Fields { get; set; } = new();
     public List<FieldDefinitionViewModel> FieldDefinitions { get; set; } = new();
+    public Guid InventoryId { get; set; }
     public string CreatedAtString => CreatedAt.Humanize();
 }
