@@ -44,9 +44,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasConversion<string>()
                 .HasMaxLength(20); 
             
-            //entity.Property(e => e.ValidationRules)
-            //    .HasColumnType("jsonb");
-            
             entity.HasIndex(e => new { e.InventoryId, e.Name }).IsUnique();
             entity.HasIndex(e => new { e.InventoryId, e.SortOrder });
             

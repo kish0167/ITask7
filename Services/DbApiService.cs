@@ -202,18 +202,25 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     private async Task<ApplicationUser?> GetUser(string userId)
     {
         return await _dbContext.Users
+            .AsNoTracking()
             .Where(u => string.Equals(u.Id, userId))
             .Include(u => u.CreatedInventories)
+            .ThenInclude(i => i.Items)
             .Include(u => u.Accesses)
             .ThenInclude(a => a.Inventory)
             .ThenInclude(i => i.Items)
+            .Include(u => u.Accesses)
+            .ThenInclude(a => a.Inventory)
+            .ThenInclude(i => i.Creator)
             .FirstOrDefaultAsync();
     }
 
     private async Task<List<Inventory>> GetPublicInventories()
     {
         return await _dbContext.Inventories
+            .AsNoTracking() 
             .Where(i => i.IsPublic)
+            .Include(i => i.Creator)
             .Include(i => i.Items)
             .ToListAsync();
     }

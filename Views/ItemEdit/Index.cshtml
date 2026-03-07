@@ -152,8 +152,7 @@
                                                            value="true"
                                                            class="form-check-input"
                                                            style="width: 3em; height: 1.5em;"
-                                                           @(currentValue.ToLower() == "true" ? "checked" : "")
-                                                           @(fieldDef.IsRequired ? "required" : "")/>
+                                                           @(currentValue.ToLower() == "true" ? "checked" : "")/>
                                                     <label class="form-check-label ms-2" for="@inputId">Yes / No</label>
                                                 </div>
                                                 break;
@@ -341,6 +340,7 @@
 
                 if (response.ok) {
                     showToast('Success', 'Item saved successfully!', 'success');
+                    clearDraft();
                     setTimeout(() => {
                         window.location.href = '@inventoryUrl';
                     }, 1000);
@@ -422,7 +422,6 @@
                     }
 
                     data.Fields[fieldId] = {
-                        //Type: parseInt(fieldType),
                         Value: value
                     };
                 }
@@ -505,7 +504,7 @@
         {
             <text>
             const draft = localStorage.getItem('itemDraft_@Model.Id');
-            if (draft && confirm('You have unsaved changes from a previous session. Would you like to restore them?')) {
+            if (draft) {
                 try {
                     const draftData = JSON.parse(draft);
                     if (draftData.CustomId) {
