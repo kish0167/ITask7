@@ -33,7 +33,7 @@ public static class InventorySeedData
             Name = "IT Equipment",
             Description = "Track laptops, monitors, peripherals, and other IT assets",
             IsPublic = false,
-            CreatedBy = adminUserId,
+            CreatorId = adminUserId,
             CreatedAt = now,
             UpdatedAt = now
         });
@@ -208,7 +208,7 @@ public static class InventorySeedData
             Name = "Office Supplies",
             Description = "Track stationery, printer supplies, and office consumables",
             IsPublic = true,
-            CreatedBy = adminUserId,
+            CreatorId = adminUserId,
             CreatedAt = now.AddDays(-5),
             UpdatedAt = now.AddDays(-5)
         });
@@ -315,7 +315,7 @@ public static class InventorySeedData
             Id = fleetInventoryId,
             Name = "Vehicle Fleet",
             Description = "Company vehicles and maintenance records",
-            CreatedBy = adminUserId,
+            CreatorId = adminUserId,
             CreatedAt = now.AddDays(-10),
             UpdatedAt = now.AddDays(-10)
         });

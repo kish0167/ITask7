@@ -1,10 +1,7 @@
-﻿using System.Text.Json;
-using ITask7.Models.Inventories;
-using ITask7.Services;
+﻿using ITask7.Services;
 using ITask7.Users;
 using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,13 +14,12 @@ public class InventoryEditController(DbApiService dbApiService, UserManager<Appl
     public async Task<IActionResult> Index(Guid inventoryId, string? tabOpened)
     {
         if (!await WriterAccessCheck(inventoryId)) return BadRequest();
-        bool creatorAccess = await CreatorAccessCheck(inventoryId);
         InventoryViewModel? inventory = await _dbApiService.GetInventoryEditPageViewModel(inventoryId);
         if (inventory == null) return BadRequest("Inventory does not exist");
         return View(new InventoryEditPageViewModel()
         {
             Inventory = inventory,
-            CreatorAccess = creatorAccess,
+            CreatorAccess = await CreatorAccessCheck(inventoryId),
             TabOpened = tabOpened ?? "items"
         });
     }

@@ -9,6 +9,7 @@ public class HomePageViewModel
 
     public void AddToAvailableInventories(IEnumerable<InventoryViewModel> viewModels)
     {
-        AvailableInventories.AddRange(viewModels);
+        HashSet<Guid> ownedIds = OwnedInventories.Select(i => i.Id).ToHashSet();
+        AvailableInventories.AddRange(viewModels.Where(vm => !ownedIds.Contains(vm.Id)));
     }
 }

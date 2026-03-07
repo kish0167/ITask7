@@ -16,10 +16,15 @@ public class InventoryController(DbApiService dbApiService, UserManager<Applicat
     protected async Task<bool> WriterAccessCheck(Guid inventoryId)
     {
         ApplicationUser? user = await GetUser();
-        return user != null && await dbApiService.UserHasCreatorAccess(inventoryId, user);
+        return user != null && await dbApiService.UserHasWriteAccess(inventoryId, user);
     }
 
-    private async Task<ApplicationUser?> GetUser()
+    protected async Task<bool> AuthorizationCheck()
+    {
+        return await GetUser() != null;
+    }
+
+    protected async Task<ApplicationUser?> GetUser()
     {
         return await userManager.GetUserAsync(User);
     }

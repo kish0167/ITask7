@@ -13,15 +13,11 @@ public class HomeController(DbApiService dbApiService, UserManager<ApplicationUs
     public async Task<IActionResult> Index()
     {
         ApplicationUser? user = await userManager.GetUserAsync(User);
-        if (user == null) return BadRequest();
-        HomePageViewModel? viewModel = await dbApiService.GetHomePage(user.Id);
+        HomePageViewModel? viewModel;
+        if (user == null) viewModel = new HomePageViewModel();
+        else viewModel = await dbApiService.GetHomePage(user.Id);
         if (viewModel == null) return BadRequest();
         return View(viewModel);
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

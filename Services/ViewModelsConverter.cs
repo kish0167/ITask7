@@ -22,7 +22,9 @@ public class ViewModelsConverter()
             CreatedAt = DateTime.UtcNow,
             DisplayInTable = fieldViewModel.DisplayInTable,
             IsRequired = fieldViewModel.IsRequired,
-            SortOrder = inventory.Fields.Select(f=>f.SortOrder).ToList().Max() + 1
+            SortOrder = inventory.Fields.Any() ?
+                inventory.Fields.Select(f=>f.SortOrder).ToList().Max() + 1
+                : 1
         };
         return field;
     }

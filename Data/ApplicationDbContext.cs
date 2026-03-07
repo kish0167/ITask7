@@ -29,7 +29,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             entity.HasOne(e => e.Creator)
                 .WithMany(u => u.CreatedInventories)
-                .HasForeignKey(e => e.CreatedBy)
+                .HasForeignKey(e => e.CreatorId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
         
@@ -124,6 +124,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.IsAdmin).HasDefaultValue(false);
             entity.Property(e => e.IsBlocked).HasDefaultValue(false);
         });
+        
         //InventorySeedData.Seed(modelBuilder);
     }
 }

@@ -17,7 +17,12 @@
             <h5 class="mb-0">
                 <i class="bi bi-box-seam me-2"></i>My Inventories
             </h5>
-            <span class="badge bg-light text-primary">@Model.OwnedInventories.Count</span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-primary">@Model.OwnedInventories.Count</span>
+                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#createInventoryModal">
+                    <i class="bi bi-plus-lg"></i> New
+                </button>
+            </div>
         </div>
         <div class="card-body p-0">
             @if (Model.OwnedInventories.Any())
@@ -77,7 +82,9 @@
                 <div class="text-center py-5 text-muted">
                     <i class="bi bi-inbox display-4 d-block mb-3"></i>
                     <p>You don't own any inventories yet.</p>
-                    <a href="#" class="btn btn-primary btn-sm">Create your first inventory</a>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createInventoryModal">
+                        <i class="bi bi-plus-lg me-1"></i>Create your first inventory
+                    </button>
                 </div>
             }
         </div>
@@ -141,6 +148,43 @@
             }
         </div>
     </div>
+    
+    <!-- Create Inventory Modal -->
+    <div class="modal fade" id="createInventoryModal" tabindex="-1" aria-labelledby="createInventoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="createInventoryModalLabel">
+                        <i class="bi bi-plus-circle me-2"></i>Create New Inventory
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createInventoryForm">
+                        <div class="mb-3">
+                            <label for="inventoryTitle" class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="inventoryTitle" name="Name" required maxlength="100" placeholder="Enter inventory name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inventoryDescription" class="form-label fw-semibold">Description</label>
+                            <textarea class="form-control" id="inventoryDescription" name="Description" rows="3" maxlength="500" placeholder="Enter description (optional)"></textarea>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="inventoryIsPublic" name="IsPublic" value="true">
+                            <label class="form-check-label fw-semibold" for="inventoryIsPublic">Make Public</label>
+                            <div class="form-text text-muted">Public inventories can be viewed by anyone with the link.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitInventoryBtn">
+                        <i class="bi bi-check-lg me-1"></i>Create Inventory
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -167,3 +211,64 @@
         color: #6c757d;
     }
 </style>
+
+<script>
+    document.getElementById('submitInventoryBtn').addEventListener('click', async function() {
+        const form = document.getElementById('createInventoryForm');
+        const titleInput = document.getElementById('inventoryTitle');
+        
+        if (!titleInput.value.trim()) {
+            titleInput.classList.add('is-invalid');
+            return;
+        }
+        titleInput.classList.remove('is-invalid');
+        
+        const model = {
+            Name: titleInput.value.trim(),
+            Description: document.getElementById('inventoryDescription').value.trim(),
+            IsPublic: document.getElementById('inventoryIsPublic').checked
+        };
+        
+        const submitBtn = document.getElementById('submitInventoryBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Creating...';
+        
+        try {
+            const response = await fetch('@Url.Action("NewInventory", "InventoryCreate")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify(model)
+            });
+            
+            if (response.ok) {
+                const inventoryId = await response.json();
+                // Redirect to the new inventory
+                window.location.href = '@Url.Action("Index", "InventoryEdit")?inventoryId=' + inventoryId;
+            } else {
+                alert('Failed to create inventory. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
+    
+    document.getElementById('inventoryTitle').addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+    });
+    
+    document.getElementById('createInventoryModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('createInventoryForm').reset();
+        document.getElementById('inventoryTitle').classList.remove('is-invalid');
+        document.getElementById('submitInventoryBtn').disabled = false;
+        document.getElementById('submitInventoryBtn').innerHTML = '<i class="bi bi-check-lg me-1"></i>Create Inventory';
+    });
+</script>

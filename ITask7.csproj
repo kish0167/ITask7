@@ -39,4 +39,8 @@
       </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\InventoryCreate\Index.cshtml" />
+    </ItemGroup>
+
 </Project>
