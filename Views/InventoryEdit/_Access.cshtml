@@ -157,12 +157,6 @@
         }
         
         location.reload();
-        return;
-        
-        AddUserToTable(username, success);
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
-        modal.hide();
-        document.getElementById('usernameInput').value = '';
     }
     
     let selectedUserId = null;
@@ -286,22 +280,4 @@
         selectedUserId = null;
     }
     
-    //------------- UI UPDATE ------------
-    
-    function AddUserToTable(username, id){
-        const tb = document.getElementById('userTableBody');
-        const rowHtml = `
-                <tr style="cursor: pointer;" data-user-id="${id}">
-                    <td>
-                        <input class="form-check-input selectable-item"
-                               type="checkbox"
-                               value="${id}">
-                    </td>
-                    <td>
-                        <span class="fw-bold">${username}</span>
-                    </td>
-                </tr>
-            `;
-        tb.insertAdjacentHTML('beforeend', rowHtml);
-    }
 </script>

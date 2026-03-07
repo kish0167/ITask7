@@ -1,8 +1,169 @@
-﻿@{
+﻿@model ITask7.ViewModels.HomePageViewModel
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">@Localizer["welcome"]</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-4">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">@Localizer["welcome"]</h1>
+        <p class="text-muted">Manage your inventories and collaborate with your team</p>
+    </div>
+
+    <!-- Owned Inventories Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-box-seam me-2"></i>My Inventories
+            </h5>
+            <span class="badge bg-light text-primary">@Model.OwnedInventories.Count</span>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.OwnedInventories.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Visibility</th>
+                            <th>Items</th>
+                            <th>Shared With</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var inventory in Model.OwnedInventories)
+                        {
+                            <tr class="cursor-pointer" onclick="location.href='@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })'" style="cursor: pointer;">
+                                <td class="fw-semibold text-primary">@inventory.Name</td>
+                                <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
+                                    @(string.IsNullOrEmpty(inventory.Description) ? "-" : inventory.Description)
+                                </td>
+                                <td>
+                                    @if (inventory.IsPublic)
+                                    {
+                                        <span class="badge bg-success">Public</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Private</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">@inventory.Items.Count</span>
+                                </td>
+                                <td>
+                                    @if (inventory.WriteAccessUsers.Any())
+                                    {
+                                        <span class="badge bg-dark" title="@string.Join(", ", inventory.WriteAccessUsers.Select(u => u.Email))">
+                                            @inventory.WriteAccessUsers.Count users
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                    <p>You don't own any inventories yet.</p>
+                    <a href="#" class="btn btn-primary btn-sm">Create your first inventory</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Available Inventories Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-people me-2"></i>Shared With Me
+            </h5>
+            <span class="badge bg-light text-success">@Model.AvailableInventories.Count</span>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.AvailableInventories.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Owner</th>
+                            <th>Items</th>
+                            <th>Your Access</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var inventory in Model.AvailableInventories)
+                        {
+                            <tr class="cursor-pointer" onclick="location.href='@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })'" style="cursor: pointer;">
+                                <td class="fw-semibold text-success">@inventory.Name</td>
+                                <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
+                                    @(string.IsNullOrEmpty(inventory.Description) ? "-" : inventory.Description)
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="bi bi-person-circle me-1"></i>@inventory.CreatedBy
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">@inventory.Items.Count</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-pencil-square me-1"></i>Write
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-lock display-4 d-block mb-3"></i>
+                    <p>No inventories have been shared with you.</p>
+                </div>
+            }
+        </div>
+    </div>
 </div>
+
+<style>
+    .cursor-pointer:hover {
+        background-color: rgba(0,0,0,0.02) !important;
+        transition: background-color 0.2s ease;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+    
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        padding: 1rem 1.25rem;
+    }
+    
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+    }
+</style>

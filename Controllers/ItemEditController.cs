@@ -6,13 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers;
 
-public class ItemEditController(DbApiService dbApiService, UserManager<ApplicationUser> userManager) : Controller
+public class ItemEditController(DbApiService dbApiService, UserManager<ApplicationUser> userManager) : InventoryController(dbApiService, userManager)
 {
+    private readonly DbApiService _dbApiService = dbApiService;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+
     public async Task<IActionResult> Index(Guid itemId, Guid inventoryId)
     {
         ItemViewModel? item;
-        if (itemId != Guid.Empty) item = await dbApiService.GetItemViewModel(itemId);
-        else item = await dbApiService.GetEmptyItemViewModel(inventoryId);
+        if (itemId != Guid.Empty) item = await _dbApiService.GetItemViewModel(itemId);
+        else item = await _dbApiService.GetEmptyItemViewModel(inventoryId);
         if (item == null) return BadRequest();
         return View(item);
     }
@@ -21,9 +24,10 @@ public class ItemEditController(DbApiService dbApiService, UserManager<Applicati
     public async Task<IActionResult> SubmitChanges([FromBody] ItemViewModel? model)
     {
         if (model == null) return BadRequest();
-        ApplicationUser? user = await userManager.GetUserAsync(User);
+        if (!await WriterAccessCheck(model.InventoryId)) return BadRequest();
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
         if (user == null) return BadRequest();
-        Guid? id = await dbApiService.EditItem(model, user);
+        Guid? id = await _dbApiService.EditItem(model, user);
         if (id == null) return BadRequest();
         return Ok();
     }

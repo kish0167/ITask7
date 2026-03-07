@@ -71,6 +71,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<DbApiService>();
 builder.Services.AddScoped<ViewModelsConverter>();
+builder.Services.AddScoped<AccessValidationService>();
 
 var app = builder.Build();
 

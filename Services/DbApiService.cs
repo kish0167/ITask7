@@ -1,6 +1,7 @@
 ﻿using ITask7.Data;
 using ITask7.Models.Inventories;
 using ITask7.Users;
+using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,45 +12,45 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     private readonly ApplicationDbContext _dbContext = dbContext;
     private readonly ViewModelsConverter _viewModelsConverter = viewModelsConverter;
     
-    public async Task<InventoryViewModel?> GetInventoryViewModel(Guid inventoryId)
+    public async Task<InventoryViewModel?> GetInventoryEditPageViewModel(Guid inventoryId)
     {
-        Inventory? inventory = await GetInventory(inventoryId);
+        Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
-        return _viewModelsConverter.GetInventoryViewModel(inventory);
+        return inventory.ToViewModel();
     }
     
     public async Task<ItemViewModel?> GetItemViewModel(Guid itemId)
     {
         Item? item = await GetItem(itemId);
         if (item == null) return null;
-        return _viewModelsConverter.GetInventoryAlignedItemViewModel(item);
+        return item.ToViewModel();
     }
 
     public async Task<Item?> CreateNewItem(Guid inventoryId, ApplicationUser user)
     {
-        Inventory? inventory = await GetInventory(inventoryId);
+        Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
         return new Item(inventory, user);
     }
     
     public async Task<ItemViewModel?> GetEmptyItemViewModel(Guid inventoryId)
     {
-        Inventory? inventory = await GetInventory(inventoryId);
+        Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
         return _viewModelsConverter.GetEmptyItemViewModel(inventory);
     }
 
-    public async Task<string?> AddAccess(string username, Guid inventoryId)
+    public async Task<bool> AddAccess(string username, Guid inventoryId)
     {
         ApplicationUser? user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.UserName == username);
-        if (user == null) return null;
+        if (user == null) return false;
         bool inventoryExists = await _dbContext.Inventories
             .AnyAsync(i => i.Id == inventoryId);
-        if (!inventoryExists) return null; 
+        if (!inventoryExists) return false; 
         bool accessExists = await _dbContext.InventoriesAccesses
             .AnyAsync(a => a.UserId == user.Id && a.InventoryId == inventoryId);
-        if (accessExists) return null;
+        if (accessExists) return false;
         var inventoryAccess = new InventoryAccess
         {
             UserId = user.Id,
@@ -57,7 +58,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         };
         await _dbContext.InventoriesAccesses.AddAsync(inventoryAccess);
         await _dbContext.SaveChangesAsync();
-        return user.Id;
+        return true;
     }
 
     public async Task<bool> RemoveAccesses(List<string> userIds, Guid inventoryId)
@@ -109,7 +110,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
 
     public async Task<Guid?> AddField(FieldDefinitionViewModel fieldViewModel, Guid inventoryId)
     {
-        Inventory? inventory = await GetInventory(inventoryId);
+        Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
         InventoryField field = _viewModelsConverter.GetNewField(fieldViewModel, inventory);
         await _dbContext.InventoryFields.AddAsync(field);
@@ -125,10 +126,9 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return field.Id;
     }
     
-    private async Task<Inventory?> GetInventory(Guid inventoryId)
+    private async Task<Inventory?> GetInventoryDetailed(Guid inventoryId)
     {
         Inventory? inventory = await _dbContext.Inventories
-            //.AsNoTracking()
             .Where(i => i.Id == inventoryId)
             .Include(i => i.Fields.OrderBy(f => f.SortOrder))
             .Include(i => i.Items)
@@ -184,9 +184,54 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     {
         Item? item = await GetItem(itemViewModel.Id);
         if (item == null)  item = await CreateNewItem(itemViewModel.InventoryId, user);
-        else _viewModelsConverter.EditItem(item, itemViewModel);
         if (item == null) return null;
-        int rows = await _dbContext.SaveChangesAsync();
+        _viewModelsConverter.EditItem(item, itemViewModel);
+        await _dbContext.SaveChangesAsync();
         return item.Id;
+    }
+
+    public async Task<HomePageViewModel?> GetHomePage(string userId)
+    {
+        ApplicationUser? user = await _dbContext.Users
+            .Where(u => string.Equals(u.Id, userId))
+            .Include(u => u.CreatedInventories)
+            .Include(u => u.Accesses)
+            .ThenInclude(a => a.Inventory)
+            .ThenInclude(i => i.Items)
+            .FirstOrDefaultAsync();
+        if (user == null) return null;
+        HomePageViewModel viewModel = user.GetHomePage();
+        viewModel.AddToAvailableInventories((await GetPublicInventories()).Select(i => i.ToViewModel()));
+        return viewModel;
+    }
+
+    private async Task<List<Inventory>> GetPublicInventories()
+    {
+        return await _dbContext.Inventories
+            .Where(i => i.IsPublic)
+            .Include(i => i.Items)
+            .ToListAsync();
+    }
+    
+    public async Task<bool> UserHasCreatorAccess(Guid inventoryId, ApplicationUser user)
+    {
+        Inventory? inventory = await GetInventoryBasic(inventoryId);
+        if (inventory == null) return false;
+        return user.IsAdmin || inventory.UserIsCreator(user);
+    }
+
+    public async Task<bool> UserHasWriteAccess(Guid inventoryId, ApplicationUser user)
+    {
+        Inventory? inventory = await GetInventoryBasic(inventoryId);
+        if (inventory == null) return false;
+        return user.IsAdmin || inventory.UserIsCreator(user) || inventory.UserHasWriteAccess(user);
+    }
+
+    private async Task<Inventory?> GetInventoryBasic(Guid inventoryId)
+    {
+        return await _dbContext.Inventories
+            .AsNoTracking()
+            .Where(i => i.Id == inventoryId)
+            .FirstOrDefaultAsync();
     }
 }

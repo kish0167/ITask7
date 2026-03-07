@@ -119,6 +119,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasMethod("BTree")
             .HasOperators("varchar_pattern_ops");
         
-        InventorySeedData.Seed(modelBuilder);
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.Property(e => e.IsAdmin).HasDefaultValue(false);
+            entity.Property(e => e.IsBlocked).HasDefaultValue(false);
+        });
+        //InventorySeedData.Seed(modelBuilder);
     }
 }

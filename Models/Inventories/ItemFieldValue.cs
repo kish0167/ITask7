@@ -1,4 +1,5 @@
 ﻿using ITask7.Services;
+using ITask7.ViewModels.Inventories;
 
 namespace ITask7.Models.Inventories;
 
@@ -32,8 +33,18 @@ public class ItemFieldValue
         Field = field;
         SetValue(value);
     }
+    
+    public FieldValueViewModel ToViewModel()
+    {
+        FieldValueViewModel viewModel = new()
+        {
+            Type = Field.FieldType,
+            Value = GetValue()
+        };
+        return viewModel;
+    }
 
-    public object GetValue()
+    private object GetValue()
     {
         object? value = Field.FieldType switch
         {

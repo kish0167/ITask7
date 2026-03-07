@@ -1,5 +1,6 @@
 ﻿using ITask7.Services;
 using ITask7.Users;
+using ITask7.ViewModels.Inventories;
 
 namespace ITask7.Models.Inventories;
 
@@ -49,5 +50,42 @@ public class Item
         ItemFieldValue fieldValue = new ItemFieldValue(field, this, value);
         fieldValue.SetValue(value);
         FieldValues.Add(fieldValue);
+    }
+
+    public ItemViewModel ToViewModel()
+    {
+        ItemViewModel viewModel = new()
+        {
+            Id = Id,
+            CustomId = CustomId,
+            CreatedByUserName = Creator?.UserName ?? "creator not found",
+            CreatedAt = CreatedAt,
+            UpdatedAt = UpdatedAt,
+            InventoryId = InventoryId
+        };
+        foreach (InventoryField field in Inventory.Fields)
+        {
+            ItemFieldValue value = TryGetValue(field.Id) ?? GetNewValue(field);
+            viewModel.Fields.Add(field.Id, value.ToViewModel());
+            viewModel.FieldDefinitions.Add(field.ToViewModel());
+        }
+        return viewModel;
+    }
+    
+    private ItemFieldValue? TryGetValue(Guid fieldId)
+    {
+        return FieldValues.FirstOrDefault(v => v.Field.Id == fieldId);
+    }
+    
+    private ItemFieldValue GetNewValue(InventoryField field)
+    {
+        return new ItemFieldValue()
+        {
+            Id = Guid.NewGuid(),
+            Field = field,
+            FieldId = field.Id,
+            Item = this,
+            ItemId = Id
+        };
     }
 }

@@ -1,32 +1,47 @@
 ﻿using System.Text.Json;
+using ITask7.Models.Inventories;
 using ITask7.Services;
+using ITask7.Users;
+using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers;
 
-public class InventoryEditController(DbApiService dbApiService) : Controller
+public class InventoryEditController(DbApiService dbApiService, UserManager<ApplicationUser> userManager) : InventoryController(dbApiService, userManager)
 {
+    private readonly DbApiService _dbApiService = dbApiService;
+
     public async Task<IActionResult> Index(Guid inventoryId, string? tabOpened)
     {
-        InventoryViewModel? inventory = await dbApiService.GetInventoryViewModel(inventoryId);
+        if (!await WriterAccessCheck(inventoryId)) return BadRequest();
+        bool creatorAccess = await CreatorAccessCheck(inventoryId);
+        InventoryViewModel? inventory = await _dbApiService.GetInventoryEditPageViewModel(inventoryId);
         if (inventory == null) return BadRequest("Inventory does not exist");
-        if (tabOpened != null) inventory.TabOpened = tabOpened;
-        return View(inventory);
+        return View(new InventoryEditPageViewModel()
+        {
+            Inventory = inventory,
+            CreatorAccess = creatorAccess,
+            TabOpened = tabOpened ?? "items"
+        });
     }
 
     [HttpPost]
     public async Task<IActionResult> EditProperties(InventoryViewModel? model)
     {
         if (model == null) return BadRequest();
-        bool success = await dbApiService.EditInventoryProperties(model);
+        if (!await CreatorAccessCheck(model.Id)) return BadRequest();
+        bool success = await _dbApiService.EditInventoryProperties(model);
         return Ok(success);
     }
     
     [HttpPost]
     public async Task<IActionResult> DeleteFields([FromBody] List<Guid> fieldsIds, [FromQuery] Guid contextId)
     {
-        bool success = await dbApiService.RemoveFields(fieldsIds, contextId);
+        if (!await CreatorAccessCheck(contextId)) return BadRequest();
+        bool success = await _dbApiService.RemoveFields(fieldsIds, contextId);
         return Ok(success);
     }
     
@@ -34,7 +49,8 @@ public class InventoryEditController(DbApiService dbApiService) : Controller
     public async Task<IActionResult> AddField([FromQuery] Guid inventoryId, [FromBody] FieldDefinitionViewModel? field)
     {
         if (field == null) return BadRequest();
-        Guid? id = await dbApiService.AddField(field, inventoryId);
+        if (!await CreatorAccessCheck(inventoryId)) return BadRequest();
+        Guid? id = await _dbApiService.AddField(field, inventoryId);
         return Ok(id);
     }
     
@@ -42,28 +58,33 @@ public class InventoryEditController(DbApiService dbApiService) : Controller
     public async Task<IActionResult> EditField([FromQuery] Guid inventoryId, [FromBody] FieldDefinitionViewModel? field)
     {
         if (field == null) return BadRequest();
-        Guid? id = await dbApiService.EditFieldProperties(field, inventoryId);
+        if (!await CreatorAccessCheck(inventoryId)) return BadRequest();
+        Guid? id = await _dbApiService.EditFieldProperties(field, inventoryId);
         return Ok(id);
     }
     
     [HttpPost]
     public async Task<IActionResult> DeleteAccesses([FromBody] List<string> userIds, [FromQuery] Guid contextId)
     {
-        bool success = await dbApiService.RemoveAccesses(userIds, contextId);
+        if (!await CreatorAccessCheck(contextId)) return BadRequest();
+        bool success = await _dbApiService.RemoveAccesses(userIds, contextId);
         return Ok(success);
     }
     
     [HttpPost]
     public async Task<IActionResult> AddAccess([FromQuery] string username, [FromBody] Guid inventoryId)
     {
-        string? success = await dbApiService.AddAccess(username, inventoryId);
+        if (!await CreatorAccessCheck(inventoryId)) return BadRequest();
+        bool success = await _dbApiService.AddAccess(username, inventoryId);
+        if (!success) return BadRequest();
         return Ok(success);
     }
     
     [HttpPost]
     public async Task<IActionResult> DeleteItems([FromBody] List<Guid> itemsIds, [FromQuery] Guid contextId)
     {
-        bool success = await dbApiService.RemoveItems(itemsIds, contextId);
+        if (!await WriterAccessCheck(contextId)) return BadRequest();
+        bool success = await _dbApiService.RemoveItems(itemsIds, contextId);
         return Ok(success);
     }
 }

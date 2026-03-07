@@ -1,14 +1,22 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ITask7.Models;
+using ITask7.Services;
+using ITask7.Users;
+using ITask7.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace ITask7.Controllers;
 
-public class HomeController : Controller
+public class HomeController(DbApiService dbApiService, UserManager<ApplicationUser> userManager) : Controller
 {
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        ApplicationUser? user = await userManager.GetUserAsync(User);
+        if (user == null) return BadRequest();
+        HomePageViewModel? viewModel = await dbApiService.GetHomePage(user.Id);
+        if (viewModel == null) return BadRequest();
+        return View(viewModel);
     }
 
     public IActionResult Privacy()
