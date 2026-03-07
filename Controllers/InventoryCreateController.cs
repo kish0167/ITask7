@@ -12,11 +12,11 @@ public class InventoryCreateController(DbApiService dbApiService, UserManager<Ap
 {
     private readonly DbApiService _dbApiService = dbApiService;
     
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> NewInventory([FromBody] InventoryViewModel? model)
     {
         if (model == null) return BadRequest();
+        if (!await ActiveUserCheck()) return BadRequest();
         ApplicationUser? creator = await GetUser();
         if(creator == null) return BadRequest();
         Guid? inventoryId = await _dbApiService.AddNewInventory(model, creator);

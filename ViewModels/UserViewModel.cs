@@ -1,28 +1,20 @@
 ﻿using ITask7.Services;
+using ITask7.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace ITask7.ViewModels;
 
 public class UserViewModel
 {
-    public string Id;
-    public string? Email;
-    public List<string?> Roles = new(); // TODO: Remove this
-    public string Status
+    public UserViewModel(ApplicationUser user)
     {
-        get
-        {
-            if (Roles.Contains(UserRoles.Blocked))
-            {
-                return UserRoles.Blocked;
-            }
 
-            if(Roles.Contains(UserRoles.Admin))
-            {
-                return UserRoles.Admin;
-            }
-            
-            return Roles.Contains(UserRoles.Active) ? UserRoles.Active : "no role assigned";
-        }
+        Id = user.Id;
+        Email = user.Email;
+        Status = user.GetStatus();
     }
+
+    public string Id { get; set; }
+    public string? Email { get; set; }
+    public string Status { get; set; }
 }

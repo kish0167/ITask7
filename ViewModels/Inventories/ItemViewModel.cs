@@ -19,7 +19,7 @@ public class ItemViewModel
     {
         foreach (InventoryField field in inventory.Fields)
         {
-            Fields.Add(field.Id, new(){Type = field.FieldType});
+            Fields.Add(field.Id, new FieldValueViewModel(field));
             FieldDefinitions.Add(field.ToViewModel());
         }
     }

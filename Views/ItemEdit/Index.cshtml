@@ -81,7 +81,7 @@
                                 {
                                     var fieldValue = Model.Fields.ContainsKey(fieldDef.Id)
                                         ? Model.Fields[fieldDef.Id]
-                                        : new FieldValueViewModel { Value = "no value", Type = fieldDef.Type };
+                                        : new FieldValueViewModel(fieldDef);
 
                                     <div class="col-md-@(fieldDef.Type == FieldType.MultiLine ? "12" : "6") field-container"
                                          data-field-id="@fieldDef.Id"

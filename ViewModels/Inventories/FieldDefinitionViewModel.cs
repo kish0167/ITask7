@@ -11,4 +11,15 @@ public class FieldDefinitionViewModel
     public int SortOrder { get; set; }
     public bool DisplayInTable { get; set; }
     public bool IsRequired { get; set; }
+
+    public FieldDefinitionViewModel(InventoryField field)
+    {
+        Id = field.Id;
+        Title = field.Title;
+        Description = field.Description;
+        DisplayInTable = field.DisplayInTable;
+        IsRequired = field.IsRequired;
+        SortOrder = field.SortOrder;
+        Type = field.FieldType;
+    }
 }

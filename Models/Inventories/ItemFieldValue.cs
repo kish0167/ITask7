@@ -36,15 +36,10 @@ public class ItemFieldValue
     
     public FieldValueViewModel ToViewModel()
     {
-        FieldValueViewModel viewModel = new()
-        {
-            Type = Field.FieldType,
-            Value = GetValue()
-        };
-        return viewModel;
+        return new FieldValueViewModel(this);
     }
 
-    private object GetValue()
+    public object GetValue()
     {
         object? value = Field.FieldType switch
         {

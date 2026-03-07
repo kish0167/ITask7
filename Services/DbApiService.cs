@@ -39,6 +39,11 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         if (inventory == null) return null;
         return _viewModelsConverter.GetEmptyItemViewModel(inventory);
     }
+    
+    public async Task<List<UserViewModel>> GetAllUsersViewModels()
+    {
+        return await _dbContext.Users.Select(u => u.ToViewModel()).ToListAsync();
+    }
 
     public async Task<bool> AddAccess(string username, Guid inventoryId)
     {
@@ -195,7 +200,8 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         ApplicationUser? user = await GetUser(userId);
         if (user == null) return null;
         HomePageViewModel viewModel = user.GetHomePage();
-        viewModel.AddToAvailableInventories((await GetPublicInventories()).Select(i => i.ToViewModel()));
+        List<Inventory> available = user.IsAdmin ? await GetAllInventories() : await GetPublicInventories();
+        viewModel.AddToAvailableInventories(available.Select(i => i.ToViewModel()));
         return viewModel;
     }
 
@@ -213,6 +219,15 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             .ThenInclude(a => a.Inventory)
             .ThenInclude(i => i.Creator)
             .FirstOrDefaultAsync();
+    }
+    
+    private async Task<List<Inventory>> GetAllInventories()
+    {
+        return await _dbContext.Inventories
+            .AsNoTracking() 
+            .Include(i => i.Creator)
+            .Include(i => i.Items)
+            .ToListAsync();
     }
 
     private async Task<List<Inventory>> GetPublicInventories()
@@ -254,5 +269,60 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         _dbContext.Inventories.Add(inventory);
         await _dbContext.SaveChangesAsync();
         return inventory.Id;
+    }
+
+    public async Task<int> DeleteUsers(List<string> ids)
+    {
+        return await _dbContext.Users
+            .Where(u => ids.Contains(u.Id))
+            .ExecuteDeleteAsync();
+    }
+
+    public async Task<int> BlockUsers(List<string> ids)
+    {
+        List<ApplicationUser> users = await _dbContext.Users
+            .Where(u => ids.Contains(u.Id) && !u.IsBlocked)
+            .ToListAsync();
+        foreach (var user in users)
+        {
+            user.Block();
+        }
+        return await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<int> UnBlockUsers(List<string> ids)
+    {
+        List<ApplicationUser> users = await _dbContext.Users
+            .Where(u => ids.Contains(u.Id) && u.IsBlocked)
+            .ToListAsync();
+        foreach (var user in users)
+        {
+            user.UnBlock();
+        }
+        return await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<int> MakeUsersAdmin(List<string> ids)
+    {
+        List<ApplicationUser> users = await _dbContext.Users
+            .Where(u => ids.Contains(u.Id) && !u.IsAdmin)
+            .ToListAsync();
+        foreach (var user in users)
+        {
+            user.MakeAdmin();
+        }
+        return await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<int> DeAdminUseers(List<string> ids)
+    {
+        List<ApplicationUser> users = await _dbContext.Users
+            .Where(u => ids.Contains(u.Id) && u.IsAdmin)
+            .ToListAsync();
+        foreach (var user in users)
+        {
+            user.DeAdmin();
+        }
+        return await _dbContext.SaveChangesAsync();
     }
 }

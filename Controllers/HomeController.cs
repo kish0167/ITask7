@@ -14,6 +14,7 @@ public class HomeController(DbApiService dbApiService, UserManager<ApplicationUs
     {
         ApplicationUser? user = await userManager.GetUserAsync(User);
         HomePageViewModel? viewModel;
+        //if (user == null) return Redirect("Unauthorized/Index");
         if (user == null) viewModel = new HomePageViewModel();
         else viewModel = await dbApiService.GetHomePage(user.Id);
         if (viewModel == null) return BadRequest();

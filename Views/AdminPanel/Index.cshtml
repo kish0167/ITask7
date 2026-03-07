@@ -9,11 +9,15 @@
         Actions = new()
         {
             new() { Name = "delete", Title = "Delete", Icon = "bi-trash-fill", 
-                    ButtonClass = "btn-danger", Endpoint = "/AdminPanel/BulkDelete", IsSingle = false},
+                    ButtonClass = "btn-outline-danger", Endpoint = "/AdminPanel/BulkDelete", IsSingle = false},
             new() { Name = "block", Title = "Block", Icon = "bi-lock-fill", 
-                    ButtonClass = "btn-warning", Endpoint = "/AdminPanel/BulkBlock", IsSingle = false },
+                    ButtonClass = "btn-outline-warning", Endpoint = "/AdminPanel/BulkBlock", IsSingle = false },
             new() { Name = "unblock", Title = "Unblock", Icon = "bi-unlock-fill", 
-                    ButtonClass = "btn-info", Endpoint = "/AdminPanel/BulkUnblock", IsSingle = false }
+                    ButtonClass = "btn-outline-info", Endpoint = "/AdminPanel/BulkUnblock", IsSingle = false },
+            new() { Name = "admin", Title = "Make admin", Icon = "bi-person-gear", 
+                ButtonClass = "btn-outline-success", Endpoint = "/AdminPanel/BulkAdmin", IsSingle = false },
+            new() { Name = "deAdmin", Title = "De-admin", Icon = "bi-person-x", 
+                ButtonClass = "btn-outline-secondary", Endpoint = "/AdminPanel/BulkDeAdmin", IsSingle = false }
         }
     };
 }
@@ -62,11 +66,15 @@
     
     function handleActionSuccess(action, userIds) {     
         if (action === 'delete'){
-            removeRows(userIds);
+            location.reload();
         } else if (action === 'block'){
-            updateStatuses(userIds, 'Blocked');
+            location.reload();
         } else if (action === 'unblock'){
             updateStatuses(userIds, 'Active');
+        } else if (action === 'admin'){
+            updateStatuses(userIds, 'Admin');
+        } else if (action === 'deAdmin'){
+            location.reload();
         }
     }
     

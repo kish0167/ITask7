@@ -11,13 +11,9 @@ public class InventoryField
     public string Title { get; set; }
     public string Description { get; set; }
     public FieldType FieldType { get; set; }
-    
     public bool IsRequired { get; set; }
     public bool DisplayInTable { get; set; }
     public int SortOrder { get; set; }
-    
-    //public JsonDocument ValidationRules { get; set; }
-    
     public DateTime CreatedAt { get; set; }
 
     public Inventory Inventory { get; set; }
@@ -25,15 +21,6 @@ public class InventoryField
 
     public FieldDefinitionViewModel ToViewModel()
     {
-        return new ()
-        {
-            Id = Id,
-            Title = Title,
-            Description = Description,
-            DisplayInTable = DisplayInTable,
-            IsRequired = IsRequired,
-            SortOrder = SortOrder,
-            Type = FieldType
-        };
+        return new FieldDefinitionViewModel(this);
     }
 }

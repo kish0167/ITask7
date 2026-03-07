@@ -9,16 +9,24 @@
     <div class="text-center mb-5">
         <h1 class="display-5 fw-bold text-primary">@Localizer["welcome"]</h1>
         <p class="text-muted">Manage your inventories and collaborate with your team</p>
+        @if (Model.IsAdmin)
+        {
+            <div class="mt-3">
+                <a href="@Url.Action("Index", "AdminPanel")" class="btn btn-outline-danger btn-lg shadow-sm">
+                    <i class="bi bi-shield-lock me-2"></i>Admin Panel
+                </a>
+            </div>
+        }
     </div>
 
     <!-- Owned Inventories Section -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">
-                <i class="bi bi-box-seam me-2"></i>My Inventories
+                <i class="bi bi-box-seam me-2"></i>
+                My inventories @(Model.OwnedInventories.Count > 0 ? $": {Model.OwnedInventories.Count}" : "")
             </h5>
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-primary">@Model.OwnedInventories.Count</span>
                 <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#createInventoryModal">
                     <i class="bi bi-plus-lg"></i> New
                 </button>
@@ -28,21 +36,23 @@
             @if (Model.OwnedInventories.Any())
             {
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0" data-toggle="table" data-sortable="true">
                         <thead class="table-light">
                         <tr>
-                            <th>Name</th>
+                            <th data-sortable="true">Name</th>
                             <th>Description</th>
-                            <th>Visibility</th>
-                            <th>Items</th>
-                            <th>Shared With</th>
+                            <th data-sortable="true">Visibility</th>
+                            <th data-sortable="true">Items</th>
+                            <th data-sortable="true">Shared With</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach (var inventory in Model.OwnedInventories)
                         {
                             <tr class="cursor-pointer" onclick="location.href='@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })'" style="cursor: pointer;">
-                                <td class="fw-semibold text-primary">@inventory.Name</td>
+                                <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })">
+                                    @inventory.Name
+                                </a>
                                 <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
                                     @(string.IsNullOrEmpty(inventory.Description) ? "-" : inventory.Description)
                                 </td>
@@ -94,29 +104,33 @@
     <div class="card shadow-sm">
         <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">
-                <i class="bi bi-people me-2"></i>Shared With Me
+                <i class="bi bi-people me-2"></i>
+                Available inventories @(Model.AvailableInventories.Count > 0 ? $": {Model.AvailableInventories.Count}" : "")
             </h5>
-            <span class="badge bg-light text-success">@Model.AvailableInventories.Count</span>
         </div>
         <div class="card-body p-0">
             @if (Model.AvailableInventories.Any())
             {
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0" data-toggle="table" data-sortable="true">
                         <thead class="table-light">
                         <tr>
-                            <th>Name</th>
+                            <th data-sortable="true">Name</th>
                             <th>Description</th>
-                            <th>Owner</th>
-                            <th>Items</th>
+                            <th data-sortable="true">Owner</th>
+                            <th data-sortable="true">Items</th>
                             <th>Your Access</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach (var inventory in Model.AvailableInventories)
                         {
-                            <tr class="cursor-pointer" onclick="location.href='@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })'" style="cursor: pointer;">
-                                <td class="fw-semibold text-success">@inventory.Name</td>
+                            <tr class="cursor-pointer" style="cursor: pointer;">
+                                <td class="fw-semibold text-success">
+                                    <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })">
+                                        @inventory.Name
+                                    </a>
+                                </td>
                                 <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
                                     @(string.IsNullOrEmpty(inventory.Description) ? "-" : inventory.Description)
                                 </td>
@@ -148,7 +162,7 @@
             }
         </div>
     </div>
-    
+
     <!-- Create Inventory Modal -->
     <div class="modal fade" id="createInventoryModal" tabindex="-1" aria-labelledby="createInventoryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -189,6 +203,29 @@
 
 <style>
     .cursor-pointer:hover {
+        background-color: rgba(0,0,0,0.02) !important;
+        transition: background-color 0.2s ease;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+    
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        padding: 1rem 1.25rem;
+    }
+    
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+    }
+    
+.cursor-pointer:hover {
         background-color: rgba(0,0,0,0.02) !important;
         transition: background-color 0.2s ease;
     }

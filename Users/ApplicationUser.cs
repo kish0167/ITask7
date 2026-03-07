@@ -14,25 +14,38 @@ public class ApplicationUser : IdentityUser
 
     public HomePageViewModel GetHomePage()
     {
-        HomePageViewModel viewModel = new HomePageViewModel();
-        foreach (Inventory inventory in CreatedInventories)
-        {
-            viewModel.OwnedInventories.Add(inventory.ToViewModel());
-        }
-        foreach (InventoryAccess access in Accesses)
-        {
-            viewModel.AvailableInventories.Add(access.Inventory.ToViewModel());
-        }
-
-        return viewModel;
+        return new HomePageViewModel(this);
     }
 
     public UserViewModel ToViewModel()
     {
-        return new UserViewModel()
-        {
-            Id = Id,
-            Email = Email
-        };
+        return new UserViewModel(this);
+    }
+
+    public string GetStatus()
+    {
+        if (IsBlocked) return "Blocked";
+        if (IsAdmin) return "Admin";
+        return "Active";
+    }
+
+    public void Block()
+    {
+        IsBlocked = true;
+    }
+
+    public void UnBlock()
+    {
+        IsBlocked = false;
+    }
+
+    public void MakeAdmin()
+    {
+        IsAdmin = true;
+    }
+
+    public void DeAdmin()
+    {
+        IsAdmin = false;
     }
 }
