@@ -41,6 +41,7 @@
                 <input class="form-check-input select-all"
                        type="checkbox">
             </th>
+            <th>Custom id</th>
             @foreach (FieldDefinitionViewModel field in Model.Fields)
             {
                 if (!field.DisplayInTable) continue;
@@ -62,6 +63,12 @@
                         <input class="form-check-input selectable-item"
                                type="checkbox"
                                value="@item.Id">
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Index", "ItemReadonly", new { itemId = item.Id })"
+                           onclick="event.stopPropagation();">
+                            @item.CustomId
+                        </a>
                     </td>
                     @foreach (FieldDefinitionViewModel field in Model.Fields)
                     {
@@ -89,7 +96,7 @@
         }
         </tbody>
     </table>
-    
+
     <script>
         // ==================== TOOLBAR REQS ====================
     

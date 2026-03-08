@@ -1,4 +1,4 @@
-﻿@model ITask7.ViewModels.HomePageViewModel
+﻿@model ITask7.ViewModels.Pages.HomePageViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -43,16 +43,17 @@
                             <th>Description</th>
                             <th data-sortable="true">Visibility</th>
                             <th data-sortable="true">Items</th>
-                            <th data-sortable="true">Shared With</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach (var inventory in Model.OwnedInventories)
                         {
                             <tr class="cursor-pointer" onclick="location.href='@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })'" style="cursor: pointer;">
-                                <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })">
-                                    @inventory.Name
-                                </a>
+                                <td>
+                                    <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })">
+                                        @inventory.Name
+                                    </a>
+                                </td>
                                 <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
                                     @(string.IsNullOrEmpty(inventory.Description) ? "-" : inventory.Description)
                                 </td>
@@ -68,18 +69,6 @@
                                 </td>
                                 <td>
                                     <span class="badge bg-warning text-dark">@inventory.Items.Count</span>
-                                </td>
-                                <td>
-                                    @if (inventory.WriteAccessUsers.Any())
-                                    {
-                                        <span class="badge bg-dark" title="@string.Join(", ", inventory.WriteAccessUsers.Select(u => u.Email))">
-                                            @inventory.WriteAccessUsers.Count users
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">-</span>
-                                    }
                                 </td>
                             </tr>
                         }
@@ -132,7 +121,7 @@
                                     </a>
                                 </td>
                                 <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
-                                    @(string.IsNullOrEmpty(inventory.Description) ? "-" : inventory.Description)
+                                    @inventory.Description
                                 </td>
                                 <td>
                                     <span class="badge bg-light text-dark border">

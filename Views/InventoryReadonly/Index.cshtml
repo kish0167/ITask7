@@ -1,0 +1,58 @@
+﻿@model ITask7.ViewModels.Inventories.InventoryViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>@Model.Name</h2>
+<div class="table-responsive">
+    <table class="table table-hover border">
+        <thead class="table-light">
+        <tr>
+            <th>Custom ID</th>
+            @* Only show fields marked for table display *@
+            @foreach (var field in Model.Fields.OrderBy(f => f.SortOrder).Where(f => f.DisplayInTable))
+            {
+                <th>@field.Title</th>
+            }
+            <th>Created At</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (!Model.Items.Any())
+        {
+            <tr>
+                <td colspan="@(Model.Fields.Count(f => f.DisplayInTable) + 3)" class="text-center text-muted">
+                    No items found in this inventory.
+                </td>
+            </tr>
+        }
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td class="fw-bold">
+                    <a href="@Url.Action("Index", "ItemReadonly", new { itemId = item.Id })">
+                        @item.CustomId
+                    </a>
+                </td>
+
+                @foreach (var fieldDef in Model.Fields.OrderBy(f => f.SortOrder).Where(f => f.DisplayInTable))
+                {
+                    <td>
+                        @if (item.Fields.TryGetValue(fieldDef.Id, out var fieldValue))
+                        {
+                            @fieldValue.DisplayValue
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                }
+                <td>@item.CreatedAtString</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

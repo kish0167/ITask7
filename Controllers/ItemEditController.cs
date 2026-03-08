@@ -13,6 +13,7 @@ public class ItemEditController(DbApiService dbApiService, UserManager<Applicati
 
     public async Task<IActionResult> Index(Guid itemId, Guid inventoryId)
     {
+        if (!await WriterAccessCheck(inventoryId)) return BadRequest();
         ItemViewModel? item;
         if (itemId != Guid.Empty) item = await _dbApiService.GetItemViewModel(itemId);
         else item = await _dbApiService.GetEmptyItemViewModel(inventoryId);

@@ -54,7 +54,7 @@ public class AdminPanelController(DbApiService dbApiService, UserManager<Applica
     public async Task<IActionResult> BulkDeAdmin([FromBody] List<string> userIds)
     {
         if (!await AdminAccessCheck()) return BadRequest();
-        int blocked = await _dbApiService.DeAdminUseers(userIds);
+        int blocked = await _dbApiService.DeAdminUsers(userIds);
         return Ok(blocked);
     }
 }

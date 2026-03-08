@@ -1,0 +1,76 @@
+﻿@model ITask7.ViewModels.Inventories.ItemViewModel
+
+@{
+    ViewBag.Title = "Item";
+    Layout = "_Layout";
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">General Information</h5>
+        <a href="@Url.Action("Index", "InventoryReadonly", new { inventoryId = Model.InventoryId })" class="btn btn-outline-primary btn-sm">
+            &larr; Back to Inventory
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p>
+                    <strong>System ID:</strong> <span class="text-muted">@Model.Id</span>
+                </p>
+                <p>
+                    <strong>Custom ID:</strong> @Model.CustomId
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p><strong>Created:</strong> @Model.CreatedAtString by @(Model.CreatedByUserName ?? "System")</p>
+                <p>
+                    <strong>Last Updated:</strong> @Model.UpdatedAt.ToString("dd/MM/yyyy")
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Item Properties</h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+            <tr>
+                <th style="width: 30%">Field</th>
+                <th style="width: 70%">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var definition in Model.FieldDefinitions.OrderBy(f => f.SortOrder))
+            {
+                <tr>
+                    <td>
+                        <strong>@definition.Title</strong>
+                        @if (!string.IsNullOrEmpty(definition.Description))
+                        {
+                            <br/>
+                            <small class="text-muted">@definition.Description</small>
+                        }
+                    </td>
+                    <td>
+                        @if (Model.Fields.TryGetValue(definition.Id, out var fieldValue))
+                        {
+                            @fieldValue.DisplayValue
+                        }
+                        else
+                        {
+                            <span class="text-muted">
+                                <em>Not set</em>
+                            </span>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

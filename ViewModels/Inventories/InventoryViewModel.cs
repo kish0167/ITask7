@@ -9,6 +9,7 @@ public class InventoryViewModel
     public string Description { get; set; }
     public string CreatedBy { get; set; }
     public bool IsPublic { get; set; }
+    public DateTime UpdatedAt { get; set; }
     public List<FieldDefinitionViewModel> Fields { get; set; } = new();
     public List<ItemViewModel> Items { get; set; } = new();
     public List<UserViewModel> WriteAccessUsers { get; set; } = new();
@@ -22,6 +23,7 @@ public class InventoryViewModel
         Description = inventory.Description;
         CreatedBy = inventory.Creator?.UserName ?? "creator not found";
         IsPublic = inventory.IsPublic;
+        UpdatedAt = inventory.UpdatedAt;
         Fields = inventory.Fields.Select(field => field.ToViewModel()).ToList();
         Items = inventory.Items.Select(item => item.ToViewModel()).ToList();
         WriteAccessUsers = inventory.Accesses.Select(a => a.User.ToViewModel()).ToList();

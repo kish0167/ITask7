@@ -4,6 +4,7 @@ using ITask7.Models;
 using ITask7.Services;
 using ITask7.Users;
 using ITask7.ViewModels;
+using ITask7.ViewModels.Pages;
 using Microsoft.AspNetCore.Identity;
 
 namespace ITask7.Controllers;
@@ -14,9 +15,9 @@ public class HomeController(DbApiService dbApiService, UserManager<ApplicationUs
     {
         ApplicationUser? user = await userManager.GetUserAsync(User);
         HomePageViewModel? viewModel;
-        //if (user == null) return Redirect("Unauthorized/Index");
-        if (user == null) viewModel = new HomePageViewModel();
-        else viewModel = await dbApiService.GetHomePage(user.Id);
+        if (user == null) return Redirect(Url.Action("Index", "Main") ?? "");
+        if (user == null) return Redirect(Url.Action("Index", "Main") ?? "");
+        viewModel = await dbApiService.GetHomePage(user.Id);
         if (viewModel == null) return BadRequest();
         return View(viewModel);
     }

@@ -1,7 +1,6 @@
-﻿using ITask7.Models.Inventories;
-using ITask7.ViewModels.Inventories;
+﻿using ITask7.ViewModels.Inventories;
 
-namespace ITask7.ViewModels;
+namespace ITask7.ViewModels.Pages;
 
 public class InventoryEditPageViewModel
 {

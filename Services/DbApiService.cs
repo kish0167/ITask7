@@ -3,6 +3,7 @@ using ITask7.Models.Inventories;
 using ITask7.Users;
 using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
+using ITask7.ViewModels.Pages;
 using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Services;
@@ -12,7 +13,17 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     private readonly ApplicationDbContext _dbContext = dbContext;
     private readonly ViewModelsConverter _viewModelsConverter = viewModelsConverter;
 
-    public async Task<InventoryViewModel?> GetInventoryEditPageViewModel(Guid inventoryId)
+    public async Task<MainPageViewModel> GetMainPageViewModel()
+    {
+        MainPageViewModel viewModel = new();
+        viewModel.LatestInventories = (await GetLatestInventories(viewModel.MaxLatestCount))
+            .Select(i => i.ToViewModel()).ToList();
+        viewModel.PopularInventories = (await GetPopularInventories(viewModel.MaxPopularCount))
+            .Select(i => i.ToViewModel()).ToList();
+        return viewModel;
+    }
+
+    public async Task<InventoryViewModel?> GetInventoryViewModel(Guid inventoryId)
     {
         Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
@@ -26,7 +37,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return item.ToViewModel();
     }
 
-    public async Task<Item?> CreateNewItem(Guid inventoryId, ApplicationUser user)
+    private async Task<Item?> CreateNewItem(Guid inventoryId, ApplicationUser user)
     {
         Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
@@ -44,7 +55,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     {
         return await _dbContext.Users.Select(u => u.ToViewModel()).ToListAsync();
     }
-
+    
     public async Task<bool> AddAccess(string username, Guid inventoryId)
     {
         ApplicationUser? user = await _dbContext.Users
@@ -220,7 +231,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             .ThenInclude(i => i.Creator)
             .FirstOrDefaultAsync();
     }
-    
+
     private async Task<List<Inventory>> GetAllInventories()
     {
         return await _dbContext.Inventories
@@ -314,7 +325,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<int> DeAdminUseers(List<string> ids)
+    public async Task<int> DeAdminUsers(List<string> ids)
     {
         List<ApplicationUser> users = await _dbContext.Users
             .Where(u => ids.Contains(u.Id) && u.IsAdmin)
@@ -324,5 +335,27 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             user.DeAdmin();
         }
         return await _dbContext.SaveChangesAsync();
+    }
+    
+    private async Task<List<Inventory>> GetLatestInventories(int max)
+    {
+        return await _dbContext.Inventories
+            .AsNoTracking()
+            .Include(i => i.Creator)
+            .Include(i => i.Items)
+            .OrderByDescending(i => i.UpdatedAt)
+            .Take(max)
+            .ToListAsync();
+    }
+    
+    private async Task<List<Inventory>> GetPopularInventories(int max)
+    {
+        return await _dbContext.Inventories
+            .AsNoTracking()
+            .Include(i => i.Creator)
+            .Include(i => i.Items)
+            .OrderByDescending(i => i.Items.Count())
+            .Take(max)
+            .ToListAsync();
     }
 }

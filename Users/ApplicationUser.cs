@@ -1,5 +1,6 @@
 ﻿using ITask7.Models.Inventories;
 using ITask7.ViewModels;
+using ITask7.ViewModels.Pages;
 using Microsoft.AspNetCore.Identity;
 
 namespace ITask7.Users;
