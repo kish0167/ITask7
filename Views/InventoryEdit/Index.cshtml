@@ -59,7 +59,7 @@
         </div>
         <!-- Chat -->
         <div class="tab-pane fade @(Model.TabOpened == "chat" ? "show active" : "")" id="chat" role="tabpanel">
-            <partial name="_Chat" model="Model.Inventory"/>
+            <partial name="_Chat" model="Model"/>
         </div>
         @if (Model.CreatorAccess)
         {

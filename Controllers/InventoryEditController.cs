@@ -1,6 +1,5 @@
 ﻿using ITask7.Services;
 using ITask7.Users;
-using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
 using ITask7.ViewModels.Pages;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +16,7 @@ public class InventoryEditController(DbApiService dbApiService, UserManager<Appl
         if (!await WriterAccessCheck(inventoryId)) return BadRequest();
         InventoryViewModel? inventory = await _dbApiService.GetInventoryViewModel(inventoryId);
         if (inventory == null) return BadRequest("Inventory does not exist");
+        inventory.ChatViewModel.CurrentUserName = User.Identity?.Name ?? "noname";
         return View(new InventoryEditPageViewModel()
         {
             Inventory = inventory,

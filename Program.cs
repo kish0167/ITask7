@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ITask7.Data;
 using ITask7.Localization;
+using ITask7.RealTimeChat;
 using ITask7.Services;
 using ITask7.Users;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -14,6 +15,8 @@ var connectionString = builder.Configuration.GetConnectionString("LocalConnectio
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(
         options =>
@@ -70,6 +73,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<DbApiService>();
+builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<ViewModelsConverter>();
 builder.Services.AddScoped<AccessValidationService>();
 
@@ -121,5 +125,7 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
+app.MapHub<ChatHub>("/ChatHub");
 
 app.Run();

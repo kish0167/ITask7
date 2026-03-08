@@ -1,4 +1,5 @@
 ﻿using ITask7.Data;
+using ITask7.Models.Chat;
 using ITask7.Models.Inventories;
 using ITask7.Users;
 using ITask7.ViewModels;
@@ -155,6 +156,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             .Include(i => i.Creator)
             .Include(i => i.Accesses)
             .ThenInclude(access => access.User)
+            .Include(i => i.Messages)
             .FirstOrDefaultAsync();
         return inventory;
     }
@@ -357,5 +359,12 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             .OrderByDescending(i => i.Items.Count())
             .Take(max)
             .ToListAsync();
+    }
+
+    public async Task AddNewMessage(ApplicationUser sender, Guid inventoryId, string text)
+    {
+        InventoryMessage message = new InventoryMessage(sender, inventoryId, text);
+        await _dbContext.InventoryMessages.AddAsync(message);
+        await _dbContext.SaveChangesAsync();
     }
 }
