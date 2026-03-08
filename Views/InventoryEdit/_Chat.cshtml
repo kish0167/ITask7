@@ -1,4 +1,6 @@
-﻿@model ITask7.ViewModels.Pages.InventoryEditPageViewModel
+﻿@using Markdig
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model ITask7.ViewModels.Pages.InventoryEditPageViewModel
 <div class="card shadow-sm" id="chat-container" data-inventory-id="@Model.Inventory.Id">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
@@ -20,7 +22,11 @@
                                     <strong>@message.SenderName</strong>
                                     <span class="ms-2">@message.SentAt.ToString("HH:mm")</span>
                                 </div>
-                                <div class="message-text markdown-content">@Html.Raw(Markdig.Markdown.ToHtml(message.Text))</div>
+                                <div class="message-text markdown-content">@Html.Raw(Markdown.ToHtml(message.Text, new MarkdownPipelineBuilder()
+                                                                               .UseSoftlineBreakAsHardlineBreak()
+                                                                               .UsePipeTables()
+                                                                               .UseGridTables()
+                                                                               .Build()))</div>
                             </div>
                         </div>
                     </div>
@@ -130,10 +136,6 @@
         });
         
         connection.on("ReceiveMessage", (data) => {
-            marked.use({
-                gfm: true,
-                breaks: true
-            });
             const isMe = data.senderName === '@Model.Inventory.ChatViewModel.CurrentUserName';
             const html = `
                 <div class="message mb-3" data-sender="${data.senderName}">
@@ -177,4 +179,4 @@
                 document.getElementById('chat-form').dispatchEvent(new Event('submit'));
             }
         });
-    </script>
+</script>
