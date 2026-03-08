@@ -1,4 +1,5 @@
-﻿using ITask7.Users;
+﻿using ITask7.Models.Chat;
+using ITask7.Users;
 using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +21,7 @@ public class Inventory
     public ICollection<InventoryField> Fields { get; set; } = new List<InventoryField>();
     public ICollection<Item> Items { get; set; } = new List<Item>();
     public ICollection<InventoryAccess> Accesses { get; set; } = new List<InventoryAccess>();
+    public ICollection<InventoryMessage> Messages { get; set; } = new List<InventoryMessage>();
     
     public Inventory(){}
 

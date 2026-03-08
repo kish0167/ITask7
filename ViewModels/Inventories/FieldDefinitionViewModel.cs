@@ -11,6 +11,8 @@ public class FieldDefinitionViewModel
     public int SortOrder { get; set; }
     public bool DisplayInTable { get; set; }
     public bool IsRequired { get; set; }
+    
+    public FieldDefinitionViewModel(){}
 
     public FieldDefinitionViewModel(InventoryField field)
     {

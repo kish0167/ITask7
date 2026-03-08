@@ -8,6 +8,8 @@ public class FieldValueViewModel
     public object? Value { get; set; }
     public string DisplayValue => Value?.ToString() ?? "";
     
+    public FieldValueViewModel(){}
+    
     public FieldValueViewModel(ItemFieldValue value)
     {
         Type = value.Field.FieldType;

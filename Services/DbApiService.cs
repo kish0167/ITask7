@@ -64,7 +64,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         bool inventoryExists = await _dbContext.Inventories
             .AnyAsync(i => i.Id == inventoryId);
         if (!inventoryExists) return false;
-        bool accessExists = await _dbContext.InventoriesAccesses
+        bool accessExists = await _dbContext.InventoryAccesses
             .AnyAsync(a => a.UserId == user.Id && a.InventoryId == inventoryId);
         if (accessExists) return false;
         var inventoryAccess = new InventoryAccess
@@ -72,7 +72,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
             UserId = user.Id,
             InventoryId = inventoryId
         };
-        await _dbContext.InventoriesAccesses.AddAsync(inventoryAccess);
+        await _dbContext.InventoryAccesses.AddAsync(inventoryAccess);
         await _dbContext.SaveChangesAsync();
         return true;
     }
@@ -81,12 +81,12 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     {
         if (!userIds.Any())
             return false;
-        List<InventoryAccess> accessesToRemove = await _dbContext.InventoriesAccesses
+        List<InventoryAccess> accessesToRemove = await _dbContext.InventoryAccesses
             .Where(a => a.InventoryId == inventoryId && userIds.Contains(a.UserId))
             .ToListAsync();
         if (!accessesToRemove.Any())
             return false;
-        _dbContext.InventoriesAccesses.RemoveRange(accessesToRemove);
+        _dbContext.InventoryAccesses.RemoveRange(accessesToRemove);
         int result = await _dbContext.SaveChangesAsync();
         return result > 0;
     }

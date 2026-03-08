@@ -1,8 +1,10 @@
-﻿using ITask7.Models.Inventories;
+﻿using ITask7.Models.Chat;
+using ITask7.Models.Inventories;
 using ITask7.TEMP;
 using ITask7.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
 
 namespace ITask7.Data;
 
@@ -12,7 +14,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<InventoryField> InventoryFields { get; set; }
     public DbSet<Item> Items { get; set; }
     public DbSet<ItemFieldValue> ItemFieldValues { get; set; }
-    public DbSet<InventoryAccess> InventoriesAccesses { get; set; }
+    public DbSet<InventoryAccess> InventoryAccesses { get; set; }
+    public DbSet<InventoryMessage> InventoryMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -121,7 +124,23 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.IsAdmin).HasDefaultValue(false);
             entity.Property(e => e.IsBlocked).HasDefaultValue(false);
         });
-        
-        //InventorySeedData.Seed(modelBuilder);
+
+        modelBuilder.Entity<InventoryMessage>(entity =>
+        {
+            entity.ToTable("messages");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            
+            entity.HasOne(e => e.Inventory)
+                .WithMany(i => i.Messages)
+                .HasForeignKey(e => e.InventoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.Sender)
+                .WithMany(u => u.Messages)
+                .HasForeignKey(e => e.SenderId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }
