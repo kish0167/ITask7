@@ -23,11 +23,11 @@ public class ApplicationUser : IdentityUser
         return new UserViewModel(this);
     }
 
-    public string GetStatus()
+    public string GetStatusText()
     {
-        if (IsBlocked) return "Blocked";
-        if (IsAdmin) return "Admin";
-        return "Active";
+        if (IsBlocked) return "🚫 Blocked";
+        if (IsAdmin) return "🛡️ Admin";
+        return "✅ Active";
     }
 
     public void Block()

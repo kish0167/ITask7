@@ -9,15 +9,18 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ITask7.Controllers;
 
-public class HomeController(DbApiService dbApiService, UserManager<ApplicationUser> userManager) : Controller
+public class HomeController(DbApiService dbApiService, UserManager<ApplicationUser> userManager) : InventoryController(dbApiService, userManager)
 {
+    private readonly DbApiService _dbApiService = dbApiService;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+
     public async Task<IActionResult> Index()
     {
-        ApplicationUser? user = await userManager.GetUserAsync(User);
+        if (!await ActiveUserCheck()) return Redirect(Url.Action("Index", "Main") ?? "");
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
         HomePageViewModel? viewModel;
         if (user == null) return Redirect(Url.Action("Index", "Main") ?? "");
-        if (user == null) return Redirect(Url.Action("Index", "Main") ?? "");
-        viewModel = await dbApiService.GetHomePage(user.Id);
+        viewModel = await _dbApiService.GetHomePage(user.Id);
         if (viewModel == null) return BadRequest();
         return View(viewModel);
     }

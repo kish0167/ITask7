@@ -24,7 +24,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager<ApplicationSignInManager>();
-builder.Services.AddScoped<IUserStore<ApplicationUser>, RoleAssigningUserStore>();
+builder.Services.AddScoped<IUserStore<ApplicationUser>, AdminAssigningUserStore>();
 
 builder.Services.AddControllersWithViews().
     AddViewLocalization();

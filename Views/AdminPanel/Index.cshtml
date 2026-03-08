@@ -46,7 +46,9 @@
                        value="@user.Id">
             </td>
             <td>@user.Email</td>
-            <td class="user-status">@user.Status</td>
+            <td class="user-status" data-user-id="@user.Id">
+                <span class="status-text">@user.Status</span>
+            </td>
         </tr>
     }
     </tbody>
@@ -64,15 +66,17 @@
 
     // ==================== UI UPDATES ====================
     
+    const icons = { Admin: "value1", Blocked: "value2", Active: "value3"};
+    
     function handleActionSuccess(action, userIds) {     
         if (action === 'delete'){
             location.reload();
         } else if (action === 'block'){
             location.reload();
         } else if (action === 'unblock'){
-            updateStatuses(userIds, 'Active');
+            updateStatuses(userIds, '✅ Active');
         } else if (action === 'admin'){
-            updateStatuses(userIds, 'Admin');
+            updateStatuses(userIds, '🛡️ Admin');
         } else if (action === 'deAdmin'){
             location.reload();
         }
@@ -89,14 +93,15 @@
         userIds.forEach(id => {
             const statusCell = getStatusCell(id);
             if (statusCell) {
-                statusCell.textContent = newStatus;
-                statusCell.setAttribute('data-user-status', newStatus);
+                const textItem = statusCell.querySelector('.status-text');
+                if (textItem) textItem.textContent = newStatus;
+                    statusCell.setAttribute('data-user-status', newStatus);
             }
         });
     }
         
     function getStatusCell(userId) {
         return document.querySelector(`tr[data-user-id="${userId}"] .user-status`);
-    }        
+    }       
         
 </script>

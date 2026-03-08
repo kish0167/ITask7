@@ -11,7 +11,7 @@ public class UserViewModel
 
         Id = user.Id;
         Email = user.Email;
-        Status = user.GetStatus();
+        Status = user.GetStatusText();
     }
 
     public string Id { get; set; }
