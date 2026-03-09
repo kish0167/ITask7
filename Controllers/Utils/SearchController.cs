@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Utils;
 
 public class SearchController(ApplicationDbContext dbContext) : Controller
 {

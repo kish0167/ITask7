@@ -42,29 +42,5 @@ public class ViewModelsConverter()
     {
         return Regex.Replace(title, @"(\B[A-Z])", "_$1").ToLower();
     }
-
-    public void EditItem(Item item, ItemViewModel itemViewModel)
-    {
-        item.UpdatedAt = DateTime.UtcNow;
-        item.CustomId = itemViewModel.CustomId;
-        foreach (InventoryField field in item.Inventory.Fields)
-        {
-            item.SetFieldValue(field, itemViewModel.Fields[field.Id].Value);
-        }
-    }
-
-    public ItemViewModel GetEmptyItemViewModel(Inventory inventory)
-    {
-        ItemViewModel itemViewModel = new()
-        {
-            Id = Guid.Empty,
-            InventoryId = inventory.Id,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-            CreatedByUserName = "none",
-            CustomId = "none"
-        };
-        itemViewModel.PopulateFields(inventory);
-        return itemViewModel;
-    }
+    
 }

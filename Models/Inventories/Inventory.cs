@@ -15,7 +15,8 @@ public class Inventory
     public bool IsPublic { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    // Custom id's
+    public string CustomIdSchemaJson { get; set; }
+    public int Sequential { get; set; }
     
     public ApplicationUser? Creator { get; set; }
     public ICollection<InventoryField> Fields { get; set; } = new List<InventoryField>();

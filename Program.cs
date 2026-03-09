@@ -4,6 +4,9 @@ using ITask7.Data;
 using ITask7.Localization;
 using ITask7.RealTimeChat;
 using ITask7.Services;
+using ITask7.Services.Chat;
+using ITask7.Services.CustomId;
+using ITask7.Services.Users;
 using ITask7.Users;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -26,7 +29,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(
         })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager<ApplicationSignInManager>();
+    .AddSignInManager<SignInManager<ApplicationUser>>();
 builder.Services.AddScoped<IUserStore<ApplicationUser>, AdminAssigningUserStore>();
 
 builder.Services.AddControllersWithViews().
@@ -75,7 +78,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<DbApiService>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<ViewModelsConverter>();
-builder.Services.AddScoped<AccessValidationService>();
 
 var app = builder.Build();
 
@@ -111,19 +113,6 @@ if (Environment.GetEnvironmentVariable("ENABLE_AUTO_MIGRATION") == "true")
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
-}
-
-using (var scope = app.Services.CreateScope())
-{
-    RoleManager<IdentityRole> roleManager =
-        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    foreach (string role in UserRoles.List)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
-    }
 }
 
 app.MapHub<ChatHub>("/ChatHub");

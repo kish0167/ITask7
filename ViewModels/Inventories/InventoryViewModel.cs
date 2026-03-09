@@ -1,4 +1,5 @@
-﻿using ITask7.Models.Inventories;
+﻿using ITask7.Models.CustomId;
+using ITask7.Models.Inventories;
 using ITask7.ViewModels.Chat;
 
 namespace ITask7.ViewModels.Inventories;
@@ -15,6 +16,7 @@ public class InventoryViewModel
     public List<ItemViewModel> Items { get; set; } = new();
     public List<UserViewModel> WriteAccessUsers { get; set; } = new();
     public ChatViewModel ChatViewModel { get; set; }
+    public CustomIdSchema CustomIdSchema { get; set; }
     
     public InventoryViewModel(){}
     
@@ -30,5 +32,6 @@ public class InventoryViewModel
         Items = inventory.Items.Select(item => item.ToViewModel()).ToList();
         WriteAccessUsers = inventory.Accesses.Select(a => a.User.ToViewModel()).ToList();
         ChatViewModel = new ChatViewModel(inventory);
+        CustomIdSchema = new CustomIdSchema(inventory.CustomIdSchemaJson);
     }
 }

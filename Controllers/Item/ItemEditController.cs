@@ -4,7 +4,7 @@ using ITask7.ViewModels.Inventories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Item;
 
 public class ItemEditController(DbApiService dbApiService, UserManager<ApplicationUser> userManager) : InventoryController(dbApiService, userManager)
 {
@@ -28,7 +28,7 @@ public class ItemEditController(DbApiService dbApiService, UserManager<Applicati
         if (!await WriterAccessCheck(model.InventoryId)) return BadRequest();
         ApplicationUser? user = await _userManager.GetUserAsync(User);
         if (user == null) return BadRequest();
-        Guid? id = await _dbApiService.EditItem(model, user);
+        Guid? id = await _dbApiService.SaveItem(model, user);
         if (id == null) return BadRequest();
         return Ok();
     }

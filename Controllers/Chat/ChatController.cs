@@ -1,10 +1,10 @@
-﻿using ITask7.RealTimeChat;
-using ITask7.Services;
+﻿using ITask7.Services;
+using ITask7.Services.Chat;
 using ITask7.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Chat;
 
 public class ChatController(DbApiService dbApiService, UserManager<ApplicationUser> userManager, ChatService chatService)
     : InventoryController(dbApiService, userManager)

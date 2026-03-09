@@ -4,7 +4,7 @@ using ITask7.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Pages;
 
 public class AdminPanelController(DbApiService dbApiService, UserManager<ApplicationUser> userManager)
     : InventoryController(dbApiService, userManager)

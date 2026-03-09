@@ -1,9 +1,8 @@
 ﻿using ITask7.Services;
-using ITask7.ViewModels;
 using ITask7.ViewModels.Pages;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Pages;
 
 public class MainController(DbApiService dbApiService) : Controller
 {

@@ -1,11 +1,10 @@
 ﻿using ITask7.Services;
 using ITask7.Users;
 using ITask7.ViewModels.Inventories;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Inventory;
 
 public class InventoryCreateController(DbApiService dbApiService, UserManager<ApplicationUser> userManager)
     : InventoryController(dbApiService, userManager)

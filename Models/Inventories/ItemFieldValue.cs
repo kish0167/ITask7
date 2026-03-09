@@ -1,4 +1,5 @@
 ﻿using ITask7.Services;
+using ITask7.Services.Helpers;
 using ITask7.ViewModels.Inventories;
 
 namespace ITask7.Models.Inventories;
@@ -24,7 +25,6 @@ public class ItemFieldValue
 
     public ItemFieldValue(InventoryField field, Item item, object? value)
     {
-        // Id = Guid.NewGuid();
         ItemId = item.Id;
         FieldId = field.Id;
         CreatedAt = DateTime.UtcNow;
@@ -33,7 +33,7 @@ public class ItemFieldValue
         Field = field;
         SetValue(value);
     }
-    
+
     public FieldValueViewModel ToViewModel()
     {
         return new FieldValueViewModel(this);

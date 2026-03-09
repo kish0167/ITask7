@@ -2,7 +2,7 @@
 using ITask7.Users;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ITask7.Services;
+namespace ITask7.Services.Chat;
 
 public class ChatService(IHubContext<ChatHub> hubContext)
 {

@@ -1,5 +1,6 @@
 ﻿using ITask7.Data;
 using ITask7.Models.Chat;
+using ITask7.Models.CustomId;
 using ITask7.Models.Inventories;
 using ITask7.Users;
 using ITask7.ViewModels;
@@ -42,14 +43,16 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     {
         Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
-        return new Item(inventory, user);
+        Item item = new Item(inventory, user);
+        await _dbContext.Items.AddAsync(item);
+        return item;
     }
 
     public async Task<ItemViewModel?> GetEmptyItemViewModel(Guid inventoryId)
     {
         Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
-        return _viewModelsConverter.GetEmptyItemViewModel(inventory);
+        return new ItemViewModel(inventory);
     }
     
     public async Task<List<UserViewModel>> GetAllUsersViewModels()
@@ -94,7 +97,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
 
     public async Task<bool> EditInventoryProperties(InventoryViewModel model)
     {
-        var inventory = await _dbContext.Inventories.FindAsync(model.Id);
+        Inventory? inventory = await _dbContext.Inventories.FindAsync(model.Id);
         if (inventory == null) return false;
         if (inventory.Name != model.Name) inventory.Name = model.Name;
         if (inventory.Description != model.Description) inventory.Description = model.Description;
@@ -198,12 +201,12 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return result > 0;
     }
 
-    public async Task<Guid?> EditItem(ItemViewModel itemViewModel, ApplicationUser user)
+    public async Task<Guid?> SaveItem(ItemViewModel itemViewModel, ApplicationUser user)
     {
         Item? item = await GetItem(itemViewModel.Id);
         if (item == null) item = await CreateNewItem(itemViewModel.InventoryId, user);
         if (item == null) return null;
-        _viewModelsConverter.EditItem(item, itemViewModel);
+        item.Edit(itemViewModel);
         await _dbContext.SaveChangesAsync();
         return item.Id;
     }
@@ -366,5 +369,14 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         InventoryMessage message = new InventoryMessage(sender, inventoryId, text);
         await _dbContext.InventoryMessages.AddAsync(message);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> SetCustomIdSchema(Guid inventoryId, CustomIdSchema schema)
+    {
+        Inventory? inventory = await _dbContext.Inventories.FindAsync(inventoryId);
+        if (inventory == null) return false;
+        inventory.CustomIdSchemaJson = schema.ToJson();
+        await _dbContext.SaveChangesAsync();
+        return true;
     }
 }

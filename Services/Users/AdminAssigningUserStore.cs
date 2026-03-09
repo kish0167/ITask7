@@ -2,9 +2,8 @@
 using ITask7.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
-namespace ITask7.Services;
+namespace ITask7.Services.Users;
 
 public class AdminAssigningUserStore(ApplicationDbContext context, IdentityErrorDescriber? describer = null)
     : UserStore<ApplicationUser, IdentityRole, ApplicationDbContext>(context, describer)

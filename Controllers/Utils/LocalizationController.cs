@@ -1,9 +1,8 @@
-﻿using System.Collections.Specialized;
-using System.Globalization;
+﻿using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Utils;
 
 public class LocalizationController : Controller
 {

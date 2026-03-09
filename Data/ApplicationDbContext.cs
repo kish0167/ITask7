@@ -29,6 +29,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.IsPublic).HasDefaultValue("FALSE");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.Sequential).HasDefaultValue(0);
 
             entity.HasOne(e => e.Creator)
                 .WithMany(u => u.CreatedInventories)

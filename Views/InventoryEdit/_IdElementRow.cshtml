@@ -1,0 +1,27 @@
+﻿@using ITask7.Models.CustomId
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model ITask7.Models.CustomId.IdElement
+
+<div class="list-group-item element-row d-flex align-items-center gap-2 border-0 border-bottom">
+    <div class="drag-handle px-2">
+        <i class="bi bi-grip-vertical fs-4"></i>
+    </div>
+    
+    <select class="form-select type-select w-auto" onchange="updatePreview()" name="Type">
+        @foreach (IdElementType type in Enum.GetValues<IdElementType>())
+        {
+            <option value="@((int)type)" selected="@(Model.Type == type)">@type</option>
+        }
+    </select>
+    
+    <div class="flex-grow-1">
+        <input type="text" class="form-control value-input" 
+               placeholder="Format (e.g. yyyy, D3, X5_)" 
+               value="@Model.Value" 
+               oninput="updatePreview()" name="Value" />
+    </div>
+
+    <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('.element-row').remove(); updatePreview();">
+        <i class="bi bi-x-circle"></i>
+    </button>
+</div>

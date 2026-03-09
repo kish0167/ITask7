@@ -1,9 +1,8 @@
 ﻿using ITask7.Services;
 using ITask7.ViewModels.Inventories;
-using ITask7.ViewModels.Pages;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Inventory;
 
 public class InventoryReadonlyController(DbApiService dbApiService) : Controller
 {

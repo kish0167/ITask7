@@ -2,7 +2,7 @@
 using ITask7.ViewModels.Inventories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ITask7.Controllers;
+namespace ITask7.Controllers.Item;
 
 public class ItemReadonlyController(DbApiService dbApiService) : Controller
 {
