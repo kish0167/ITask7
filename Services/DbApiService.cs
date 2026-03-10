@@ -386,4 +386,13 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         await _dbContext.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> DeleteInventory(Guid inventoryId)
+    {
+        Inventory? inventory = await _dbContext.Inventories
+            .Where(i => i.Id == inventoryId).FirstOrDefaultAsync();
+        if (inventory == null) return false;
+        _dbContext.Inventories.Remove(inventory);
+        return await _dbContext.SaveChangesAsync() > 0;
+    }
 }

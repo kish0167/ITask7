@@ -35,6 +35,14 @@ public class InventoryEditController(DbApiService dbApiService, UserManager<Appl
     }
     
     [HttpPost]
+    public async Task<IActionResult> Delete([FromQuery] Guid inventoryId)
+    {
+        if (!await CreatorAccessCheck(inventoryId)) return BadRequest();
+        bool success = await _dbApiService.DeleteInventory(inventoryId);
+        return Ok(success);
+    }
+    
+    [HttpPost]
     public async Task<IActionResult> DeleteFields([FromBody] List<Guid> fieldsIds, [FromQuery] Guid contextId)
     {
         if (!await CreatorAccessCheck(contextId)) return BadRequest();
