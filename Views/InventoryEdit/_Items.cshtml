@@ -67,7 +67,7 @@
                     <td>
                         <a href="@Url.Action("Index", "ItemReadonly", new { itemId = item.Id })"
                            onclick="event.stopPropagation();">
-                            @item.CustomIdString
+                            @item.CustomIdString()
                         </a>
                     </td>
                     @foreach (FieldDefinitionViewModel field in Model.Fields)

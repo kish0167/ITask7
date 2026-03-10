@@ -10,6 +10,7 @@ public class Item
 {
     public Guid Id { get; set; }
     public string CustomId { get; set; }
+    public int SequentialNumber { get; set; }
     public string CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -22,7 +23,8 @@ public class Item
 
     public Item(Inventory inventory, ApplicationUser user)
     {
-        CustomId = new CustomIdViewModel(inventory).ToString();
+        SequentialNumber = inventory.Sequential++;
+        CustomId = new CustomIdViewModel(inventory).ToStoreString();
         CreatedBy = user.Id;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
@@ -50,7 +52,8 @@ public class Item
     public void Edit(ItemViewModel itemViewModel)
     {
         UpdatedAt = DateTime.UtcNow;
-        CustomId = itemViewModel.CustomId.ToString();
+        itemViewModel.CustomId.InjectSequential(SequentialNumber);
+        CustomId = itemViewModel.CustomId.ToStoreString();
         foreach (InventoryField field in Inventory.Fields)
         {
             SetFieldValue(field, itemViewModel.Fields[field.Id].Value);

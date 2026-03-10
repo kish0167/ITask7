@@ -5,7 +5,6 @@ using ITask7.Localization;
 using ITask7.RealTimeChat;
 using ITask7.Services;
 using ITask7.Services.Chat;
-using ITask7.Services.CustomId;
 using ITask7.Services.Users;
 using ITask7.Users;
 using Microsoft.AspNetCore.HttpOverrides;

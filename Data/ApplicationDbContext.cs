@@ -65,7 +65,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
             
-            entity.HasIndex(e => e.CustomId).IsUnique();
+            entity.HasIndex(e => new { e.InventoryId, e.CustomId })
+                .IsUnique();
+            
             entity.HasIndex(e => e.InventoryId);
             
             entity.HasOne(e => e.Inventory)

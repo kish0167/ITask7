@@ -2,6 +2,7 @@
 @using ITask7.ViewModels.Inventories
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Humanizer
+@using ITask7.Models.CustomId
 @model ITask7.ViewModels.Inventories.ItemViewModel
 
 @{
@@ -37,218 +38,247 @@
         </div>
     </div>
 
-    <form id="itemForm" method="post">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Id"/>
-        <input type="hidden" asp-for="CreatedAt"/>
-        <input type="hidden" asp-for="UpdatedAt"/>
+<form id="itemForm" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id"/>
+    <input type="hidden" asp-for="CreatedAt"/>
+    <input type="hidden" asp-for="UpdatedAt"/>
 
-        <div class="row">
-            <!-- Main Content -->
-            <div class="col-lg-8">
-                <!-- System Fields Card -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>System Information</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                custom id placeholder
-                            </div>
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- System Fields Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-3"><i class="bi bi-info-circle me-2"></i>Custom Id</h5>
+                    <div class="d-flex gap-3 small">
+                        <div class="text-muted">
+                            <span class="text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em;">Current</span>
+                            <div class="font-monospace text-dark">@Model.CustomId.ToPrintString()</div>
+                        </div>
+                        <div class="vr"></div>
+                        <div>
+                            <span class="text-uppercase fw-bold text-primary" style="font-size: 0.7rem; letter-spacing: 0.05em;">New</span>
+                            <div id="new-id-label" class="font-monospace text-primary">—</div>
                         </div>
                     </div>
                 </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div id="custom-id-editor" class="row g-3 align-items-end">
+                            @for (int i = 0; i < Model.CustomId.Schema.Elements.Count; i++)
+                            {
+                                IdElement element = Model.CustomId.Schema.Elements[i];
+                                string elementValue = Model.CustomId.Values[i];
+                                bool isReadOnly = !element.IsEditableValue;
+                                bool isFixed = element.Type == IdElementType.Fixed;
 
-                <!-- Dynamic Fields Card -->
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>Item Fields</h5>
-                        <span class="badge bg-secondary" id="fieldCountBadge">@Model.FieldDefinitions.Count fields</span>
+                                <div class="col-sm-6 col-lg-1 custom-id-row" style="min-width: 200px; max-width: 500px;">
+                                    <small class="text-muted d-block mb-1">@element.GetLabel()</small>
+
+                                    <input type="hidden" name="CustomId.Elements[@i].Key.Type" value="@((int)element.Type)"/>
+                                    <input type="hidden" name="CustomId.Elements[@i].Key.Format" value="@element.Format"/>
+
+                                    <input type="text"
+                                           name="CustomId.Elements[@i].Value"
+                                           value="@(isFixed ? element.GetPreview() ?? "" : elementValue)"
+                                           class="form-control custom-id-input @(isReadOnly ? "bg-light text-muted" : "")"
+                                           placeholder="..."
+                                           @(isReadOnly ? "readonly" : "")
+                                           oninput="validateCustomId()"/>
+                                </div>
+                            }
+                        </div>
                     </div>
-                    <div class="card-body">
-                        @if (Model.FieldDefinitions.Any())
-                        {
-                            <div class="row g-3">
-                                @foreach (var fieldDef in Model.FieldDefinitions.OrderBy(f => f.SortOrder))
-                                {
-                                    var fieldValue = Model.Fields.ContainsKey(fieldDef.Id)
-                                        ? Model.Fields[fieldDef.Id]
-                                        : new FieldValueViewModel(fieldDef);
+                </div>
+            </div>
 
-                                    <div class="col-md-@(fieldDef.Type == FieldType.MultiLine ? "12" : "6") field-container"
-                                         data-field-id="@fieldDef.Id"
-                                         data-field-type="@fieldDef.Type">
+            <!-- Dynamic Fields Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>Item Fields</h5>
+                    <span class="badge bg-secondary" id="fieldCountBadge">@Model.FieldDefinitions.Count fields</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.FieldDefinitions.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var fieldDef in Model.FieldDefinitions.OrderBy(f => f.SortOrder))
+                            {
+                                var fieldValue = Model.Fields.ContainsKey(fieldDef.Id)
+                                    ? Model.Fields[fieldDef.Id]
+                                    : new FieldValueViewModel(fieldDef);
 
-                                        <label class="form-label fw-bold">
-                                            @fieldDef.Title
-                                            @if (fieldDef.IsRequired)
-                                            {
-                                                <span class="text-danger">*</span>
-                                            }
-                                        </label>
+                                <div class="col-md-@(fieldDef.Type == FieldType.MultiLine ? "12" : "6") field-container"
+                                     data-field-id="@fieldDef.Id"
+                                     data-field-type="@fieldDef.Type">
 
-                                        @if (!string.IsNullOrEmpty(fieldDef.Description))
+                                    <label class="form-label fw-bold">
+                                        @fieldDef.Title
+                                        @if (fieldDef.IsRequired)
                                         {
-                                            <div class="form-text mb-1">@fieldDef.Description</div>
+                                            <span class="text-danger">*</span>
                                         }
+                                    </label>
 
-                                        @{
-                                            string inputName = $"Fields[{fieldDef.Id}].Value";
-                                            string inputId = $"field_{fieldDef.Id}";
-                                            string currentValue = fieldValue.DisplayValue;
-                                        }
+                                    @if (!string.IsNullOrEmpty(fieldDef.Description))
+                                    {
+                                        <div class="form-text mb-1">@fieldDef.Description</div>
+                                    }
 
-                                        @switch (fieldDef.Type)
-                                        {
-                                            case FieldType.SingleLine:
-                                                <input type="text"
-                                                       name="@inputName"
-                                                       id="@inputId"
-                                                       value="@currentValue"
-                                                       class="form-control"
-                                                       placeholder="Enter @fieldDef.Title..."
-                                                       @(fieldDef.IsRequired ? "required" : "")/>
-                                                break;
+                                    @{
+                                        string inputName = $"Fields[{fieldDef.Id}].Value";
+                                        string inputId = $"field_{fieldDef.Id}";
+                                        string currentValue = fieldValue.DisplayValue;
+                                    }
 
-                                            case FieldType.MultiLine:
-                                                <textarea name="@inputName" 
+                                    @switch (fieldDef.Type)
+                                    {
+                                        case FieldType.SingleLine:
+                                            <input type="text"
+                                                   name="@inputName"
+                                                   id="@inputId"
+                                                   value="@currentValue"
+                                                   class="form-control"
+                                                   placeholder="Enter @fieldDef.Title..."
+                                                   @(fieldDef.IsRequired ? "required" : "")/>
+                                            break;
+
+                                        case FieldType.MultiLine:
+                                            <textarea name="@inputName" 
                                                           id="@inputId"
                                                           class="form-control" 
                                                           rows="4"
                                                           placeholder="Enter @fieldDef.Title..."
                                                           @(fieldDef.IsRequired ? "required" : "")>@currentValue</textarea>
-                                                break;
+                                            break;
 
-                                            case FieldType.Numeric:
-                                                <div class="input-group">
-                                                    <span class="input-group-text">
-                                                        <i class="bi bi-123"></i>
-                                                    </span>
-                                                    <input type="number"
-                                                           name="@inputName"
-                                                           id="@inputId"
-                                                           value="@currentValue"
-                                                           class="form-control"
-                                                           step="any"
-                                                           placeholder="0.00"
-                                                           @(fieldDef.IsRequired ? "required" : "")/>
+                                        case FieldType.Numeric:
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="bi bi-123"></i>
+                                                </span>
+                                                <input type="number"
+                                                       name="@inputName"
+                                                       id="@inputId"
+                                                       value="@currentValue"
+                                                       class="form-control"
+                                                       step="any"
+                                                       placeholder="0.00"
+                                                       @(fieldDef.IsRequired ? "required" : "")/>
+                                            </div>
+                                            break;
+
+                                        case FieldType.Boolean:
+                                            <div class="form-check form-switch mt-2">
+                                                <input type="hidden" name="@inputName" value="false"/>
+                                                <input type="checkbox"
+                                                       name="@inputName"
+                                                       id="@inputId"
+                                                       value="true"
+                                                       class="form-check-input"
+                                                       style="width: 3em; height: 1.5em;"
+                                                       @(currentValue.ToLower() == "true" ? "checked" : "")/>
+                                                <label class="form-check-label ms-2" for="@inputId">Yes / No</label>
+                                            </div>
+                                            break;
+
+                                        case FieldType.Document:
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="bi bi-paperclip"></i>
+                                                </span>
+                                                <input type="file"
+                                                       name="@inputName"
+                                                       id="@inputId"
+                                                       class="form-control"
+                                                       @(fieldDef.IsRequired ? "required" : "")/>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(currentValue))
+                                            {
+                                                <div class="mt-2">
+                                                    <a href="@currentValue" target="_blank" class="btn btn-sm btn-outline-info">
+                                                        <i class="bi bi-eye me-1"></i>View Current Document
+                                                    </a>
                                                 </div>
-                                                break;
+                                            }
 
-                                            case FieldType.Boolean:
-                                                <div class="form-check form-switch mt-2">
-                                                    <input type="hidden" name="@inputName" value="false"/>
-                                                    <input type="checkbox"
-                                                           name="@inputName"
-                                                           id="@inputId"
-                                                           value="true"
-                                                           class="form-check-input"
-                                                           style="width: 3em; height: 1.5em;"
-                                                           @(currentValue.ToLower() == "true" ? "checked" : "")/>
-                                                    <label class="form-check-label ms-2" for="@inputId">Yes / No</label>
-                                                </div>
-                                                break;
+                                            break;
+                                    }
 
-                                            case FieldType.Document:
-                                                <div class="input-group">
-                                                    <span class="input-group-text">
-                                                        <i class="bi bi-paperclip"></i>
-                                                    </span>
-                                                    <input type="file"
-                                                           name="@inputName"
-                                                           id="@inputId"
-                                                           class="form-control"
-                                                           @(fieldDef.IsRequired ? "required" : "")/>
-                                                </div>
-                                                @if (!string.IsNullOrEmpty(currentValue))
-                                                {
-                                                    <div class="mt-2">
-                                                        <a href="@currentValue" target="_blank" class="btn btn-sm btn-outline-info">
-                                                            <i class="bi bi-eye me-1"></i>View Current Document
-                                                        </a>
-                                                    </div>
-                                                }
-
-                                                break;
-                                        }
-
-                                        <input type="hidden" name="Fields[@fieldDef.Id].FieldDefinitionId" value="@fieldDef.Id"/>
-                                        <div class="invalid-feedback">Please provide a valid value for @fieldDef.Title.</div>
-                                    </div>
-                                }
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="alert alert-info mb-0">
-                                <i class="bi bi-info-circle me-2"></i>No custom fields defined for this item type.
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="col-lg-4">
-                <!-- Metadata Card (only for existing items) -->
-                @if (!isNewItem)
-                {
-                    <div class="card shadow-sm mb-4 border-info">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Metadata</h5>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                    <span class="text-muted">Item ID</span>
-                                    <code class="small">@Model.Id.ToString("D")</code>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                    <span class="text-muted">Created</span>
-                                    <span>@Model.CreatedAt.Humanize()</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                    <span class="text-muted">By</span>
-                                    <span class="badge bg-light text-dark">@Model.CreatedByUserName</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                    <span class="text-muted">Last Updated</span>
-                                    <span>@Model.UpdatedAt.Humanize()</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                }
-
-                <!-- Quick Actions -->
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class="bi bi-lightning-charge me-2"></i>Actions</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-outline-primary" onclick="window.print()">
-                                <i class="bi bi-printer me-2"></i>Print
-                            </button>
-                            @if (!isNewItem)
-                            {
-                                <button type="button" class="btn btn-outline-danger" id="deleteBtn">
-                                    <i class="bi bi-trash me-2"></i>Delete Item
-                                </button>
+                                    <input type="hidden" name="Fields[@fieldDef.Id].FieldDefinitionId" value="@fieldDef.Id"/>
+                                    <div class="invalid-feedback">Please provide a valid value for @fieldDef.Title.</div>
+                                </div>
                             }
                         </div>
-                    </div>
-                </div>
-
-                <!-- Validation Summary -->
-                <div id="validationSummary" class="alert alert-danger mt-4 d-none">
-                    <h6><i class="bi bi-exclamation-triangle me-2"></i>Please correct the following errors:</h6>
-                    <ul class="mb-0 small" id="validationList"></ul>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>No custom fields defined for this item type.
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-    </form>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Metadata Card (only for existing items) -->
+            @if (!isNewItem)
+            {
+                <div class="card shadow-sm mb-4 border-info">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Metadata</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Item ID</span>
+                                <code class="small">@Model.Id.ToString("D")</code>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Created</span>
+                                <span>@Model.CreatedAt.Humanize()</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">By</span>
+                                <span class="badge bg-light text-dark">@Model.CreatedByUserName</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Last Updated</span>
+                                <span>@Model.UpdatedAt.Humanize()</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-lightning-charge me-2"></i>Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if (!isNewItem)
+                        {
+                            <button type="button" class="btn btn-outline-danger" id="deleteBtn">
+                                <i class="bi bi-trash me-2"></i>Delete Item
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Validation Summary -->
+            <div id="validationSummary" class="alert alert-danger mt-4 d-none">
+                <h6><i class="bi bi-exclamation-triangle me-2"></i>Please correct the following errors:</h6>
+                <ul class="mb-0 small" id="validationList"></ul>
+            </div>
+        </div>
+    </div>
+</form>
 </div>
 
 <style>
@@ -282,6 +312,11 @@
 
     .form-control {
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .form-control[custom-id-input] {
+        background-image: none !important;
+        border-color: #dee2e6 !important;
     }
 
     .is-invalid {
@@ -339,7 +374,7 @@
                     }, 1000);
                 } else {
                     const errorText = await response.text();
-                    showValidationErrors(['Failed to save item. Please try again.']);
+                    showValidationErrors([errorText]);
                     console.error('Save failed:', errorText);
                 }
             } catch (error) {
@@ -386,7 +421,7 @@
         function collectFormData() {
             const data = {
                 Id: document.querySelector('input[name="Id"]').value || '@Guid.Empty',
-                CustomId: document.querySelector('input[name="CustomId"]').value,
+                CustomId: getCustomId(),
                 InventoryId: inventoryId,
                 Fields: {},
                 FieldDefinitions: []
@@ -432,18 +467,6 @@
             return data;
         }
 
-        function showValidationErrors(errors) {
-            validationList.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
-            validationSummary.classList.remove('d-none');
-            validationSummary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function clearValidationErrors() {
-            validationSummary.classList.add('d-none');
-            validationList.innerHTML = '';
-            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        }
-
         function showToast(title, message, type) {
             const toastHtml = `
                 <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'danger' ? 'danger' : 'primary'} border-0 position-fixed top-0 end-0 m-3" role="alert" style="z-index: 1055;">
@@ -466,7 +489,7 @@
             setTimeout(() => wrapper.remove(), 5000);
         }
 
-        document.querySelectorAll('input, textarea, select').forEach(input => {
+        document.querySelectorAll('input:not(.custom-id-input), textarea, select').forEach(input => {
             input.addEventListener('blur', function() {
                 if (this.checkValidity()) {
                     this.classList.remove('is-invalid');
@@ -500,9 +523,6 @@
             if (draft) {
                 try {
                     const draftData = JSON.parse(draft);
-                    if (draftData.CustomId) {
-                        document.querySelector('input[name="CustomId"]').value = draftData.CustomId;
-                    }
                     Object.keys(draftData.Fields).forEach(fieldId => {
                         const field = draftData.Fields[fieldId];
                         const input = document.getElementById(`field_${fieldId}`);
@@ -525,4 +545,62 @@
             localStorage.removeItem('itemDraft_@Model.Id');
         }
     });
+    
+    function showValidationErrors(errors) {
+        validationList.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
+        validationSummary.classList.remove('d-none');
+        validationSummary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }    
+    
+    function clearValidationErrors() {
+        validationSummary.classList.add('d-none');
+        validationList.innerHTML = '';
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    }
+    
+    function showIdPreview(id){
+        const idLabel = document.getElementById('new-id-label');
+        idLabel.innerHTML = 'New id: ' + id;
+    }
+    
+    async function validateCustomId() {
+        const payload = getCustomId()
+ 
+        try {
+            const response = await fetch(`/CustomId/ValidateId`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        
+            const result = await response.json();
+            showIdPreview(result.preview);
+            if (result.errors.length > 0)
+                showValidationErrors(result.errors);
+            else    
+                clearValidationErrors();
+        } catch (error) {
+            console.error("Validation failed", error);
+        }
+    }    
+    
+    function getCustomId(){
+        const container = document.getElementById('custom-id-editor');
+        const values = [];
+        const elements = [];
+        const rows = container.querySelectorAll('.custom-id-row');
+            rows.forEach(row => {
+            const type = parseInt(row.querySelector('input[name*="Key.Type"]').value);
+            const format = row.querySelector('input[name*="Key.Format"]').value;
+            const value = row.querySelector('.custom-id-input').value;
+            values.push(value);
+            elements.push({Type: type, Format: format});
+        });
+        return {
+            Values: values,
+            Schema: {Elements: elements}
+        };
+    }
+    
+    validateCustomId();
 </script>

@@ -207,8 +207,15 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         if (item == null) item = await CreateNewItem(itemViewModel.InventoryId, user);
         if (item == null) return null;
         item.Edit(itemViewModel);
+        if (!await CustomIdUniquenessCheck(item)) return null;
         await _dbContext.SaveChangesAsync();
         return item.Id;
+    }
+
+    private async Task<bool> CustomIdUniquenessCheck(Item item)
+    {
+        return !await _dbContext.Items
+            .AnyAsync(i => i.InventoryId == item.InventoryId && i.CustomId == item.CustomId);
     }
 
     public async Task<HomePageViewModel?> GetHomePage(string userId)

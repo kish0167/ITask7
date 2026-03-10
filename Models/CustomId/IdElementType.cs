@@ -9,5 +9,5 @@ public enum IdElementType
     Decimal9,
     Guid,
     Time,
-    Sequence
+    Sequential
 }

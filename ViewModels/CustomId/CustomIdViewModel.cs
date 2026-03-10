@@ -1,34 +1,86 @@
 ﻿using ITask7.Models.CustomId;
 using ITask7.Models.Inventories;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ITask7.ViewModels.CustomId;
 
 public class CustomIdViewModel
 {
-    private CustomIdSchema Schema { get; set; }
-    public Dictionary<IdElement, string> Elements { get; set; } = new();
-    private const string Separator = "/";
+    public List<string> Values { get; set; } = new();
+    public CustomIdSchema Schema { get; set; }
+    private string _original;
+    private int _sequential;
+    private List<string> Errors { get; } = new();
     
     public CustomIdViewModel(){}
     
     public CustomIdViewModel(Inventory inventory)
     {
         Schema = new CustomIdSchema(inventory.CustomIdSchemaJson);
-        Elements = Schema.GenerateNew(inventory.Sequential);
+        Values = Schema.GenerateNew(inventory.Sequential);
+        _original = "";
     }
     
-    public CustomIdViewModel(string id, Inventory inventory)
+    public CustomIdViewModel(Item item, string schemaJson)
     {
-        Schema = new CustomIdSchema(inventory.CustomIdSchemaJson);
-        string[] values = id.Split(Separator);
-        for (int i = 0; i < values.Length && i < Schema.Elements.Count; i++)
+        Schema = new CustomIdSchema(schemaJson);
+        _original = item.CustomId;
+        string[] values = item.CustomId.Split(Schema.Separator);
+        for (int i = 0; Values.Count < Schema.Elements.Count; i++)
         {
-            Elements.Add(Schema.Elements[i], values[i]);
+            Values.Add(i < values.Length ? values[i] : "");
+        }
+
+        InjectSequential(item.SequentialNumber);
+    }
+
+    public void InjectSequential(int itemSequentialNumber)
+    {
+        for (int i = 0; i < Schema.Elements.Count; i++)
+        {
+            if (Schema.Elements[i].Type == IdElementType.Sequential)
+            {
+                Values[i] = itemSequentialNumber.ToString();
+            }
         }
     }
 
-    public override string ToString()
+    public string GetPreview()
     {
-        return String.Join(Separator, Elements.Select(e => e.Value));
+        return String.Join("",Values);
+    }
+    
+    public string ToPrintString()
+    {
+        return _original.Replace(Schema.Separator.ToString(), "");
+    }
+    
+    public string ToStoreString()
+    {
+        return String.Join(Schema.Separator, Values);
+    }
+
+    public ValidationResult Validate()
+    {
+        return new ValidationResult()
+        {
+            Preview = GetPreview(),
+            IsValid = IsValid(),
+            Errors = Errors
+        };
+    }
+    
+    private bool IsValid()
+    {
+        bool isValid = true;
+        List<IdElement> elements = Schema.Elements;
+        Errors.Clear();
+        for (int i = 0; i < elements.Count; i++)
+        {
+            if (elements[i].IsValidValue(Values[i])) continue;
+            Errors.Add($"{elements[i].Type.ToString()} formatting error ({i+1})");
+            isValid = false;
+        }
+        return isValid;
     }
 }

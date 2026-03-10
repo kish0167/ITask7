@@ -1,4 +1,5 @@
 ﻿using ITask7.Models.Chat;
+using ITask7.Models.CustomId;
 using ITask7.Users;
 using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
@@ -36,6 +37,8 @@ public class Inventory
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
         Creator = creator;
+        CustomIdSchemaJson = CustomIdSchema.Default().ToJson();
+        Sequential = 0;
     }
     public InventoryViewModel ToViewModel()
     {

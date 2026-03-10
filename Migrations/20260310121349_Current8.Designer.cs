@@ -3,6 +3,7 @@ using System;
 using ITask7.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ITask7.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260310121349_Current8")]
+    partial class Current8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,10 +206,10 @@ namespace ITask7.Migrations
 
                     b.HasIndex("CreatedBy");
 
-                    b.HasIndex("InventoryId");
-
-                    b.HasIndex("InventoryId", "CustomId")
+                    b.HasIndex("CustomId")
                         .IsUnique();
+
+                    b.HasIndex("InventoryId");
 
                     b.ToTable("items", (string)null);
                 });

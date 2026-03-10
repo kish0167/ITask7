@@ -6,22 +6,54 @@
     <div class="drag-handle px-2">
         <i class="bi bi-grip-vertical fs-4"></i>
     </div>
-    
-    <select class="form-select type-select w-auto" onchange="updatePreview()" name="Type">
+
+    <select class="form-select type-select w-auto" onchange="updateType(this)" name="Type">
         @foreach (IdElementType type in Enum.GetValues<IdElementType>())
         {
             <option value="@((int)type)" selected="@(Model.Type == type)">@type</option>
         }
     </select>
-    
+
     <div class="flex-grow-1">
-        <input type="text" class="form-control value-input" 
-               placeholder="Format (e.g. yyyy, D3, X5_)" 
-               value="@Model.Value" 
-               oninput="updatePreview()" name="Value" />
+        <input type="text" class="form-control value-input @(Model.IsEditableFormat ? "" : "bg-light text-muted")"
+               placeholder="@(Model.IsEditableFormat ? "Format string" : "")"
+               value="@Model.Format"
+               @(Model.IsEditableFormat ? "" : "readonly")
+               oninput="validateSchema()" name="Value"/>
     </div>
 
-    <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('.element-row').remove(); updatePreview();">
+    <!--
+    <div class="flex-grow-1">
+        <input type="text" class="form-control value-input"
+               placeholder="Format string"
+               value="@Model.Format"
+               oninput="validateSchema()" name="Value"/>
+    </div>
+    -->
+
+    <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('.element-row').remove(); validateSchema();">
         <i class="bi bi-x-circle"></i>
     </button>
 </div>
+
+<script>
+    function updateType(select) {
+        const element = select.parentElement;
+        const valueInput = element.querySelector('.value-input');
+        const value = parseInt(select.value);
+        const isBlocked = [3, 4, 7].includes(value);
+    
+        if (isBlocked) {
+            valueInput.value = "";
+            valueInput.placeholder = "";
+            valueInput.readOnly = true;
+            valueInput.classList.add('bg-light', 'text-muted');
+        } else {
+            valueInput.placeholder = "Format string";
+            valueInput.readOnly = false;
+            valueInput.classList.remove('bg-light', 'text-muted');
+        }
+       
+        validateSchema();
+    }
+</script>

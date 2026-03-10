@@ -8,8 +8,7 @@ namespace ITask7.ViewModels.Inventories;
 public class ItemViewModel
 {
     public Guid Id { get; set; }
-    public CustomIdViewModel CustomId { get; set; }
-    public string CustomIdString => CustomId.ToString();
+    public CustomIdViewModel CustomId { get; set; } = new();
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public string? CreatedByUserName { get; set; }
@@ -17,24 +16,26 @@ public class ItemViewModel
     public List<FieldDefinitionViewModel> FieldDefinitions { get; set; } = new();
     public Guid InventoryId { get; set; }
     public string CreatedAtString => CreatedAt.Humanize();
+    
+    public string CustomIdString() => CustomId.ToPrintString();
 
     public ItemViewModel(){}
     
     public ItemViewModel(Inventory inventory)
     {
         Id = Guid.Empty;
+        CustomId = new CustomIdViewModel(inventory);
         InventoryId = inventory.Id;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
         CreatedByUserName = "none";
-        CustomId = new CustomIdViewModel(inventory);
         PopulateFields(inventory);
     }
 
     public ItemViewModel(Item item)
     {
         Id = item.Id;
-        CustomId = new CustomIdViewModel(item.CustomId, item.Inventory);
+        CustomId = new CustomIdViewModel(item, item.Inventory.CustomIdSchemaJson);
         CreatedByUserName = item.Creator?.UserName ?? "creator not found";
         CreatedAt = item.CreatedAt;
         UpdatedAt = item.UpdatedAt;

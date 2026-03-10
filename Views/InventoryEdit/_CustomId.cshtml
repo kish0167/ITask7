@@ -7,10 +7,10 @@
         <h5 class="mb-0">Example: </h5>
         <h5 class="mb-0 text-primary p-2 rounded shadow-sm" id="preview-text">Loading...</h5>
     </div>
-    
+
     <div class="card-body">
         <p class="text-muted small">Drag elements to reorder. Drag to the trash icon to remove.</p>
-        
+
         <form id="schema-form">
             <div id="element-list" class="list-group mb-3">
                 @foreach (IdElement element in Model.CustomIdSchema.Elements)
@@ -23,7 +23,7 @@
                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addElement()">
                     <i class="bi bi-plus-lg"></i> Add element
                 </button>
-                
+
                 <div id="trash-zone" class="btn btn-outline-danger btn-sm border-dashed" style="display:none;">
                     <i class="bi bi-trash"></i> Drop here to delete
                 </div>
@@ -33,9 +33,17 @@
         </form>
     </div>
 </div>
+<div id="validation-summary" class="alert alert-danger d-none" role="alert">
+    <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+        <strong>Please fix the following errors:</strong>
+    </div>
+    <ul id="error-list" class="mb-0 small">
+    </ul>
+</div>
 
 <template id="element-template">
-    @Html.Partial("_IdElementRow", new IdElement { Type = IdElementType.Fixed, Value = "" })
+    @Html.Partial("_IdElementRow", new IdElement { Type = IdElementType.Fixed, Format = "" })
 </template>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -47,23 +55,29 @@
     let lastCheck = false;
 
     const sortable = new Sortable(list, {
+        group: 'shared',
         animation: 150,
         handle: '.drag-handle',
-        ghostClass: 'bg-light',
         onStart: () => trashZone.style.display = 'block',
-        onEnd: (evt) => {
+        onEnd: () => {
             trashZone.style.display = 'none';
-            if (evt.to === trashZone) {
-                evt.item.remove();
-            }
-            updatePreview();
+            validateSchema();
+        }
+    });
+    
+    const trashSortable = new Sortable(trashZone, {
+        group: 'shared',
+        onAdd: function (evt) {
+            evt.item.remove();
+            validateSchema();
+            trashZone.style.display = 'none';
         }
     });
 
-    async function updatePreview() {
+    async function validateSchema() {
         const schema = { Elements: getElementsFromDom() };
         try {
-            const response = await fetch('/CustomId/GeneratePreview', {
+            const response = await fetch('/CustomId/ValidateSchema', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(schema)
@@ -75,6 +89,7 @@
             } else {
                 previewEl.classList.remove('text-danger');
             }
+            showErrors(result.errors);
             lastCheck = result.isValid;
         } catch (e) { console.error("Preview failed", e); }
     }
@@ -82,7 +97,7 @@
     function getElementsFromDom() {
         return Array.from(list.querySelectorAll('.element-row')).map(row => ({
             Type: parseInt(row.querySelector('.type-select').value),
-            Value: row.querySelector('.value-input').value
+            Format: row.querySelector('.value-input').value
         }));
     }
 
@@ -90,7 +105,7 @@
         if (list.children.length >= 10) return alert("Limit of 10 elements reached.");
         const template = document.getElementById('element-template').content.cloneNode(true);
         list.appendChild(template);
-        updatePreview();
+        validateSchema();
     }
 
     async function saveSchema() {
@@ -109,8 +124,26 @@
         
         if (response === false) alert("Couldn't save schema");
     }
+    
+    function showErrors(errors) {
+        const summary = document.getElementById('validation-summary');
+        const list = document.getElementById('error-list');
+        
+        list.innerHTML = '';
+        
+        if (errors.length > 0) {
+            errors.forEach(err => {
+                const li = document.createElement('li');
+                li.textContent = err;
+                list.appendChild(li);
+            });
+            summary.classList.remove('d-none');
+        } else {
+            summary.classList.add('d-none');
+        }
+    }
 
-    updatePreview();
+    validateSchema();
 </script>
 
 <style>

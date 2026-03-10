@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using ITask7.Services.CustomId;
+using ITask7.ViewModels.CustomId;
 using Newtonsoft.Json;
 
 namespace ITask7.Models.CustomId;
@@ -7,6 +7,7 @@ namespace ITask7.Models.CustomId;
 public class CustomIdSchema
 {
     public List<IdElement> Elements { get; set; } = new();
+    public char Separator => '\x1F';
     private List<string> Errors { get;  } = new();
     private const int MaxElements = 10;
     private const int MinElements = 1;
@@ -28,14 +29,34 @@ public class CustomIdSchema
         }
     }
 
+    public static CustomIdSchema Default()
+    {
+        return new CustomIdSchema()
+        {
+            Elements =
+            [
+                new IdElement()
+                {
+                    Type = IdElementType.Fixed,
+                    Format = "custom-"
+                },
+                new IdElement()
+                {
+                    Type = IdElementType.Guid,
+                    Format = ""
+                }
+            ]
+        };
+    }
+
     public string ToJson()
     {
         return JsonConvert.SerializeObject(Elements, Formatting.None);
     }
 
-    public SchemaValidationResult Validate()
+    public ValidationResult Validate()
     {
-        return new SchemaValidationResult()
+        return new ValidationResult()
         {
             Preview = GetPreview(),
             IsValid = IsValid(),
@@ -43,12 +64,12 @@ public class CustomIdSchema
         };
     }
 
-    public Dictionary<IdElement, string> GenerateNew(int sequential)
+    public List<string> GenerateNew(int sequential)
     {
-        Dictionary<IdElement, string> id = new();
+        List<string> id = new();
         foreach (IdElement element in Elements)
         {
-            id.Add(element, element.Generate(sequential));
+            id.Add(element.Generate(sequential).Replace(Separator.ToString(), ""));
         }
         return id;
     }
@@ -67,17 +88,22 @@ public class CustomIdSchema
     private bool IsValid()
     {
         Errors.Clear();
-        bool elements = ElementsOk();
+        bool elements = ElementFormatsOk();
         bool count = ElementCountOk();
         bool uniqueness = EnoughUniqueness();
         return elements && count && uniqueness;
     }
 
-    private bool ElementsOk()
+    private bool ElementFormatsOk()
     {
-        if (Elements.All(e => e.IsValid())) return true;
-        Errors.Add("At least one element contains formatting error");
-        return false;
+        bool isOk = true;
+        for (int i = 0; i < Elements.Count; i++)
+        {
+            if (Elements[i].IsValidFormat()) continue;
+            Errors.Add($"{Elements[i].Type.ToString()}({i+1}) invalid format");
+            isOk = false;
+        }
+        return isOk;
     }
 
     private bool ElementCountOk()
@@ -101,9 +127,10 @@ public class CustomIdSchema
     {
         if (Elements.Any(e => e.Type == IdElementType.Int20)) return true;
         if (Elements.Any(e => e.Type == IdElementType.Int32)) return true;
+        if (Elements.Any(e => e.Type == IdElementType.Decimal6)) return true;
         if (Elements.Any(e => e.Type == IdElementType.Decimal9)) return true;
-        if (Elements.Any(e => e.Type == IdElementType.Decimal9)) return true;
-        if (Elements.Any(e => e.Type == IdElementType.Sequence)) return true;
+        if (Elements.Any(e => e.Type == IdElementType.Sequential)) return true;
+        if (Elements.Any(e => e.Type == IdElementType.Guid)) return true;
         Errors.Add("Not enough uniqueness");
         return false;
     }

@@ -1,7 +1,7 @@
 ﻿using ITask7.Models.CustomId;
 using ITask7.Services;
-using ITask7.Services.CustomId;
 using ITask7.Users;
+using ITask7.ViewModels.CustomId;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,25 +13,26 @@ public class CustomIdController(DbApiService dbApiService, UserManager<Applicati
     private readonly DbApiService _dbApiService = dbApiService;
     
     [HttpPost]
+    public IActionResult ValidateSchema([FromBody] CustomIdSchema? schema)
+    {
+        if (schema == null) return BadRequest("schema is null");
+        return Ok(schema.Validate());
+    }
+    
+    [HttpPost]
     public async Task<IActionResult> SetSchema([FromQuery] Guid inventoryId, [FromBody] CustomIdSchema? schema)
     {
         if (!await CreatorAccessCheck(inventoryId)) return BadRequest();
         if (schema == null) return BadRequest("schema is null");
+        if (!schema.Validate().IsValid) BadRequest("Invalid schema");
         bool success = await _dbApiService.SetCustomIdSchema(inventoryId, schema);
         return Ok(success);
     }
     
     [HttpPost]
-    public IActionResult GeneratePreview([FromBody] CustomIdSchema? schema)
+    public async Task<IActionResult> ValidateId([FromBody] CustomIdViewModel? customId)
     {
-        if (schema == null) return Ok("error fetching preview - schema is null");
-        SchemaValidationResult preview = schema.Validate();
-        return Ok(preview);
-    }
-    
-    [HttpPost]
-    public async Task<IActionResult> ValidateId([FromQuery] Guid inventoryId)
-    {
-        return Ok(true);
+        if (customId == null) return BadRequest("id is null");
+        return Ok(customId.Validate());
     }
 }

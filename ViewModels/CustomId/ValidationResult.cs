@@ -1,6 +1,6 @@
-﻿namespace ITask7.Services.CustomId;
+﻿namespace ITask7.ViewModels.CustomId;
 
-public class SchemaValidationResult
+public class ValidationResult
 {
     public string? Preview { get; set; }
     public bool IsValid { get; set; }
