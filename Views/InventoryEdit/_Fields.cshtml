@@ -27,18 +27,18 @@
     <h5 class="mb-0">Field Definitions</h5>
 </div>
 
-<div class="table-responsive" data-bulk-context="access" data-context-id="@Model.Id">
-    <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+<div class="card shadow-sm border-0 bg-body-tertiary" data-bulk-context="access" data-context-id="@Model.Id">
+    <div class="d-flex justify-content-between align-items-center card-header bg-transparent border-bottom py-3">
         <partial name="Components/BulkActionToolbar/Default" model="fieldsToolbarModel"/>
         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addFieldModal">
             <i class="bi bi-plus-lg me-1"></i>Add Field
         </button>
     </div>
 
-    <table class="table table-hover table-striped align-middle">
-        <thead class="table-light">
-        <tr>
-            <th style="width: 40px;">
+    <table class="table table-hover mb-0 align-middle">
+        <thead class="table">
+        <tr class="text-uppercase small fw-bold text-muted">
+            <th>
                 <input class="form-check-input select-all"
                        type="checkbox">
             </th>
@@ -73,7 +73,7 @@
                         </span>
                     </td>
                     <td>
-                        <span class="badge bg-light text-dark border">
+                        <span class="badge border text-body">
                             @field.Type
                         </span>
                     </td>
@@ -228,49 +228,54 @@
                 <div class="modal-body">
                     <form id="editFieldForm">
                         <input type="hidden" id="editFieldId" name="Id">
+                        
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                                 <label for="editFieldTitle" class="form-label">Title <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="editFieldTitle" name="Title" required maxlength="100">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label">Type</label>
                                 <input type="text" class="form-control" id="editFieldTypeDisplay" disabled readonly>
                                 <input type="hidden" id="editFieldType" name="Type">
                             </div>
+    
                             <div class="col-12">
                                 <label for="editFieldDescription" class="form-label">Description</label>
                                 <textarea class="form-control" id="editFieldDescription" name="Description" rows="2" maxlength="500"></textarea>
                             </div>
-                            <div class="col-md-6">
+    
+                            <div class="col-md-4">
                                 <label class="form-label">Sort Order</label>
-                                <input type="text" class="form-control" id="editFieldSortOrderDisplay" disabled readonly>
+                                <input type="number" class="form-control" id="editFieldSortOrderDisplay">
                                 <input type="hidden" id="editFieldSortOrder" name="SortOrder">
                             </div>
-                            <div class="col-md-6 d-flex align-items-center justify-content-center">
-                                <div class="form-check form-switch mt-3">
-                                    <input class="form-check-input" type="checkbox" id="editFieldDisplayInTable" name="DisplayInTable" value="true">
-                                    <label class="form-check-label" for="editFieldDisplayInTable">Display in Table</label>
+    
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="editFieldIsRequired" name="IsRequired" value="true">
+                                    <label class="form-check-label" for="editFieldIsRequired">Required field</label>
                                 </div>
                             </div>
-                            <div class="col-md-6 d-flex align-items-center justify-content-center">
-                                <div class="form-check form-switch mt-3">
-                                    <input class="form-check-input" type="checkbox" id="editFieldIsRequired" name="IsRequired" value="true">
-                                    <label class="form-check-label" for="editFieldDisplayInTable">Is required</label>
+    
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="editFieldDisplayInTable" name="DisplayInTable" value="true">
+                                    <label class="form-check-label" for="editFieldDisplayInTable">Show in table</label>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" form="editFieldForm" class="btn btn-primary">Save Changes</button>
                 </div>
             </div>
         </div>
     </div>
-
-
+    
+    
 </div>
 
 <script>
@@ -288,7 +293,6 @@
             Title: document.getElementById('fieldTitle').value,
             Description: document.getElementById('fieldDescription').value,
             Type: parseInt(document.getElementById('fieldType').value),
-            SortOrder: -1,
             DisplayInTable: document.getElementById('fieldDisplayInTable').checked,
             IsRequired: document.getElementById('fieldIsRequired').checked
         };
@@ -325,6 +329,7 @@
             Id: document.getElementById('editFieldId').value,
             Title: document.getElementById('editFieldTitle').value,
             Description: document.getElementById('editFieldDescription').value,
+            SortOrder: parseInt(document.getElementById('editFieldSortOrderDisplay').value),
             DisplayInTable: document.getElementById('editFieldDisplayInTable').checked,
             IsRequired: document.getElementById('editFieldIsRequired').checked,
         };

@@ -35,6 +35,7 @@ public class ViewModelsConverter()
         field.Name = TitleToName(fieldViewModel.Title);
         field.Description = fieldViewModel.Description;
         field.DisplayInTable = fieldViewModel.DisplayInTable;
+        field.SortOrder = fieldViewModel.SortOrder;
         field.IsRequired = fieldViewModel.IsRequired;
     }
     

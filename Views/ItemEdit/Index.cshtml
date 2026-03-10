@@ -186,23 +186,24 @@
                                         case FieldType.Document:
                                             <div class="input-group">
                                                 <span class="input-group-text">
-                                                    <i class="bi bi-paperclip"></i>
+                                                    <i class="bi bi-link-45deg"></i>
                                                 </span>
-                                                <input type="file"
+                                                <input type="url"
                                                        name="@inputName"
                                                        id="@inputId"
                                                        class="form-control"
-                                                       @(fieldDef.IsRequired ? "required" : "")/>
+                                                       placeholder="https://..."
+                                                       value="@currentValue"
+                                                       @(fieldDef.IsRequired ? "required" : "") />
                                             </div>
                                             @if (!string.IsNullOrEmpty(currentValue))
                                             {
                                                 <div class="mt-2">
                                                     <a href="@currentValue" target="_blank" class="btn btn-sm btn-outline-info">
-                                                        <i class="bi bi-eye me-1"></i>View Current Document
+                                                        <i class="bi bi-box-arrow-up-right me-1"></i>Open Document
                                                     </a>
                                                 </div>
                                             }
-
                                             break;
                                     }
 

@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model ITask7.ViewModels.Pages.InventoryEditPageViewModel
 <div class="card shadow-sm" id="chat-container" data-inventory-id="@Model.Inventory.Id">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div class="card-header bg-body-tertiary text-body d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
             <i class="bi bi-chat-dots me-2"></i>Inventory Discussion
         </h5>
@@ -17,10 +17,10 @@
                 {
                     <div class="message mb-3" data-sender="@message.SenderName">
                         <div class="d-flex @(message.SenderName == User.Identity?.Name ? "justify-content-end" : "justify-content-start")">
-                            <div class="message-bubble p-2 px-3 rounded-3 @(message.SenderName == User.Identity?.Name ? "message-mine" : "bg-light border")" style="max-width: 75%;">
-                                <div class="message-header small opacity-75 mb-1">
+                            <div class="message-bubble p-2 px-3 rounded-3 @(message.SenderName == User.Identity?.Name ? "message-mine" : "message-other")" style="max-width: 75%;">
+                                <div class="message-header small mb-1">
                                     <strong>@message.SenderName</strong>
-                                    <span class="ms-2">@message.SentAt.ToString("HH:mm")</span>
+                                    <span class="ms-2 text-secondary">@message.SentAt.ToString("HH:mm")</span>
                                 </div>
                                 <div class="message-text markdown-content">@Html.Raw(Markdown.ToHtml(message.Text, new MarkdownPipelineBuilder()
                                                                                .UseSoftlineBreakAsHardlineBreak()
@@ -42,7 +42,7 @@
         </div>
     </div>
     
-    <div class="card-footer bg-white">
+    <div class="card-footer">
         <form id="chat-form" class="d-flex gap-2">
             <textarea id="message-input" class="form-control" rows="1" placeholder="Type a message..." autocomplete="off" maxlength="2000" style="resize: none; min-height: 38px; max-height: 120px;"></textarea>
             <button type="submit" class="btn btn-primary" id="send-btn">
@@ -54,53 +54,125 @@
 
 <style>
     .chat-messages {
-        background-color: #f8f9fa;
+        background-color: var(--bs-body-bg);
     }
+    
     .message-bubble {
         word-wrap: break-word;
+        background-color: var(--bs-secondary-bg);
+        border: 1px solid var(--bs-border-color);
+        color: var(--bs-body-color);
     }
+    
+    .message-mine {
+        background-color: var(--bs-primary-bg-subtle);
+        border: 2px solid var(--bs-primary);
+        color: var(--bs-body-color);
+    }
+    
+    .message-mine .message-header strong {
+        color: var(--bs-primary);
+    }
+    
+    .message-header strong {
+        color: var(--bs-body-color);
+    }
+    
     .message {
         animation: fadeIn 0.3s ease-in;
     }
+    
     @@keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
     }
+    
     #chat-messages::-webkit-scrollbar {
         width: 6px;
     }
+    
     #chat-messages::-webkit-scrollbar-thumb {
-        background-color: rgba(0,0,0,0.2);
+        background-color: var(--bs-secondary);
         border-radius: 3px;
     }
     
-    .message-mine {
-        background-color: white;
-        border: 2px solid #0d6efd;
-        color: #212529;
-    }
-    
-    .message-mine .message-header {
-        color: #0d6efd !important;
-        opacity: 1 !important;
+    #chat-messages::-webkit-scrollbar-track {
+        background-color: var(--bs-secondary-bg);
     }
 
-    .message-mine .markdown-content code {
-        background: rgba(13, 110, 253, 0.1);
-        color: #0d6efd;
-    }
-    
+    /* Markdown Content Styling with CSS Variables */
     .markdown-content p { margin-bottom: 0.5rem; }
     .markdown-content p:last-child { margin-bottom: 0; }
-    .markdown-content ul, .markdown-content ol { padding-left: 1.25rem; margin-bottom: 0.5rem; }
-    .markdown-content code { background: rgba(0,0,0,0.1); padding: 0.125rem 0.25rem; border-radius: 3px; font-size: 0.875em; }
-    .markdown-content pre { background: #f4f4f4; padding: 0.75rem; border-radius: 4px; overflow-x: auto; margin-bottom: 0.5rem; }
-    .markdown-content pre code { background: none; padding: 0; }
-    .markdown-content blockquote { border-left: 3px solid #dee2e6; padding-left: 0.75rem; margin-left: 0; color: #6c757d; }
-    .markdown-content h1, .markdown-content h2, .markdown-content h3 { font-size: 1.1em; margin-bottom: 0.5rem; font-weight: bold; }
-    .markdown-content table { width: 100%; border-collapse: collapse; margin-bottom: 0.5rem; }
-    .markdown-content th, .markdown-content td { border: 1px solid #dee2e6; padding: 0.375rem; }
-    .markdown-content th { background: rgba(0,0,0,0.05); }
+    .markdown-content ul, .markdown-content ol { 
+        padding-left: 1.25rem; 
+        margin-bottom: 0.5rem; 
+    }
+    
+    .markdown-content code { 
+        background: var(--bs-secondary-bg); 
+        color: var(--bs-code-color); 
+        padding: 0.125rem 0.25rem; 
+        border-radius: 3px; 
+        font-size: 0.875em; 
+    }
+    
+    .message-mine .markdown-content code {
+        background: rgba(var(--bs-primary-rgb), 0.15);
+        color: var(--bs-primary);
+    }
+    
+    .markdown-content pre { 
+        background: var(--bs-tertiary-bg); 
+        padding: 0.75rem; 
+        border-radius: 4px; 
+        overflow-x: auto; 
+        margin-bottom: 0.5rem; 
+    }
+    
+    .markdown-content pre code { 
+        background: none; 
+        padding: 0; 
+        color: var(--bs-body-color);
+    }
+    
+    .markdown-content blockquote { 
+        border-left: 3px solid var(--bs-border-color); 
+        padding-left: 0.75rem; 
+        margin-left: 0; 
+        color: var(--bs-secondary-color); 
+    }
+    
+    .markdown-content h1, .markdown-content h2, .markdown-content h3 { 
+        font-size: 1.1em; 
+        margin-bottom: 0.5rem; 
+        font-weight: bold; 
+        color: var(--bs-body-color);
+    }
+    
+    .markdown-content table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin-bottom: 0.5rem; 
+    }
+    
+    .markdown-content th, .markdown-content td { 
+        border: 1px solid var(--bs-border-color); 
+        padding: 0.375rem; 
+    }
+    
+    .markdown-content th { 
+        background: var(--bs-secondary-bg); 
+    }
+    
+    .markdown-content td {
+        background: var(--bs-body-bg);
+    }
+    
+    /* Ensure footer matches card theme */
+    .card-footer {
+        background-color: var(--bs-card-cap-bg);
+        border-top: 1px solid var(--bs-card-border-color);
+    }
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
@@ -138,18 +210,18 @@
         connection.on("ReceiveMessage", (data) => {
             const isMe = data.senderName === '@Model.Inventory.ChatViewModel.CurrentUserName';
             const html = `
-                <div class="message mb-3" data-sender="${data.senderName}">
-                    <div class="d-flex ${isMe ? "justify-content-end" : "justify-content-start"}">
-                        <div class="message-bubble p-2 px-3 rounded-3 ${isMe ? "message-mine" : "bg-light border"}">
-                            <div class="message-header small opacity-75 mb-1">
-                                <strong>${data.senderName}</strong>
-                                <span class="ms-2">${new Date(data.sentAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    <div class="message mb-3" data-sender="${data.senderName}">
+                        <div class="d-flex ${isMe ? "justify-content-end" : "justify-content-start"}">
+                            <div class="message-bubble p-2 px-3 rounded-3 ${isMe ? "message-mine" : "message-other"}">
+                                <div class="message-header small mb-1">
+                                    <strong>${data.senderName}</strong>
+                                    <span class="ms-2 text-secondary">${new Date(data.sentAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                </div>
+                                <div class="message-text markdown-content"></div>
                             </div>
-                            <div class="message-text markdown-content"></div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
             
             document.getElementById('chat-messages').insertAdjacentHTML('beforeend', html);
             scrollToBottom();

@@ -13,14 +13,22 @@
 
     <!-- Owned Inventories Section -->
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-box-seam me-2"></i>
-                My inventories @(Model.OwnedInventories.Count > 0 ? $": {Model.OwnedInventories.Count}" : "")
+        <div class="card-header border-bottom d-flex justify-content-between align-items-center bg-body-tertiary py-3">
+            <h5 class="mb-0 fw-semibold text-body">
+                <i class="bi bi-box-seam me-2 text-primary"></i>
+                My inventories 
+                @if (Model.OwnedInventories.Count > 0)
+                {
+                    <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis border border-primary-subtle ms-1">
+                        @Model.OwnedInventories.Count
+                    </span>
+                }
             </h5>
-            <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#createInventoryModal">
-                    <i class="bi bi-plus-lg"></i> New
+            <div class="d-flex align-items-center">
+                <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" 
+                        data-bs-toggle="modal" data-bs-target="#createInventoryModal">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>New</span>
                 </button>
             </div>
         </div>
@@ -29,7 +37,7 @@
             {
                 <div class="table-responsive">
                     <table class="table table-hover mb-0" data-toggle="table" data-sortable="true">
-                        <thead class="table-light">
+                        <thead class="table">
                         <tr>
                             <th data-sortable="true">Name</th>
                             <th>Description</th>
@@ -42,7 +50,8 @@
                         {
                             <tr class="cursor-pointer" onclick="location.href='@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })'" style="cursor: pointer;">
                                 <td>
-                                    <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })">
+                                    <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })"
+                                       class="text-decoration-none fw-semibold link-primary">
                                         @inventory.Name
                                     </a>
                                 </td>
@@ -83,10 +92,16 @@
 
     <!-- Available Inventories Section -->
     <div class="card shadow-sm">
-        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-people me-2"></i>
-                Available inventories @(Model.AvailableInventories.Count > 0 ? $": {Model.AvailableInventories.Count}" : "")
+        <div class="card-header border-bottom d-flex justify-content-between align-items-center bg-body-tertiary py-3">
+            <h5 class="mb-0 fw-semibold text-body">
+                <i class="bi bi-people me-2 text-success"></i>
+                Available inventories
+                @if (Model.AvailableInventories.Count > 0)
+                {
+                    <span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle ms-1">
+                        @Model.AvailableInventories.Count
+                    </span>
+                }
             </h5>
         </div>
         <div class="card-body p-0">
@@ -94,13 +109,12 @@
             {
                 <div class="table-responsive">
                     <table class="table table-hover mb-0" data-toggle="table" data-sortable="true">
-                        <thead class="table-light">
+                        <thead class="table">
                         <tr>
                             <th data-sortable="true">Name</th>
                             <th>Description</th>
                             <th data-sortable="true">Owner</th>
                             <th data-sortable="true">Items</th>
-                            <th>Your Access</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -108,7 +122,8 @@
                         {
                             <tr class="cursor-pointer" style="cursor: pointer;">
                                 <td class="fw-semibold text-success">
-                                    <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })">
+                                    <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })"
+                                       class="text-decoration-none fw-semibold link-primary">
                                         @inventory.Name
                                     </a>
                                 </td>
@@ -116,17 +131,12 @@
                                     @inventory.Description
                                 </td>
                                 <td>
-                                    <span class="badge bg-light text-dark border">
+                                    <span class="badge border bg-body-secondary text-body-secondary rounded-pill px-2">
                                         <i class="bi bi-person-circle me-1"></i>@inventory.CreatedBy
                                     </span>
                                 </td>
                                 <td>
                                     <span class="badge bg-warning text-dark">@inventory.Items.Count</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-success">
-                                        <i class="bi bi-pencil-square me-1"></i>Write
-                                    </span>
                                 </td>
                             </tr>
                         }

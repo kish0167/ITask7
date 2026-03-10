@@ -56,7 +56,7 @@ public class InventoryEditController(DbApiService dbApiService, UserManager<Appl
     {
         if (field == null) return BadRequest();
         if (!await CreatorAccessCheck(inventoryId)) return BadRequest();
-        Guid? id = await _dbApiService.EditFieldProperties(field, inventoryId);
+        Guid? id = await _dbApiService.EditFieldProperties(field);
         return Ok(id);
     }
     

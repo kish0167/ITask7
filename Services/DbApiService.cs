@@ -138,7 +138,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
         return field.Id;
     }
 
-    public async Task<Guid?> EditFieldProperties(FieldDefinitionViewModel fieldViewModel, Guid inventoryId)
+    public async Task<Guid?> EditFieldProperties(FieldDefinitionViewModel fieldViewModel)
     {
         InventoryField field = await GetField(fieldViewModel.Id);
         _viewModelsConverter.EditFieldProperties(field, fieldViewModel);

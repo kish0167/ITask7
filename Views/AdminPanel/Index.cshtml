@@ -1,4 +1,5 @@
 ﻿@using ITask7.ViewModels.UI
+@using ITask7.ViewModels
 @model System.Collections.Generic.List<ITask7.ViewModels.UserViewModel>
 
 @{
@@ -22,37 +23,48 @@
     };
 }
 
-<h1>Admin panel</h1>
-<div data-bulk-context="adminPanel" data-context-id="0">
-<partial name="Components/BulkActionToolbar/Default" model="toolbarModel" />
-<table class="table table-hover mb-0 align-middle">
-    <thead>
-    <tr>
-        <th>
-            <input class="form-check-input select-all"
-                   type="checkbox">
-        </th>
-        <th>Email</th>
-        <th>Status</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var user in Model)
-    {
-        <tr onclick="toggleItem(this)" style="cursor: pointer;" data-user-id="@user.Id">
-            <td onclick="event.stopPropagation()">
-                <input class="form-check-input selectable-item"
-                       type="checkbox"
-                       value="@user.Id">
-            </td>
-            <td>@user.Email</td>
-            <td class="user-status" data-user-id="@user.Id">
-                <span class="status-text">@user.Status</span>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+<div class="mb-4 d-flex align-items-center justify-content-between">
+    <h1 class="h2 mb-0 fw-bold">Admin panel</h1>
+    @* You could place a 'Global Refresh' or 'Export' button here later *@
+</div>
+
+<div class="card shadow-sm border-0 bg-body-tertiary" data-bulk-context="adminPanel" data-context-id="0">
+    <div class="card-header bg-transparent border-bottom py-3">
+        <partial name="Components/BulkActionToolbar/Default" model="toolbarModel" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table">
+                <tr class="text-uppercase small fw-bold text-muted">
+                    <th>
+                        <input class="form-check-input select-all" type="checkbox">
+                    </th>
+                    <th>Username</th>
+                    <th class="pe-3">Status</th>
+                </tr>
+            </thead>
+            <tbody class="border-top-0">
+                @foreach (UserViewModel user in Model)
+                {
+                    <tr onclick="toggleItem(this)" class="user-row" style="cursor: pointer;" data-user-id="@user.Id">
+                        <td onclick="event.stopPropagation()">
+                            <input class="form-check-input selectable-item"
+                                   type="checkbox"
+                                   value="@user.Id">
+                        </td>
+                        <td class="fw-medium text-body">@user.Username</td>
+                        <td class="user-status pe-3" data-user-id="@user.Id">
+                            @* Using a neutral badge for the status text *@
+                            <span class="badge border bg-body text-body-secondary fw-normal status-text">
+                                @user.Status
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>

@@ -48,7 +48,7 @@ public class ItemFieldValue
             FieldType.Boolean => ValueBoolean,
             _ => "Field type error"
         };
-        return value ?? "no value";
+        return value ?? "no data";
     }
 
     public void SetValue(object? newValue)

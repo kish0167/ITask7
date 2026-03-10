@@ -1,5 +1,6 @@
 ﻿@using ITask7.ViewModels.Inventories
 @using ITask7.ViewModels.UI
+@using ITask7.Models.Inventories
 @model ITask7.ViewModels.Inventories.InventoryViewModel
 
 @{
@@ -26,20 +27,19 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">Inventory Items</h5>
 </div>
-<div class="table-responsive" data-bulk-context="items" data-context-id="@Model.Id">
-    <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+<div class="card shadow-sm border-0 bg-body-tertiary" data-bulk-context="items" data-context-id="@Model.Id">
+    <div class="d-flex justify-content-between align-items-center card-header bg-transparent border-bottom py-3">
         <partial name="Components/BulkActionToolbar/Default" model="fieldsToolbarModel"/>
         <button class="btn btn-primary btn-sm" onclick="window.location.href = 'ItemEdit?itemId=@Guid.Empty&inventoryId=@Model.Id';">
             <i class="bi bi-plus-lg me-1"></i>Add Item
         </button>
     </div>
 
-    <table class="table table-hover table-striped align-middle">
-        <thead class="table-light">
-        <tr>
-            <th style="width: 40px;">
-                <input class="form-check-input select-all"
-                       type="checkbox">
+    <table class="table table-hover mb-0 align-middle">
+        <thead class="table">
+        <tr class="text-uppercase small fw-bold text-muted">
+            <th>
+                <input class="form-check-input select-all" type="checkbox">
             </th>
             <th>Custom id</th>
             @foreach (FieldDefinitionViewModel field in Model.Fields)
@@ -66,6 +66,7 @@
                     </td>
                     <td>
                         <a href="@Url.Action("Index", "ItemReadonly", new { itemId = item.Id })"
+                           class="text-decoration-none fw-semibold link-primary"
                            onclick="event.stopPropagation();">
                             @item.CustomIdString()
                         </a>
@@ -76,7 +77,14 @@
                         <td>
                             @if (item.Fields.TryGetValue(field.Id, out FieldValueViewModel? value))
                             {
-                                @value.DisplayValue
+                                if (value.Type == FieldType.Document && value.DisplayValue != "no data")
+                                {
+                                    <a href="@value.DisplayValue" onclick="event.stopPropagation();">File</a>
+                                }
+                                else
+                                {
+                                    @value.DisplayValue
+                                }
                             }
                         </td>
                     }

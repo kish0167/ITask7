@@ -1,57 +1,72 @@
-﻿@model ITask7.ViewModels.Pages.MainPageViewModel
+﻿@using Humanizer
+@model ITask7.ViewModels.Pages.MainPageViewModel
 
 @{
     ViewBag.Title = "Dashboard";
     Layout = "_Layout";
 }
 
-<div class="container mt-4">
-    <div class="row mb-5">
-        <div class="col-12">
-            <h1 class="display-5 mb-4">Inventory Dashboard</h1>
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold text-body">Inventory Dashboard</h1>
+            <p class="text-body-secondary">Overview of latest and trending asset collections.</p>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row g-4">
         <div class="col-lg-8">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Latest Inventories</h5>
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-body-tertiary border-bottom py-3">
+                    <h5 class="mb-0 fw-semibold">
+                        <i class="bi bi-clock-history me-2 text-primary"></i>Latest Inventories
+                    </h5>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Creator</th>
-                                <th>Updated</th>
-                            </tr>
+                        <thead class="bg-body-secondary">
+                        <tr class="small text-uppercase text-body-secondary">
+                            <th class="ps-4 border-0">Name</th>
+                            <th class="border-0">Description</th>
+                            <th class="border-0">Creator</th>
+                            <th class="border-0 pe-4">Updated</th>
+                        </tr>
                         </thead>
-                        <tbody>
-                            @if (Model.LatestInventories.Any())
-                            {
-                                foreach (var inventory in Model.LatestInventories)
-                                {
-                                    <tr>
-                                        <td>
-                                            <a href="@Url.Action("Index", "InventoryReadonly", new { inventoryId = inventory.Id })" 
-                                               class="text-decoration-none fw-bold">
-                                                @inventory.Name
-                                            </a>
-                                        </td>
-                                        <td class="text-muted small">@inventory.Description</td>
-                                        <td><span class="badge bg-light text-dark border">@inventory.CreatedBy</span></td>
-                                        <td class="small text-secondary">@inventory.UpdatedAt.ToShortDateString()</td>
-                                    </tr>
-                                }
-                            }
-                            else
+                        <tbody class="border-top-0">
+                        @if (Model.LatestInventories.Any())
+                        {
+                            foreach (var inventory in Model.LatestInventories)
                             {
                                 <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">No inventories found.</td>
+                                    <td class="ps-4">
+                                        <a href="@Url.Action("Index", "InventoryReadonly", new { inventoryId = inventory.Id })"
+                                           class="text-decoration-none fw-semibold text-primary-emphasis">
+                                            @inventory.Name
+                                        </a>
+                                    </td>
+                                    <td class="text-body-secondary small text-truncate" style="max-width: 200px;">
+                                        @inventory.Description
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill bg-body-secondary text-body-secondary border border-secondary-subtle px-2">
+                                            <i class="bi bi-person-circle me-1"></i>@inventory.CreatedBy
+                                        </span>
+                                    </td>
+                                    <td class="small text-body-secondary pe-4">
+                                        @inventory.UpdatedAt.Humanize()
+                                    </td>
                                 </tr>
                             }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-body-tertiary d-block mb-2"></i>
+                                    <span class="text-body-secondary">No inventories found.</span>
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -59,23 +74,25 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Top 5 Popular</h5>
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-body-tertiary border-bottom py-3">
+                    <h5 class="mb-0 fw-semibold">
+                        <i class="bi bi-fire me-2 text-danger"></i>Top 5 Popular
+                    </h5>
                 </div>
                 <ul class="list-group list-group-flush">
                     @if (Model.PopularInventories.Any())
                     {
                         foreach (var popular in Model.PopularInventories)
                         {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="text-truncate" style="max-width: 70%;">
-                                    <a href="@Url.Action("Index", "InventoryReadonly", new { inventoryId = popular.Id })" 
-                                       class="text-decoration-none text-dark">
+                            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 border-bottom">
+                                <div class="text-truncate">
+                                    <a href="@Url.Action("Index", "InventoryReadonly", new { inventoryId = popular.Id })"
+                                       class="text-decoration-none text-body fw-medium">
                                         @popular.Name
                                     </a>
                                 </div>
-                                <span class="badge bg-primary rounded-pill">
+                                <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis border border-primary-subtle">
                                     @popular.Items.Count Items
                                 </span>
                             </li>
@@ -83,7 +100,9 @@
                     }
                     else
                     {
-                        <li class="list-group-item text-center text-muted">No data available.</li>
+                        <li class="list-group-item text-center py-4 text-body-secondary bg-transparent">
+                            No data available.
+                        </li>
                     }
                 </ul>
             </div>

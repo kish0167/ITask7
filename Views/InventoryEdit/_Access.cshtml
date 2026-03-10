@@ -27,19 +27,19 @@
     }
 </div>
 
-<div class="table-responsive @(Model.IsPublic ? "opacity-50" : "")" data-bulk-context="access" data-context-id="@Model.Id">
+<div class="card shadow-sm border-0 bg-body-tertiary @(Model.IsPublic ? "opacity-50" : "")" data-bulk-context="access" data-context-id="@Model.Id">
     @if (!Model.IsPublic)
     {
-        <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+        <div class="d-flex justify-content-between align-items-center card-header bg-transparent border-bottom py-3">
             <partial name="Components/BulkActionToolbar/Default" model="accessToolbarModel"/>
-            <button class="btn btn-primary btn-sm h-75" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <i class="bi bi-plus-lg me-1"></i>Add user
             </button>
         </div>
-        <table class="table table-hover table-striped align-middle">
-            <thead class="@(Model.IsPublic ? "table-dark" : "table-light")">
-            <tr>
-                <th style="width: 40px;">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table">
+            <tr class="text-uppercase small fw-bold text-muted">
+                <th>
                     <input class="form-check-input select-all"
                            type="checkbox">
                 </th>

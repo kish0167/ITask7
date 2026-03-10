@@ -1,76 +1,110 @@
-﻿@model ITask7.ViewModels.Inventories.ItemViewModel
+﻿@using ITask7.Models.Inventories
+@using Humanizer
+@model ITask7.ViewModels.Inventories.ItemViewModel
 
 @{
     ViewBag.Title = "Item";
     Layout = "_Layout";
 }
 
-<div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">General Information</h5>
-        <a href="@Url.Action("Index", "InventoryReadonly", new { inventoryId = Model.InventoryId })" class="btn btn-outline-primary btn-sm">
-            &larr; Back to Inventory
+<div class="card shadow-sm mb-4 border-0">
+    <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center py-3">
+        <h5 class="mb-0 fw-semibold text-body">
+            <i class="bi bi-info-circle me-2 text-primary"></i>General Information
+        </h5>
+        <a href="@Url.Action("Index", "InventoryReadonly", new { inventoryId = Model.InventoryId })" 
+           class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 shadow-sm">
+            <i class="bi bi-arrow-left"></i> <span>Back</span>
         </a>
     </div>
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <p>
-                    <strong>System ID:</strong> <span class="text-muted">@Model.Id</span>
-                </p>
-                <p>
-                    <strong>Custom ID:</strong> @Model.CustomIdString()
-                </p>
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.75rem;">Identifiers</small>
+                <div class="d-flex flex-column gap-1">
+                    <span><strong class="text-body-secondary">System ID:</strong> <code class="text-primary-emphasis">@Model.Id</code></span>
+                    <span><strong class="text-body-secondary">Custom ID:</strong> <span class="text-body">@Model.CustomIdString()</span></span>
+                </div>
             </div>
-            <div class="col-md-6 text-md-end">
-                <p><strong>Created:</strong> @Model.CreatedAtString by @(Model.CreatedByUserName ?? "System")</p>
-                <p>
-                    <strong>Last Updated:</strong> @Model.UpdatedAt.ToString("dd/MM/yyyy")
-                </p>
+            <div class="col-sm-6 text-sm-end">
+                <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.75rem;">History</small>
+                <div class="d-flex flex-column gap-1">
+                    <span class="text-body-secondary">
+                        Created: <span class="text-body fw-medium">@Model.CreatedAtString</span> 
+                        by <span class="badge bg-secondary-subtle text-secondary-emphasis">@(Model.CreatedByUserName ?? "System")</span>
+                    </span>
+                    <span class="text-body-secondary">
+                        Last Updated: <span class="text-body fw-medium">@Model.UpdatedAt.Humanize()</span>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">Item Properties</h5>
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-body-tertiary py-3">
+        <h5 class="mb-0 fw-semibold text-body">
+            <i class="bi bi-list-task me-2 text-primary"></i>Item Properties
+        </h5>
     </div>
     <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
-            <tr>
-                <th style="width: 30%">Field</th>
-                <th style="width: 70%">Value</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var definition in Model.FieldDefinitions.OrderBy(f => f.SortOrder))
-            {
-                <tr>
-                    <td>
-                        <strong>@definition.Title</strong>
-                        @if (!string.IsNullOrEmpty(definition.Description))
-                        {
-                            <br/>
-                            <small class="text-muted">@definition.Description</small>
-                        }
-                    </td>
-                    <td>
-                        @if (Model.Fields.TryGetValue(definition.Id, out var fieldValue))
-                        {
-                            @fieldValue.DisplayValue
-                        }
-                        else
-                        {
-                            <span class="text-muted">
-                                <em>Not set</em>
-                            </span>
-                        }
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table text-secondary">
+                    <tr>
+                        <th class="ps-4" style="width: 35%">Field</th>
+                        <th style="width: 65%">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var definition in Model.FieldDefinitions.OrderBy(f => f.SortOrder))
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold text-body">@definition.Title</div>
+                                @if (!string.IsNullOrEmpty(definition.Description))
+                                {
+                                    <div class="small text-muted text-truncate" style="max-width: 250px;" title="@definition.Description">
+                                        @definition.Description
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                @if (Model.Fields.TryGetValue(definition.Id, out var fieldValue))
+                                {
+                                    @if (fieldValue.Type == FieldType.Document && fieldValue.DisplayValue != "no data")
+                                    {
+                                        <a href="@fieldValue.DisplayValue" 
+                                           class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-1 py-1 px-2 shadow-sm" 
+                                           target="_blank" onclick="event.stopPropagation();">
+                                            <i class="bi bi-file-earmark-arrow-down"></i> <span>File</span>
+                                        </a>
+                                    }
+                                    else if (fieldValue.Type == FieldType.Boolean)
+                                    {
+                                        bool isTrue = fieldValue.Value is true;
+                                        <span class="badge rounded-pill @(isTrue ? "bg-success-subtle text-success-emphasis border border-success-subtle" : "bg-light text-muted border")">
+                                            <i class="bi @(isTrue ? "bi-check-circle-fill" : "bi-x-circle") me-1"></i>
+                                            @(isTrue ? "Yes" : "No")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-body fw-medium">@fieldValue.DisplayValue</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">
+                                        <i class="bi bi-dash-circle me-1"></i><em>Not set</em>
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

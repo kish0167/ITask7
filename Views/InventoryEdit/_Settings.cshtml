@@ -15,7 +15,7 @@
             <div class="mb-3">
                 <label class="form-label fw-bold">Title</label>
                 <div class="view-mode">
-                    <p class="form-control-plaintext border p-2 rounded bg-light" id="nameDisplay">@Model.Name</p>
+                    <p class="form-control-plaintext border p-2 rounded bg-body" id="nameDisplay">@Model.Name</p>
                 </div>
                 <div class="edit-mode d-none">
                     <input type="text" class="form-control" asp-for="Name" id="nameInput" value="@Model.Name" required/>
@@ -26,7 +26,7 @@
             <div class="mb-3">
                 <label class="form-label fw-bold">Description</label>
                 <div class="view-mode">
-                    <p class="form-control-plaintext border p-2 rounded bg-light" id="descDisplay">@Model.Description</p>
+                    <p class="form-control-plaintext border p-2 rounded bg-body" id="descDisplay">@Model.Description</p>
                 </div>
                 <div class="edit-mode d-none">
                     <textarea class="form-control" asp-for="Description" id="descInput" rows="3">@Model.Description</textarea>
@@ -37,7 +37,7 @@
             <div class="mb-3">
                 <label class="form-label fw-bold">Visibility</label>
                 <div class="view-mode">
-                    <p class="form-control-plaintext border p-2 rounded bg-light" id="publicDisplay">
+                    <p class="form-control-plaintext border p-2 rounded bg-body" id="publicDisplay">
                         @(Model.IsPublic ? "🌐 Public" : "🔒 Private")
                     </p>
                 </div>
