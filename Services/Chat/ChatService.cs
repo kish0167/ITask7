@@ -1,5 +1,5 @@
-﻿using ITask7.RealTimeChat;
-using ITask7.Users;
+﻿using ITask7.Models.Users;
+using ITask7.RealTimeChat;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ITask7.Services.Chat;

@@ -75,7 +75,7 @@
                     {
                         if (!field.DisplayInTable) continue;
                         <td>
-                            @if (item.Fields.TryGetValue(field.Id, out FieldValueViewModel? value))
+                            @if (item.FieldValues.TryGetValue(field.Id, out FieldValueViewModel? value))
                             {
                                 if (value.Type == FieldType.Document && value.DisplayValue != "no data")
                                 {

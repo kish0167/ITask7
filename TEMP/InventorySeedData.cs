@@ -1,6 +1,6 @@
 ﻿using ITask7.Models.Inventories;
+using ITask7.Models.Users;
 using Microsoft.EntityFrameworkCore;
-using ITask7.Users;
 
 namespace ITask7.TEMP;
 

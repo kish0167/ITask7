@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using ITask7.Models;
+using ITask7.Models.Users;
 using ITask7.Services;
-using ITask7.Users;
 using ITask7.ViewModels.Pages;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

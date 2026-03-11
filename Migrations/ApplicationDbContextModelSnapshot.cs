@@ -85,6 +85,12 @@ namespace ITask7.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.Property<int>("Sequential")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -151,6 +157,12 @@ namespace ITask7.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
 
@@ -190,6 +202,12 @@ namespace ITask7.Migrations
 
                     b.Property<Guid>("InventoryId")
                         .HasColumnType("uuid");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.Property<int>("SequentialNumber")
                         .HasColumnType("integer");
@@ -253,7 +271,7 @@ namespace ITask7.Migrations
                     b.ToTable("item_field_values", (string)null);
                 });
 
-            modelBuilder.Entity("ITask7.Users.ApplicationUser", b =>
+            modelBuilder.Entity("ITask7.Models.Users.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -304,6 +322,12 @@ namespace ITask7.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -476,7 +500,7 @@ namespace ITask7.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ITask7.Users.ApplicationUser", "Sender")
+                    b.HasOne("ITask7.Models.Users.ApplicationUser", "Sender")
                         .WithMany("Messages")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -488,7 +512,7 @@ namespace ITask7.Migrations
 
             modelBuilder.Entity("ITask7.Models.Inventories.Inventory", b =>
                 {
-                    b.HasOne("ITask7.Users.ApplicationUser", "Creator")
+                    b.HasOne("ITask7.Models.Users.ApplicationUser", "Creator")
                         .WithMany("CreatedInventories")
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -504,7 +528,7 @@ namespace ITask7.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ITask7.Users.ApplicationUser", "User")
+                    b.HasOne("ITask7.Models.Users.ApplicationUser", "User")
                         .WithMany("Accesses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -528,7 +552,7 @@ namespace ITask7.Migrations
 
             modelBuilder.Entity("ITask7.Models.Inventories.Item", b =>
                 {
-                    b.HasOne("ITask7.Users.ApplicationUser", "Creator")
+                    b.HasOne("ITask7.Models.Users.ApplicationUser", "Creator")
                         .WithMany("CreatedItems")
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.SetNull)
@@ -575,7 +599,7 @@ namespace ITask7.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("ITask7.Users.ApplicationUser", null)
+                    b.HasOne("ITask7.Models.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -584,7 +608,7 @@ namespace ITask7.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ITask7.Users.ApplicationUser", null)
+                    b.HasOne("ITask7.Models.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -599,7 +623,7 @@ namespace ITask7.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ITask7.Users.ApplicationUser", null)
+                    b.HasOne("ITask7.Models.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -608,7 +632,7 @@ namespace ITask7.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("ITask7.Users.ApplicationUser", null)
+                    b.HasOne("ITask7.Models.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -636,7 +660,7 @@ namespace ITask7.Migrations
                     b.Navigation("FieldValues");
                 });
 
-            modelBuilder.Entity("ITask7.Users.ApplicationUser", b =>
+            modelBuilder.Entity("ITask7.Models.Users.ApplicationUser", b =>
                 {
                     b.Navigation("Accesses");
 

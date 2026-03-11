@@ -1,7 +1,7 @@
 ﻿using ITask7.Models.Chat;
 using ITask7.Models.Inventories;
+using ITask7.Models.Users;
 using ITask7.TEMP;
-using ITask7.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
@@ -30,6 +30,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.Sequential).HasDefaultValue(0);
+            entity.Property(e => e.RowVersion).IsRowVersion();
 
             entity.HasOne(e => e.Creator)
                 .WithMany(u => u.CreatedInventories)
@@ -43,6 +44,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.RowVersion).IsRowVersion();
             
             entity.Property(e => e.FieldType)
                 .HasConversion<string>()
@@ -64,6 +66,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.RowVersion).IsRowVersion();
             
             entity.HasIndex(e => new { e.InventoryId, e.CustomId })
                 .IsUnique();
@@ -126,6 +129,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.Property(e => e.IsAdmin).HasDefaultValue(false);
             entity.Property(e => e.IsBlocked).HasDefaultValue(false);
+            entity.Property(e => e.RowVersion).IsRowVersion();
         });
 
         modelBuilder.Entity<InventoryMessage>(entity =>

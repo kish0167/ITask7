@@ -5,8 +5,8 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using ITask7.Models.Users;
 using Microsoft.AspNetCore.Authorization;
-using ITask7.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;

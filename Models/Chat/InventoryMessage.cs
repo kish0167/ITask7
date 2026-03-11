@@ -1,5 +1,5 @@
 ﻿using ITask7.Models.Inventories;
-using ITask7.Users;
+using ITask7.Models.Users;
 using ITask7.ViewModels.Chat;
 
 namespace ITask7.Models.Chat;

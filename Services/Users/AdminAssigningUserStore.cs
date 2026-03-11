@@ -1,5 +1,5 @@
 ﻿using ITask7.Data;
-using ITask7.Users;
+using ITask7.Models.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 

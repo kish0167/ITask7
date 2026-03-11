@@ -2,7 +2,7 @@
 using ITask7.Models.Chat;
 using ITask7.Models.CustomId;
 using ITask7.Models.Inventories;
-using ITask7.Users;
+using ITask7.Models.Users;
 using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
 using ITask7.ViewModels.Pages;
@@ -10,10 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Services;
 
-public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter viewModelsConverter)
+public class DbApiService(ApplicationDbContext dbContext)
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
-    private readonly ViewModelsConverter _viewModelsConverter = viewModelsConverter;
 
     public async Task<MainPageViewModel> GetMainPageViewModel()
     {
@@ -132,7 +131,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     {
         Inventory? inventory = await GetInventoryDetailed(inventoryId);
         if (inventory == null) return null;
-        InventoryField field = _viewModelsConverter.GetNewField(fieldViewModel, inventory);
+        InventoryField field = new InventoryField(fieldViewModel, inventory);
         await _dbContext.InventoryFields.AddAsync(field);
         await _dbContext.SaveChangesAsync();
         return field.Id;
@@ -141,7 +140,7 @@ public class DbApiService(ApplicationDbContext dbContext, ViewModelsConverter vi
     public async Task<Guid?> EditFieldProperties(FieldDefinitionViewModel fieldViewModel)
     {
         InventoryField field = await GetField(fieldViewModel.Id);
-        _viewModelsConverter.EditFieldProperties(field, fieldViewModel);
+        field.Edit(fieldViewModel);
         await _dbContext.SaveChangesAsync();
         return field.Id;
     }

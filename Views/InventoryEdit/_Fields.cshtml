@@ -55,6 +55,7 @@
         {
             @foreach (var field in Model.Fields.OrderBy(f => f.SortOrder))
             {
+                <input type="hidden" id="FieldRowVersion-@(field.Id)" value='@field.RowVersion' />
                 <tr style="cursor: pointer;" data-field-id="@field.Id">
                     <td>
                         <input class="form-check-input selectable-item"
@@ -141,6 +142,7 @@
             const sortOrder = row.querySelector('td:nth-child(2) .badge').textContent.trim();
             const isRequired = row.querySelector('td:nth-child(6) i').classList.contains('bi-check-circle-fill');
             const displayInTable = row.querySelector('td:nth-child(7) i').classList.contains('bi-table');
+            
             
             // Populate form
             document.getElementById('editFieldId').value = fieldId;
@@ -325,13 +327,18 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving...';
         
+        const id = document.getElementById('editFieldId').value;
+        const fieldHiddenInputId = `FieldRowVersion-${id}`;
+        
         const payload = {
-            Id: document.getElementById('editFieldId').value,
+            Id: id,
             Title: document.getElementById('editFieldTitle').value,
             Description: document.getElementById('editFieldDescription').value,
             SortOrder: parseInt(document.getElementById('editFieldSortOrderDisplay').value),
             DisplayInTable: document.getElementById('editFieldDisplayInTable').checked,
             IsRequired: document.getElementById('editFieldIsRequired').checked,
+            RowVersion: parseInt(document.getElementById(fieldHiddenInputId).value),
+            InventoryRowVersion: parseInt(document.getElementById('InventoryRowVersion').value)
         };
     
         try {

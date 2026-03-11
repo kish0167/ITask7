@@ -105,8 +105,8 @@
                         <div class="row g-3">
                             @foreach (var fieldDef in Model.FieldDefinitions.OrderBy(f => f.SortOrder))
                             {
-                                var fieldValue = Model.Fields.ContainsKey(fieldDef.Id)
-                                    ? Model.Fields[fieldDef.Id]
+                                var fieldValue = Model.FieldValues.ContainsKey(fieldDef.Id)
+                                    ? Model.FieldValues[fieldDef.Id]
                                     : new FieldValueViewModel(fieldDef);
 
                                 <div class="col-md-@(fieldDef.Type == FieldType.MultiLine ? "12" : "6") field-container"

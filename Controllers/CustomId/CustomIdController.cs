@@ -1,6 +1,6 @@
 ﻿using ITask7.Models.CustomId;
+using ITask7.Models.Users;
 using ITask7.Services;
-using ITask7.Users;
 using ITask7.ViewModels.CustomId;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ public class CustomIdController(DbApiService dbApiService, UserManager<Applicati
     }
     
     [HttpPost]
-    public async Task<IActionResult> ValidateId([FromBody] CustomIdViewModel? customId)
+    public async Task<IActionResult> ValidateId([FromBody] CustomIdModel? customId)
     {
         if (customId == null) return BadRequest("id is null");
         return Ok(customId.Validate());

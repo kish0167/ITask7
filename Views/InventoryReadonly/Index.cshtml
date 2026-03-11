@@ -48,7 +48,7 @@
                     @foreach (var fieldDef in Model.Fields.OrderBy(f => f.SortOrder).Where(f => f.DisplayInTable))
                     {
                         <td>
-                            @if (item.Fields.TryGetValue(fieldDef.Id, out var fieldValue))
+                            @if (item.FieldValues.TryGetValue(fieldDef.Id, out var fieldValue))
                             {
                                 if (fieldValue.Type == FieldType.Document && fieldValue.DisplayValue != "no data")
                                 {

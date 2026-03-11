@@ -17,6 +17,7 @@ public class InventoryViewModel
     public List<UserViewModel> WriteAccessUsers { get; set; } = new();
     public ChatViewModel ChatViewModel { get; set; }
     public CustomIdSchema CustomIdSchema { get; set; }
+    public uint RowVersion { get; set; }
     
     public InventoryViewModel(){}
     
@@ -33,5 +34,6 @@ public class InventoryViewModel
         WriteAccessUsers = inventory.Accesses.Select(a => a.User.ToViewModel()).ToList();
         ChatViewModel = new ChatViewModel(inventory);
         CustomIdSchema = new CustomIdSchema(inventory.CustomIdSchemaJson);
+        RowVersion = inventory.RowVersion;
     }
 }

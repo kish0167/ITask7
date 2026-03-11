@@ -1,5 +1,7 @@
-﻿using ITask7.Services;
-using ITask7.Users;
+﻿using ITask7.Models.Users;
+using ITask7.Services;
+using ITask7.Services.DbApi.Fields;
+using ITask7.Services.DbApi.Inventories;
 using ITask7.ViewModels.Inventories;
 using ITask7.ViewModels.Pages;
 using Microsoft.AspNetCore.Identity;
@@ -7,14 +9,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers.Inventory;
 
-public class InventoryEditController(DbApiService dbApiService, UserManager<ApplicationUser> userManager) : InventoryController(dbApiService, userManager)
+public class InventoryEditController(DbApiService dbApiService, UserManager<ApplicationUser> userManager, IInventoryService inventoryService, IFieldService fieldService) : InventoryController(dbApiService, userManager)
 {
     private readonly DbApiService _dbApiService = dbApiService;
+    private readonly IInventoryService _inventoryService = inventoryService;
+    private readonly IFieldService _fieldService = fieldService;
 
     public async Task<IActionResult> Index(Guid inventoryId, string? tabOpened)
     {
         if (!await WriterAccessCheck(inventoryId)) return BadRequest();
-        InventoryViewModel? inventory = await _dbApiService.GetInventoryViewModel(inventoryId);
+        //InventoryViewModel? inventory = await _dbApiService.GetInventoryViewModel(inventoryId);
+        InventoryViewModel? inventory = await _inventoryService.GetByIdAsync(inventoryId);
         if (inventory == null) return BadRequest("Inventory does not exist");
         inventory.ChatViewModel.CurrentUserName = User.Identity?.Name ?? "noname";
         return View(new InventoryEditPageViewModel()
@@ -30,8 +35,10 @@ public class InventoryEditController(DbApiService dbApiService, UserManager<Appl
     {
         if (model == null) return BadRequest();
         if (!await CreatorAccessCheck(model.Id)) return BadRequest();
-        bool success = await _dbApiService.EditInventoryProperties(model);
-        return Ok(success);
+        //bool success = await _dbApiService.EditInventoryProperties(model);
+        bool success = await _inventoryService.UpdateAsync(model);
+        if (!success) return BadRequest("Update failed");
+        return Ok(true);
     }
     
     [HttpPost]
@@ -64,7 +71,8 @@ public class InventoryEditController(DbApiService dbApiService, UserManager<Appl
     {
         if (field == null) return BadRequest();
         if (!await CreatorAccessCheck(inventoryId)) return BadRequest();
-        Guid? id = await _dbApiService.EditFieldProperties(field);
+        //Guid? id = await _dbApiService.EditFieldProperties(field);
+        Guid? id = await _fieldService.UpdateAsync(field);
         return Ok(id);
     }
     

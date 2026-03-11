@@ -10,6 +10,7 @@
     <div class="card-body">
         <form id="settingsForm" method="post" asp-action="EditProperties">
             <input type="hidden" asp-for="Id"/>
+            <input type="hidden" asp-for="RowVersion"/>
 
             <!-- Title/Name -->
             <div class="mb-3">
@@ -83,12 +84,14 @@
             body: formData
         });
         
-        if (needReload) location.reload();
-        
         if (response.ok){
+            if (needReload) location.reload();
             updateFieldsValues();
             toggleEdit();
-        }    
+        } else {
+            alert('Please, try again');
+            location.reload();
+        }
     });
     
     function toggleEdit() {

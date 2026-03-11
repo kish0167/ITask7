@@ -1,13 +1,13 @@
 ﻿using ITask7.Models.Chat;
 using ITask7.Models.CustomId;
-using ITask7.Users;
+using ITask7.Models.Users;
 using ITask7.ViewModels;
 using ITask7.ViewModels.Inventories;
 using Microsoft.AspNetCore.Identity;
 
 namespace ITask7.Models.Inventories;
 
-public class Inventory
+public class Inventory : IVersionedEntity
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -18,6 +18,7 @@ public class Inventory
     public DateTime UpdatedAt { get; set; }
     public string CustomIdSchemaJson { get; set; }
     public int Sequential { get; set; }
+    public uint RowVersion { get; set; }
     
     public ApplicationUser? Creator { get; set; }
     public ICollection<InventoryField> Fields { get; set; } = new List<InventoryField>();
@@ -40,6 +41,15 @@ public class Inventory
         CustomIdSchemaJson = CustomIdSchema.Default().ToJson();
         Sequential = 0;
     }
+
+    public void Edit(InventoryViewModel viewModel)
+    {
+        Name = viewModel.Name;
+        Description = viewModel.Description;
+        IsPublic = viewModel.IsPublic;
+        RowVersion = viewModel.RowVersion;
+    }
+    
     public InventoryViewModel ToViewModel()
     {
         return new InventoryViewModel(this);

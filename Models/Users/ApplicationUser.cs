@@ -4,12 +4,14 @@ using ITask7.ViewModels;
 using ITask7.ViewModels.Pages;
 using Microsoft.AspNetCore.Identity;
 
-namespace ITask7.Users;
+namespace ITask7.Models.Users;
 
-public class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser, IVersionedEntity
 {
     public bool IsAdmin { get; set; } = false;
     public bool IsBlocked { get; set; } = false;
+    public uint RowVersion { get; set; }
+    
     public ICollection<Inventory> CreatedInventories { get; set; } = new List<Inventory>();
     public ICollection<InventoryAccess> Accesses { get; set; } = new List<InventoryAccess>();
     public ICollection<Item> CreatedItems { get; set; } = new List<Item>();

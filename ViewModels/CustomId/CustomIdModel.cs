@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ITask7.ViewModels.CustomId;
 
-public class CustomIdViewModel
+public class CustomIdModel
 {
     public List<string> Values { get; set; } = new();
     public CustomIdSchema Schema { get; set; }
@@ -12,16 +12,16 @@ public class CustomIdViewModel
     private int _sequential;
     private List<string> Errors { get; } = new();
     
-    public CustomIdViewModel(){}
+    public CustomIdModel(){}
     
-    public CustomIdViewModel(Inventory inventory)
+    public CustomIdModel(Inventory inventory)
     {
         Schema = new CustomIdSchema(inventory.CustomIdSchemaJson);
         Values = Schema.GenerateNew(inventory.Sequential);
         _original = "";
     }
     
-    public CustomIdViewModel(Item item, string schemaJson)
+    public CustomIdModel(Item item, string schemaJson)
     {
         Schema = new CustomIdSchema(schemaJson);
         _original = item.CustomId;
@@ -55,7 +55,7 @@ public class CustomIdViewModel
         return _original.Replace(Schema.Separator.ToString(), "");
     }
     
-    public string ToStoreString()
+    public string ToStorageString()
     {
         return String.Join(Schema.Separator, Values);
     }

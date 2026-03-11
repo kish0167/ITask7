@@ -1,6 +1,6 @@
-﻿using ITask7.Services;
+﻿using ITask7.Models.Users;
+using ITask7.Services;
 using ITask7.Services.Chat;
-using ITask7.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

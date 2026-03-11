@@ -5,23 +5,29 @@ namespace ITask7.ViewModels.Inventories;
 public class FieldDefinitionViewModel
 {
     public Guid Id { get; set; }
+    public Guid InventoryId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
     public FieldType Type { get; set; }
     public int SortOrder { get; set; }
     public bool DisplayInTable { get; set; }
     public bool IsRequired { get; set; }
+    public uint RowVersion { get; set; }
+    public uint InventoryRowVersion { get; set; }
     
     public FieldDefinitionViewModel(){}
 
     public FieldDefinitionViewModel(InventoryField field)
     {
         Id = field.Id;
+        InventoryId = field.InventoryId;
         Title = field.Title;
         Description = field.Description;
         DisplayInTable = field.DisplayInTable;
         IsRequired = field.IsRequired;
         SortOrder = field.SortOrder;
         Type = field.FieldType;
+        RowVersion = field.RowVersion;
+        InventoryRowVersion = field.Inventory.RowVersion;
     }
 }

@@ -1,5 +1,4 @@
-﻿using ITask7.Users;
-using ApplicationUser = ITask7.Users.ApplicationUser;
+﻿using ApplicationUser = ITask7.Models.Users.ApplicationUser;
 
 namespace ITask7.Models.Inventories;
 

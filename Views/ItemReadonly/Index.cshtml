@@ -71,7 +71,7 @@
                                 }
                             </td>
                             <td>
-                                @if (Model.Fields.TryGetValue(definition.Id, out var fieldValue))
+                                @if (Model.FieldValues.TryGetValue(definition.Id, out var fieldValue))
                                 {
                                     @if (fieldValue.Type == FieldType.Document && fieldValue.DisplayValue != "no data")
                                     {

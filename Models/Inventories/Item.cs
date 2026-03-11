@@ -1,12 +1,12 @@
 ﻿using ITask7.Services;
-using ITask7.Users;
 using ITask7.ViewModels.Inventories;
 using ITask7.Models.CustomId;
+using ITask7.Models.Users;
 using ITask7.ViewModels.CustomId;
 
 namespace ITask7.Models.Inventories;
 
-public class Item
+public class Item : IVersionedEntity ,IInventoryChild
 {
     public Guid Id { get; set; }
     public string CustomId { get; set; }
@@ -15,8 +15,10 @@ public class Item
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public Guid InventoryId { get; set; }
+    public uint RowVersion { get; set; }
+    
     public ApplicationUser? Creator { get; set; }
-    public Inventory Inventory { get; set; }
+    public Inventory? Inventory { get; set; }
     public ICollection<ItemFieldValue> FieldValues { get; set; } = new List<ItemFieldValue>();
     
     public Item(){}
@@ -24,7 +26,7 @@ public class Item
     public Item(Inventory inventory, ApplicationUser user)
     {
         SequentialNumber = inventory.Sequential++;
-        CustomId = new CustomIdViewModel(inventory).ToStoreString();
+        CustomId = new CustomIdModel(inventory).ToStorageString();
         CreatedBy = user.Id;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
@@ -49,14 +51,20 @@ public class Item
         return new ItemViewModel(this);
     }
     
-    public void Edit(ItemViewModel itemViewModel)
+    public void Edit(ItemViewModel viewModel)
     {
         UpdatedAt = DateTime.UtcNow;
-        itemViewModel.CustomId.InjectSequential(SequentialNumber);
-        CustomId = itemViewModel.CustomId.ToStoreString();
+        viewModel.CustomId.InjectSequential(SequentialNumber);
+        CustomId = viewModel.CustomId.ToStorageString();
+        RowVersion = viewModel.RowVersion;
+        Inventory.RowVersion = viewModel.InventoryRowVersion;
+        if (Inventory == null)
+        {
+            return;
+        }
         foreach (InventoryField field in Inventory.Fields)
         {
-            SetFieldValue(field, itemViewModel.Fields[field.Id].Value);
+            SetFieldValue(field, viewModel.FieldValues[field.Id].Value);
         }
     }
     

@@ -1,4 +1,4 @@
-﻿using ITask7.Users;
+﻿using ITask7.Models.Users;
 using ITask7.ViewModels.Inventories;
 
 namespace ITask7.ViewModels.Pages;
