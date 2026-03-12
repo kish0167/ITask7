@@ -17,23 +17,21 @@ public abstract class InventoryChildRepository<T> : BaseRepository<T>
         try
         {
             Inventory? inventory = await DbContext.Inventories
-                .FromSqlInterpolated($@"
-                    SELECT * FROM Inventories 
-                    WHERE Id = {entity.InventoryId} 
-                    FOR UPDATE")
-                .AsNoTracking()
+                .Where(i => i.Id == entity.InventoryId)
                 .FirstOrDefaultAsync();
 
             if (inventory == null) return false;
             
             EntityEntry<Inventory> inventoryEntry = DbContext.Entry(inventory);
             inventoryEntry.Property(i => i.RowVersion).OriginalValue = entity.Inventory.RowVersion;
+            inventoryEntry.State = EntityState.Modified;
             
             EntityEntry<T> entityEntry = DbContext.Entry(entity);
             entityEntry.Property(e => e.RowVersion).OriginalValue = entity.RowVersion;
 
             await DbContext.SaveChangesAsync();
             await transaction.CommitAsync();
+            
             return true;
         }
         catch (DbUpdateConcurrencyException)

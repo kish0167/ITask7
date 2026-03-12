@@ -39,7 +39,7 @@ public class FieldRepository(ApplicationDbContext dbContext)
         InventoryField? field = await GetByIdAsync(model.Id);
         if (field == null) return null;
         field.Edit(model);
-        bool success = await SaveWithOptimisticLockAsync(field);
+        bool success = await SaveWithHierarchicalLockAsync(field);
         return success ? field.Id : null;
     }
 
