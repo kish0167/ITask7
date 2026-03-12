@@ -33,7 +33,7 @@ public class InventoryViewModel
         Items = inventory.Items.Select(item => item.ToViewModel()).ToList();
         WriteAccessUsers = inventory.Accesses.Select(a => a.User.ToViewModel()).ToList();
         ChatViewModel = new ChatViewModel(inventory);
-        CustomIdSchema = new CustomIdSchema(inventory.CustomIdSchemaJson);
+        CustomIdSchema = new CustomIdSchema(inventory);
         RowVersion = inventory.RowVersion;
     }
 }

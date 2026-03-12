@@ -1,23 +1,21 @@
-﻿using ITask7.Models.Users;
-using ITask7.Services;
-using ITask7.Services.DbApi.AccessControl;
+﻿using ITask7.Services.DbApi.AccessControl;
 using ITask7.Services.DbApi.Fields;
 using ITask7.Services.DbApi.Inventories;
 using ITask7.Services.DbApi.Items;
 using ITask7.ViewModels.Inventories;
 using ITask7.ViewModels.Pages;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers.Inventory;
 
-public class InventoryEditController(DbApiService dbApiService,
-    UserManager<ApplicationUser> userManager, IInventoryService inventoryService,
-    IFieldService fieldService, IAccessControlService accessService,
+public class InventoryEditController(
+    IAccessControlService accessControlService,
+    IInventoryService inventoryService,
+    IFieldService fieldService,
+    IAccessControlService accessService,
     IItemService itemService)
-    : InventoryController(dbApiService, userManager)
+    : InventoryController(accessControlService)
 {
-    private readonly DbApiService _dbApiService = dbApiService;
     private readonly IInventoryService _inventoryService = inventoryService;
     private readonly IFieldService _fieldService = fieldService;
     private readonly IAccessControlService _accessService = accessService;

@@ -38,7 +38,7 @@ public class ItemViewModel
     public ItemViewModel(Item item)
     {
         Id = item.Id;
-        CustomId = new CustomIdModel(item, item.Inventory.CustomIdSchemaJson);
+        CustomId = new CustomIdModel(item);
         CreatedByUserName = item.Creator?.UserName ?? "creator not found";
         CreatedAt = item.CreatedAt;
         UpdatedAt = item.UpdatedAt;

@@ -15,14 +15,14 @@ public class CustomIdModel
     
     public CustomIdModel(Inventory inventory)
     {
-        Schema = new CustomIdSchema(inventory.CustomIdSchemaJson);
+        Schema = new CustomIdSchema(inventory);
         Values = Schema.GenerateNew(inventory.Sequential);
         _original = "";
     }
     
-    public CustomIdModel(Item item, string schemaJson)
+    public CustomIdModel(Item item)
     {
-        Schema = new CustomIdSchema(schemaJson);
+        Schema = new CustomIdSchema(item.Inventory);
         _original = item.CustomId;
         string[] values = item.CustomId.Split(Schema.Separator);
         for (int i = 0; Values.Count < Schema.Elements.Count; i++)

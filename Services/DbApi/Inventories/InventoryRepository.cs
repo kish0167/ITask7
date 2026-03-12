@@ -1,5 +1,7 @@
 ﻿using ITask7.Data;
 using ITask7.Models.Inventories;
+using ITask7.Models.Users;
+using ITask7.ViewModels.Inventories;
 using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Services.DbApi.Inventories;
@@ -82,9 +84,27 @@ public class InventoryRepository(ApplicationDbContext dbContext)
             .ToListAsync();
     }
 
+    public async Task<List<Inventory>> GetAllAsync()
+    {
+        return await DbContext.Inventories
+            .AsNoTracking()
+            .Where(i => true)
+            .Include(i => i.Creator)
+            .Include(i => i.Items)
+            .ToListAsync();
+    }
+
     public async Task<bool> ExistsAsync(Guid id)
     {
         return await DbContext.Inventories.AnyAsync(i => i.Id == id);
+    }
+
+    public async Task<Guid?> CreateAsync(InventoryViewModel model, ApplicationUser creator)
+    {
+        Inventory inventory = new(model, creator);
+        DbContext.Inventories.Add(inventory);
+        await DbContext.SaveChangesAsync();
+        return inventory.Id;
     }
 
     public async Task<bool> UpdateAsync(Inventory inventory)

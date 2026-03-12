@@ -1,20 +1,22 @@
 ﻿using ITask7.Models.Users;
 using ITask7.Services;
+using ITask7.Services.DbApi.AccessControl;
+using ITask7.Services.DbApi.Users;
 using ITask7.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers.Pages;
 
-public class AdminPanelController(DbApiService dbApiService, UserManager<ApplicationUser> userManager)
-    : InventoryController(dbApiService, userManager)
+public class AdminPanelController(IAccessControlService accessControlService, IUserService userService)
+    : InventoryController(accessControlService)
 {
-    private readonly DbApiService _dbApiService = dbApiService;
+    private readonly IUserService _userService = userService;
     
     public async Task<IActionResult> Index()
     {
         if (!await AdminAccessCheck()) return Redirect("Home/Index");
-        List<UserViewModel> userViewModels = await _dbApiService.GetAllUsersViewModels();
+        List<UserViewModel> userViewModels = await _userService.GetAllAsync();
         return View(userViewModels);
     }
     
@@ -22,7 +24,7 @@ public class AdminPanelController(DbApiService dbApiService, UserManager<Applica
     public async Task<IActionResult> BulkDelete([FromBody] List<string> userIds)
     {
         if (!await AdminAccessCheck()) return BadRequest();
-        int deleted = await _dbApiService.DeleteUsers(userIds);
+        int deleted = await _userService.Delete(userIds);
         return Ok(deleted);
     }
 
@@ -30,7 +32,7 @@ public class AdminPanelController(DbApiService dbApiService, UserManager<Applica
     public async Task<IActionResult> BulkBlock([FromBody] List<string> userIds)
     {
         if (!await AdminAccessCheck()) return BadRequest();
-        int blocked = await _dbApiService.BlockUsers(userIds);
+        int blocked = await _userService.BlockAsync(userIds);
         return Ok(blocked);
     }
     
@@ -38,15 +40,15 @@ public class AdminPanelController(DbApiService dbApiService, UserManager<Applica
     public async Task<IActionResult> BulkUnblock([FromBody] List<string> userIds)
     {
         if (!await AdminAccessCheck()) return BadRequest();
-        int blocked = await _dbApiService.UnBlockUsers(userIds);
-        return Ok(blocked);
+        int unBlocked = await _userService.UnblockAsync(userIds);
+        return Ok(unBlocked);
     }
     
     [HttpPost]
     public async Task<IActionResult> BulkAdmin([FromBody] List<string> userIds)
     {
         if (!await AdminAccessCheck()) return BadRequest();
-        int blocked = await _dbApiService.MakeUsersAdmin(userIds);
+        int blocked = await _userService.MakeAdminAsync(userIds);
         return Ok(blocked);
     }
     
@@ -54,7 +56,7 @@ public class AdminPanelController(DbApiService dbApiService, UserManager<Applica
     public async Task<IActionResult> BulkDeAdmin([FromBody] List<string> userIds)
     {
         if (!await AdminAccessCheck()) return BadRequest();
-        int blocked = await _dbApiService.DeAdminUsers(userIds);
+        int blocked = await _userService.RemoveAdminAsync(userIds);
         return Ok(blocked);
     }
 }

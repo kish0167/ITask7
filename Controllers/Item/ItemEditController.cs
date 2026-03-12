@@ -1,5 +1,6 @@
 ﻿using ITask7.Models.Users;
 using ITask7.Services;
+using ITask7.Services.DbApi.AccessControl;
 using ITask7.Services.DbApi.Items;
 using ITask7.ViewModels.Inventories;
 using Microsoft.AspNetCore.Identity;
@@ -7,9 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers.Item;
 
-public class ItemEditController(DbApiService dbApiService, UserManager<ApplicationUser> userManager, IItemService itemService) : InventoryController(dbApiService, userManager)
+public class ItemEditController(
+    IAccessControlService accessControlService,
+    UserManager<ApplicationUser> userManager,
+    IItemService itemService)
+    : InventoryController(accessControlService)
 {
-    private readonly DbApiService _dbApiService = dbApiService;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IItemService _itemService = itemService;
 

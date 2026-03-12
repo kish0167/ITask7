@@ -276,8 +276,6 @@
             </div>
         </div>
     </div>
-    
-    
 </div>
 
 <script>
@@ -296,7 +294,8 @@
             Description: document.getElementById('fieldDescription').value,
             Type: parseInt(document.getElementById('fieldType').value),
             DisplayInTable: document.getElementById('fieldDisplayInTable').checked,
-            IsRequired: document.getElementById('fieldIsRequired').checked
+            IsRequired: document.getElementById('fieldIsRequired').checked,
+            InventoryRowVersion: parseInt(document.getElementById('InventoryRowVersion').value)
         };
 
         try {

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using ITask7.Models.Inventories;
 using ITask7.ViewModels.CustomId;
 using Newtonsoft.Json;
 
@@ -8,14 +9,16 @@ public class CustomIdSchema
 {
     public List<IdElement> Elements { get; set; } = new();
     public char Separator => '\x1F';
+    public uint InventoryRowVersion { get; set; }
     private List<string> Errors { get;  } = new();
     private const int MaxElements = 10;
     private const int MinElements = 1;
     
     public CustomIdSchema(){}
     
-    public CustomIdSchema(string json)
+    public CustomIdSchema(Inventory inventory)
     {
+        string json = inventory.CustomIdSchemaJson;
         Elements = new List<IdElement>();
         if (string.IsNullOrWhiteSpace(json)) return;
         try
@@ -27,6 +30,8 @@ public class CustomIdSchema
         {
             return;
         }
+
+        InventoryRowVersion = inventory.RowVersion;
     }
 
     public static CustomIdSchema Default()

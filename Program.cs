@@ -5,12 +5,13 @@ using ITask7.Localization;
 using ITask7.Models.Users;
 using ITask7.RealTimeChat;
 using ITask7.Services;
-using ITask7.Services.Chat;
 using ITask7.Services.DbApi.AccessControl;
+using ITask7.Services.DbApi.Chat;
 using ITask7.Services.DbApi.Fields;
 using ITask7.Services.DbApi.FieldValues;
 using ITask7.Services.DbApi.Inventories;
 using ITask7.Services.DbApi.Items;
+using ITask7.Services.DbApi.Users;
 using ITask7.Services.Users;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -80,7 +81,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<DbApiService>();
-builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<IChatService,ChatService>();
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IFieldRepository, FieldRepository>();
@@ -89,6 +90,8 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IFieldService, FieldService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IAccessControlService, AccessControlService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();

@@ -1,16 +1,19 @@
 ﻿using ITask7.Models.CustomId;
 using ITask7.Models.Users;
 using ITask7.Services;
+using ITask7.Services.DbApi.AccessControl;
+using ITask7.Services.DbApi.Inventories;
+using ITask7.Services.DbApi.Items;
 using ITask7.ViewModels.CustomId;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITask7.Controllers.CustomId;
 
-public class CustomIdController(DbApiService dbApiService, UserManager<ApplicationUser> userManager)
-    : InventoryController(dbApiService, userManager)
+public class CustomIdController(IAccessControlService accessControlService, IInventoryService inventoryService)
+    : InventoryController(accessControlService)
 {
-    private readonly DbApiService _dbApiService = dbApiService;
+    private readonly IInventoryService _inventoryService = inventoryService;
     
     [HttpPost]
     public IActionResult ValidateSchema([FromBody] CustomIdSchema? schema)
@@ -25,8 +28,10 @@ public class CustomIdController(DbApiService dbApiService, UserManager<Applicati
         if (!await CreatorAccessCheck(inventoryId)) return BadRequest();
         if (schema == null) return BadRequest("schema is null");
         if (!schema.Validate().IsValid) BadRequest("Invalid schema");
-        bool success = await _dbApiService.SetCustomIdSchema(inventoryId, schema);
-        return Ok(success);
+        //bool success = await _dbApiService.SetCustomIdSchema(inventoryId, schema);
+        bool success = await _inventoryService.SetCustomIdSchemaAsync(inventoryId, schema);
+        if (!success) return BadRequest();
+        return Ok();
     }
     
     [HttpPost]

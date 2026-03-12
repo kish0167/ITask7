@@ -75,7 +75,9 @@
     });
 
     async function validateSchema() {
-        const schema = { Elements: getElementsFromDom() };
+        const schema = {
+            Elements: getElementsFromDom()
+        };
         try {
             const response = await fetch('/CustomId/ValidateSchema', {
                 method: 'POST',
@@ -110,7 +112,10 @@
 
     async function saveSchema() {
         const inventoryId = '@Model.Id';
-        const schema = { Elements: getElementsFromDom() };
+        const schema = { 
+            Elements: getElementsFromDom(),
+            InventoryRowVersion: parseInt(document.getElementById('InventoryRowVersion').value)
+        };
         if (!lastCheck) {
             alert('Formatting contains errors');    
             return;
@@ -122,7 +127,7 @@
             body: JSON.stringify(schema)
         });
         
-        if (response === false) alert("Couldn't save schema");
+        if (!response.ok) alert("Couldn't save schema, check validation errors and reload page");
     }
     
     function showErrors(errors) {
