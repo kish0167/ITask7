@@ -46,7 +46,6 @@ public class InventoryRepository(ApplicationDbContext dbContext)
     public async Task<Inventory?> GetWithFieldsAsync(Guid id)
     {
         return await DbContext.Inventories
-            .AsNoTracking()
             .Include(i => i.Fields)
             .FirstOrDefaultAsync(i => i.Id == id);
     }

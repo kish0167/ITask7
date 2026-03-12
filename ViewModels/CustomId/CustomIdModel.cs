@@ -9,7 +9,6 @@ public class CustomIdModel
     public List<string> Values { get; set; } = new();
     public CustomIdSchema Schema { get; set; }
     private string _original;
-    private int _sequential;
     private List<string> Errors { get; } = new();
     
     public CustomIdModel(){}

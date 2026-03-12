@@ -39,6 +39,11 @@ public class InventoryService( IInventoryRepository inventoryRepo) : IInventoryS
         return await _inventoryRepo.UpdateAsync(inventory);
     }
 
+    public async Task<bool> DeleteAsync(Guid inventoryId)
+    {
+        return await _inventoryRepo.DeleteAsync(inventoryId);
+    }
+
     public Task<bool> SetCustomIdSchemaAsync(Guid inventoryId, CustomIdSchema schema)
     {
         throw new NotImplementedException();

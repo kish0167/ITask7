@@ -6,6 +6,7 @@ using ITask7.Models.Users;
 using ITask7.RealTimeChat;
 using ITask7.Services;
 using ITask7.Services.Chat;
+using ITask7.Services.DbApi.AccessControl;
 using ITask7.Services.DbApi.Fields;
 using ITask7.Services.DbApi.FieldValues;
 using ITask7.Services.DbApi.Inventories;
@@ -87,6 +88,7 @@ builder.Services.AddScoped<IItemFieldValueRepository, ItemFieldValueRepository>(
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IFieldService, FieldService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IAccessControlService, AccessControlService>();
 
 
 var app = builder.Build();

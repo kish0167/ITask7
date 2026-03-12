@@ -1,4 +1,5 @@
-﻿using ITask7.Services;
+﻿using Humanizer;
+using ITask7.Services;
 using ITask7.ViewModels.Inventories;
 using ITask7.Models.CustomId;
 using ITask7.Models.Users;
@@ -53,15 +54,12 @@ public class Item : IVersionedEntity ,IInventoryChild
     
     public void Edit(ItemViewModel viewModel)
     {
+        if (Inventory == null) return;
         UpdatedAt = DateTime.UtcNow;
         viewModel.CustomId.InjectSequential(SequentialNumber);
         CustomId = viewModel.CustomId.ToStorageString();
         RowVersion = viewModel.RowVersion;
         Inventory.RowVersion = viewModel.InventoryRowVersion;
-        if (Inventory == null)
-        {
-            return;
-        }
         foreach (InventoryField field in Inventory.Fields)
         {
             SetFieldValue(field, viewModel.FieldValues[field.Id].Value);

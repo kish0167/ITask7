@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITask7.Services.DbApi.AccessControl;
 
-public class AccessControlService(ApplicationDbContext dbContext, IInventoryRepository inventoryRepo)
+public class AccessControlService(ApplicationDbContext dbContext, IInventoryRepository inventoryRepo) : IAccessControlService
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
     private readonly IInventoryRepository _inventoryRepo = inventoryRepo;

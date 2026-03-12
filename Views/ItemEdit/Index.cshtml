@@ -43,6 +43,8 @@
     <input type="hidden" asp-for="Id"/>
     <input type="hidden" asp-for="CreatedAt"/>
     <input type="hidden" asp-for="UpdatedAt"/>
+    <input type="hidden" id="itemRowVersion" value="@Model.RowVersion"/>
+    <input type="hidden" id="inventoryRowVersion" value="@Model.InventoryRowVersion"/>
 
     <div class="row">
         <!-- Main Content -->
@@ -424,8 +426,10 @@
                 Id: document.querySelector('input[name="Id"]').value || '@Guid.Empty',
                 CustomId: getCustomId(),
                 InventoryId: inventoryId,
-                Fields: {},
-                FieldDefinitions: []
+                FieldValues: {},
+                FieldDefinitions: [],
+                RowVersion: parseInt(document.getElementById('itemRowVersion').value),
+                InventoryRowVersion: parseInt(document.getElementById('inventoryRowVersion').value)
             };
 
             const fieldContainers = document.querySelectorAll('.field-container');
@@ -450,7 +454,7 @@
                         }
                     }
 
-                    data.Fields[fieldId] = {
+                    data.FieldValues[fieldId] = {
                         Value: value
                     };
                 }
@@ -524,8 +528,8 @@
             if (draft) {
                 try {
                     const draftData = JSON.parse(draft);
-                    Object.keys(draftData.Fields).forEach(fieldId => {
-                        const field = draftData.Fields[fieldId];
+                    Object.keys(draftData.FieldValues).forEach(fieldId => {
+                        const field = draftData.FieldValues[fieldId];
                         const input = document.getElementById(`field_${fieldId}`);
                         if (input) {
                             if (input.type === 'checkbox') {

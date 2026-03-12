@@ -27,6 +27,7 @@ public class ItemService(IItemRepository itemRepo, IInventoryRepository inventor
 
     public async Task<Guid?> SaveAsync(ItemViewModel model, ApplicationUser user)
     {
+        if (!model.CustomId.Validate().IsValid) return null;
         Item? item;
         bool isNew = false;
         
@@ -52,12 +53,15 @@ public class ItemService(IItemRepository itemRepo, IInventoryRepository inventor
         
         item.Edit(model);
         
+        
         bool success = await _itemRepo.SaveAsync(item);
         
         if (!success)
         {
             return null;
         }
+        
+        return item.Id;
         
         foreach (KeyValuePair<Guid, FieldValueViewModel> valueViewModel in model.FieldValues)
         {

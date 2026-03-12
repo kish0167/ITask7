@@ -26,6 +26,8 @@ public class ItemRepository(ApplicationDbContext dbContext)
         return await DbContext.Items
             .Where(i => i.Id == id)
             .Include(i => i.Inventory)
+            .ThenInclude(i => i.Fields)
+            .Include(i => i.FieldValues)
             .FirstOrDefaultAsync();
     }
 
@@ -33,7 +35,7 @@ public class ItemRepository(ApplicationDbContext dbContext)
     {
         Item item = new Item(inventory, user);
         await DbContext.Items.AddAsync(item);
-        await DbContext.SaveChangesAsync();
+        //await DbContext.SaveChangesAsync();
         return item;
     }
 

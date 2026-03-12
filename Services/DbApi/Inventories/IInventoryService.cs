@@ -12,5 +12,6 @@ public interface IInventoryService
     Task<HomePageViewModel?> GetHomePageAsync(string userId);
     Task<Guid?> CreateAsync(InventoryViewModel model, ApplicationUser creator);
     Task<bool> UpdateAsync(InventoryViewModel model);
+    Task<bool> DeleteAsync(Guid inventoryId);
     Task<bool> SetCustomIdSchemaAsync(Guid inventoryId, CustomIdSchema schema);
 }
