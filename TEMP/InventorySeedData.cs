@@ -178,25 +178,25 @@ public static class InventorySeedData
         // IT Field Values
         modelBuilder.Entity<ItemFieldValue>().HasData(
             // Laptop 1
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop1Id, FieldId = itFields[0].Id, ValueText = "AST-2024-001", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop1Id, FieldId = itFields[1].Id, ValueText = "SN123456789", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop1Id, FieldId = itFields[2].Id, ValueNumeric = 1299.99m, CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop1Id, FieldId = itFields[3].Id, ValueText = "2027-03-15", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop1Id, FieldId = itFields[4].Id, ValueBoolean = true, CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop1Id, FieldId = itFields[5].Id, ValueText = "Assigned to Engineering team lead", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop1Id, FieldId = itFields[0].Id, ValueText = "AST-2024-001", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop1Id, FieldId = itFields[1].Id, ValueText = "SN123456789", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop1Id, FieldId = itFields[2].Id, ValueNumeric = 1299.99m, CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop1Id, FieldId = itFields[3].Id, ValueText = "2027-03-15", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop1Id, FieldId = itFields[4].Id, ValueBoolean = true, CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop1Id, FieldId = itFields[5].Id, ValueText = "Assigned to Engineering team lead", CreatedAt = now, UpdatedAt = now },
             
             // Laptop 2
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop2Id, FieldId = itFields[0].Id, ValueText = "AST-2024-002", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop2Id, FieldId = itFields[1].Id, ValueText = "SN987654321", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop2Id, FieldId = itFields[2].Id, ValueNumeric = 1599.50m, CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop2Id, FieldId = itFields[3].Id, ValueText = "2027-06-20", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = laptop2Id, FieldId = itFields[4].Id, ValueBoolean = false, CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop2Id, FieldId = itFields[0].Id, ValueText = "AST-2024-002", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop2Id, FieldId = itFields[1].Id, ValueText = "SN987654321", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop2Id, FieldId = itFields[2].Id, ValueNumeric = 1599.50m, CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop2Id, FieldId = itFields[3].Id, ValueText = "2027-06-20", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = laptop2Id, FieldId = itFields[4].Id, ValueBoolean = false, CreatedAt = now, UpdatedAt = now },
             
             // Monitor
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = monitorId, FieldId = itFields[0].Id, ValueText = "AST-2023-045", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = monitorId, FieldId = itFields[1].Id, ValueText = "DELL-SN-778899", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = monitorId, FieldId = itFields[2].Id, ValueNumeric = 349.00m, CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = monitorId, FieldId = itFields[4].Id, ValueBoolean = true, CreatedAt = now, UpdatedAt = now }
+            new ItemFieldValue { ItemId = monitorId, FieldId = itFields[0].Id, ValueText = "AST-2023-045", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = monitorId, FieldId = itFields[1].Id, ValueText = "DELL-SN-778899", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = monitorId, FieldId = itFields[2].Id, ValueNumeric = 349.00m, CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = monitorId, FieldId = itFields[4].Id, ValueBoolean = true, CreatedAt = now, UpdatedAt = now }
         );
 
         // ========== INVENTORY 2: Office Supplies ==========
@@ -297,14 +297,14 @@ public static class InventorySeedData
 
         // Office Field Values
         modelBuilder.Entity<ItemFieldValue>().HasData(
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = paperId, FieldId = officeFields[0].Id, ValueText = "A4 Copy Paper (500 sheets)", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = paperId, FieldId = officeFields[1].Id, ValueNumeric = 45, CreatedAt = now, UpdatedAt = now.AddDays(-1) },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = paperId, FieldId = officeFields[2].Id, ValueNumeric = 10, CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = paperId, FieldId = officeFields[3].Id, ValueText = "Staples Inc. - staples.com - Account #12345", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = paperId, FieldId = officeFields[0].Id, ValueText = "A4 Copy Paper (500 sheets)", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = paperId, FieldId = officeFields[1].Id, ValueNumeric = 45, CreatedAt = now, UpdatedAt = now.AddDays(-1) },
+            new ItemFieldValue { ItemId = paperId, FieldId = officeFields[2].Id, ValueNumeric = 10, CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = paperId, FieldId = officeFields[3].Id, ValueText = "Staples Inc. - staples.com - Account #12345", CreatedAt = now, UpdatedAt = now },
             
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = tonerId, FieldId = officeFields[0].Id, ValueText = "HP LaserJet Black Toner 85A", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = tonerId, FieldId = officeFields[1].Id, ValueNumeric = 3, CreatedAt = now, UpdatedAt = now.AddDays(-2) },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = tonerId, FieldId = officeFields[2].Id, ValueNumeric = 2, CreatedAt = now, UpdatedAt = now }
+            new ItemFieldValue { ItemId = tonerId, FieldId = officeFields[0].Id, ValueText = "HP LaserJet Black Toner 85A", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = tonerId, FieldId = officeFields[1].Id, ValueNumeric = 3, CreatedAt = now, UpdatedAt = now.AddDays(-2) },
+            new ItemFieldValue { ItemId = tonerId, FieldId = officeFields[2].Id, ValueNumeric = 2, CreatedAt = now, UpdatedAt = now }
         );
 
         // ========== INVENTORY 3: Vehicle Fleet ==========
@@ -394,9 +394,9 @@ public static class InventorySeedData
 
         // Fleet Field Values
         modelBuilder.Entity<ItemFieldValue>().HasData(
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[0].Id, ValueText = "ABC-1234", CreatedAt = now, UpdatedAt = now },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[1].Id, ValueNumeric = 45230, CreatedAt = now, UpdatedAt = now.AddHours(-5) },
-            new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[2].Id, ValueBoolean = true, CreatedAt = now, UpdatedAt = now }
+            new ItemFieldValue { ItemId = vanId, FieldId = fleetFields[0].Id, ValueText = "ABC-1234", CreatedAt = now, UpdatedAt = now },
+            new ItemFieldValue { ItemId = vanId, FieldId = fleetFields[1].Id, ValueNumeric = 45230, CreatedAt = now, UpdatedAt = now.AddHours(-5) },
+            new ItemFieldValue { ItemId = vanId, FieldId = fleetFields[2].Id, ValueBoolean = true, CreatedAt = now, UpdatedAt = now }
             // new ItemFieldValue { Id = Guid.NewGuid(), ItemId = vanId, FieldId = fleetFields[3].Id, ValueDocumentUrl = "/docs/inspections/van-2024.pdf", CreatedAt = now, UpdatedAt = now }
         );
     }

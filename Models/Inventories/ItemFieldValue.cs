@@ -6,7 +6,6 @@ namespace ITask7.Models.Inventories;
 
 public class ItemFieldValue
 {
-    public Guid Id { get; set; }
     public Guid ItemId { get; set; }
     public Guid FieldId { get; set; }
     public string? ValueText { get; set; }

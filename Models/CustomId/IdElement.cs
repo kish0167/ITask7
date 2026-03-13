@@ -2,14 +2,27 @@
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql.Internal.Postgres;
 
 namespace ITask7.Models.CustomId;
 
 public class IdElement
 {
     public IdElementType Type { get; set; }
-    public string? Format { get; set; }
-    
+    private string? _format;
+
+    public string? Format
+    {
+        get
+        {
+            return _format;
+        }
+        set
+        {
+            _format = value?.Substring(0, Math.Min(value.Length, MaxLength));
+        }
+    }
+
     private const int MaxLength = 40;
     private const int MaxInt20 = 1 << 20;
     private const int MaxInt32 = 1 << 30;
@@ -42,14 +55,17 @@ public class IdElement
     
     public string? GetPreview()
     {
+        string? preview;
         try
         {
-            return GetPreviewUnsafe();
+            preview = GetPreviewUnsafe();
         }
         catch
         {
             return null;
         }
+        
+        return preview?.Length > MaxLength && IsValidValue(preview) ? null : preview;
     }
 
     public bool IsValidFormat()
@@ -66,7 +82,8 @@ public class IdElement
 
         return result != null
                && result.Length <= MaxLength
-               && (Type != IdElementType.Time || IsValidValue(result));
+               && IsValidValue(result);
+               //&& (Type != IdElementType.Time || IsValidValue(result));
     }
 
     private string? GetPreviewUnsafe()
@@ -127,20 +144,60 @@ public class IdElement
 
     private bool IsValidInt20(string value)
     {
-        if (Int32.TryParse(value, out int num))
-        {
-            return value == num.ToString(Format) && num is >= 0 and < MaxInt20;
-        }
-        return value == 0.ToString(Format);
+        int? num = TryConvert(value);
+        return value == num?.ToString(Format) && num < MaxInt20;
     }
     
     private bool IsValidInt32(string value)
     {
-        if (Int32.TryParse(value, out int num))
+        int? num = TryConvert(value);
+        return value == num?.ToString(Format) && num < MaxInt32;
+        if (Int32.TryParse(value, out int num2))
         {
-            return value == num.ToString(Format) && num is >= 0 and < MaxInt32;
+            return value == num2.ToString(Format) && num2 is >= 0 and < MaxInt32;
         }
         return value == 0.ToString(Format);
+    }
+
+    private int? TryConvert(string value)
+    {
+        int num;
+        switch (Format)
+        {
+            case "x" or "X": // hexadecimal
+                if (!int.TryParse(value, NumberStyles.HexNumber, null, out num))
+                    return null;
+                break;
+
+            case "b" or "B": // binary
+                try
+                {
+                    num = Convert.ToInt32(value, 2);
+                }
+                catch
+                {
+                    return null;
+                }
+                break;
+            
+            case "o" or "O": // oct
+                try
+                {
+                    num = Convert.ToInt32(value, 8);
+                }
+                catch
+                {
+                    return null;
+                }
+                break;
+
+            default:
+                if (!int.TryParse(value, out num))
+                    return null;
+                break;
+        }
+
+        return num;
     }
     
     private bool IsValidDecimal6(string value)
