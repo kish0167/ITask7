@@ -23,6 +23,6 @@ public class InventoryCreateController(IAccessControlService accessControlServic
         Guid? inventoryId = await _inventoryService.CreateAsync(model, creator);
         if(inventoryId == null) return BadRequest();
         // return Redirect($"InventoryEdit/Index?inventoryId={inventoryId}"); ???
-        return Ok();
+        return Ok(inventoryId);
     }
 }

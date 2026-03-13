@@ -145,12 +145,12 @@ public class IdElement
     
     private bool IsValidDecimal6(string value)
     {
-        return Int32.TryParse(value, out int num) && value == num.ToString("D6");
+        return Int32.TryParse(value, out int num) && value == num.ToString("D6") && num < 1000000;
     }
     
     private bool IsValidDecimal9(string value)
     {
-        return Int32.TryParse(value, out int num) && value == num.ToString("D9");
+        return Int32.TryParse(value, out int num) && value == num.ToString("D9") && num < 1000000000;
     }
 
     private bool IsValidGuid(string value)
