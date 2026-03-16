@@ -36,6 +36,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany(u => u.CreatedInventories)
                 .HasForeignKey(e => e.CreatorId)
                 .OnDelete(DeleteBehavior.SetNull);
+            
+            /*entity.Property(e => e.Name)
+                .HasMaxLength(100);*/
         });
         
         modelBuilder.Entity<InventoryField>(entity =>

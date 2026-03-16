@@ -19,7 +19,89 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="welcome" xml:space="preserve">
-        <value>welcome</value>
+        <value>Welcome</value>
         <comment>welcome</comment>
+    </data>
+    <data name="welcome_subtitle" xml:space="preserve">
+        <value>Manage your inventories and collaborate with your team</value>
+        <comment>welcome_subtitle</comment>
+    </data>
+    <data name="my_inventories" xml:space="preserve">
+        <value>My inventories </value>
+    </data>
+    <data name="new" xml:space="preserve">
+        <value>New</value>
+        <comment>new</comment>
+    </data>
+    <data name="name" xml:space="preserve">
+        <value>Name</value>
+        <comment>name</comment>
+    </data>
+    <data name="description" xml:space="preserve">
+        <value>Description</value>
+        <comment>description</comment>
+    </data>
+    <data name="visibility" xml:space="preserve">
+        <value>Visibility</value>
+        <comment>visibility</comment>
+    </data>
+    <data name="items" xml:space="preserve">
+        <value>Items</value>
+        <comment>items</comment>
+    </data>
+    <data name="public" xml:space="preserve">
+        <value>Public</value>
+        <comment>public</comment>
+    </data>
+    <data name="private" xml:space="preserve">
+        <value>Private</value>
+        <comment>private</comment>
+    </data>
+    <data name="no_owned_inventories" xml:space="preserve">
+        <value>You don't own any inventories yet.</value>
+        <comment>no_owned_inventories</comment>
+    </data>
+    <data name="create_first_inventory" xml:space="preserve">
+        <value>Create your first inventory</value>
+        <comment>create_first_inventory</comment>
+    </data>
+    <data name="available_inventories" xml:space="preserve">
+        <value>Available inventories</value>
+        <comment>available_inventories</comment>
+    </data>
+    <data name="owner" xml:space="preserve">
+        <value>Owner</value>
+        <comment>owner</comment>
+    </data>
+    <data name="no_shared_inventories" xml:space="preserve">
+        <value>No inventories have been shared with you.</value>
+        <comment>no_shared_inventories</comment>
+    </data>
+    <data name="create_new_inventory" xml:space="preserve">
+        <value>Create new inventory</value>
+        <comment>create_new_inventory</comment>
+    </data>
+    <data name="public_inventory_tip" xml:space="preserve">
+        <value>Public inventories can be writed at by anyone with the link.</value>
+        <comment>public_inventory_tip</comment>
+    </data>
+    <data name="make_public" xml:space="preserve">
+        <value>Make public</value>
+    </data>
+    <data name="create_inventory" xml:space="preserve">
+        <value>Create inventory</value>
+        <comment>create_inventory</comment>
+    </data>
+    <data name="cancel" xml:space="preserve">
+        <value>Cancel</value>
+        <comment>cancel</comment>
+    </data>
+    <data name="enter_inventory_name" xml:space="preserve">
+        <value>Enter inventory name</value>
+        <comment>enter_inventory_name</comment>
+    </data>
+    <data name="enter_description" xml:space="preserve">
+        <value>Enter description (optional)</value>
+        <comment>enter_description</comment>
     </data>
 </root>

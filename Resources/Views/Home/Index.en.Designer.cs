@@ -60,11 +60,200 @@ namespace ITask7.Resources.Views.Home {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to welcome.
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        internal static string _new {
+            get {
+                return ResourceManager.GetString("new", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Private.
+        /// </summary>
+        internal static string _private {
+            get {
+                return ResourceManager.GetString("private", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Public.
+        /// </summary>
+        internal static string _public {
+            get {
+                return ResourceManager.GetString("public", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Available inventories.
+        /// </summary>
+        internal static string available_inventories {
+            get {
+                return ResourceManager.GetString("available_inventories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string cancel {
+            get {
+                return ResourceManager.GetString("cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create your first inventory.
+        /// </summary>
+        internal static string create_first_inventory {
+            get {
+                return ResourceManager.GetString("create_first_inventory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create inventory.
+        /// </summary>
+        internal static string create_inventory {
+            get {
+                return ResourceManager.GetString("create_inventory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new inventory.
+        /// </summary>
+        internal static string create_new_inventory {
+            get {
+                return ResourceManager.GetString("create_new_inventory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        internal static string description {
+            get {
+                return ResourceManager.GetString("description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter description (optional).
+        /// </summary>
+        internal static string enter_description {
+            get {
+                return ResourceManager.GetString("enter_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter inventory name.
+        /// </summary>
+        internal static string enter_inventory_name {
+            get {
+                return ResourceManager.GetString("enter_inventory_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items.
+        /// </summary>
+        internal static string items {
+            get {
+                return ResourceManager.GetString("items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make public.
+        /// </summary>
+        internal static string make_public {
+            get {
+                return ResourceManager.GetString("make_public", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My inventories .
+        /// </summary>
+        internal static string my_inventories {
+            get {
+                return ResourceManager.GetString("my_inventories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string name {
+            get {
+                return ResourceManager.GetString("name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t own any inventories yet..
+        /// </summary>
+        internal static string no_owned_inventories {
+            get {
+                return ResourceManager.GetString("no_owned_inventories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No inventories have been shared with you..
+        /// </summary>
+        internal static string no_shared_inventories {
+            get {
+                return ResourceManager.GetString("no_shared_inventories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Owner.
+        /// </summary>
+        internal static string owner {
+            get {
+                return ResourceManager.GetString("owner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Public inventories can be writed at by anyone with the link..
+        /// </summary>
+        internal static string public_inventory_tip {
+            get {
+                return ResourceManager.GetString("public_inventory_tip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visibility.
+        /// </summary>
+        internal static string visibility {
+            get {
+                return ResourceManager.GetString("visibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome.
         /// </summary>
         internal static string welcome {
             get {
                 return ResourceManager.GetString("welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage your inventories and collaborate with your team.
+        /// </summary>
+        internal static string welcome_subtitle {
+            get {
+                return ResourceManager.GetString("welcome_subtitle", resourceCulture);
             }
         }
     }

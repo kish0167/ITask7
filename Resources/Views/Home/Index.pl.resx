@@ -12,6 +12,88 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="welcome" xml:space="preserve">
-        <value>witamy</value>
+        <value>Witamy</value>
+    </data>
+    <data name="welcome_subtitle" xml:space="preserve">
+        <value>Zarządzaj swoimi inwentarzami i współpracuj ze swoim zespołem</value>
+        <comment>welcome_subtitle</comment>
+    </data>
+    <data name="my_inventories" xml:space="preserve">
+        <value>Moje inwentarzy</value>
+        <comment>my_inventories</comment>
+    </data>
+    <data name="new" xml:space="preserve">
+        <value>Nowy</value>
+        <comment>new</comment>
+    </data>
+    <data name="name" xml:space="preserve">
+        <value>Nazwa</value>
+        <comment>name</comment>
+    </data>
+    <data name="description" xml:space="preserve">
+        <value>Opis</value>
+        <comment>description</comment>
+    </data>
+    <data name="visibility" xml:space="preserve">
+        <value>Widoczność</value>
+        <comment>visibility</comment>
+    </data>
+    <data name="items" xml:space="preserve">
+        <value>Rzeczy</value>
+        <comment>items</comment>
+    </data>
+    <data name="public" xml:space="preserve">
+        <value>Publiczny</value>
+        <comment>public</comment>
+    </data>
+    <data name="private" xml:space="preserve">
+        <value>Prywatny</value>
+        <comment>private</comment>
+    </data>
+    <data name="no_owned_inventories" xml:space="preserve">
+        <value>Nie posiadasz jeszcze żadnych inwentarzy.</value>
+        <comment>no_owned_inventories</comment>
+    </data>
+    <data name="create_first_inventory" xml:space="preserve">
+        <value>Utwórz swój pierwszy inwentarz</value>
+        <comment>create_first_inventory</comment>
+    </data>
+    <data name="available_inventories" xml:space="preserve">
+        <value>Dostępne inwentarzy</value>
+        <comment>available_inventories</comment>
+    </data>
+    <data name="owner" xml:space="preserve">
+        <value>Właściciel</value>
+        <comment>owner</comment>
+    </data>
+    <data name="no_shared_inventories" xml:space="preserve">
+        <value>Nie udostępniono Ci żadnych inwentarzy. </value>
+        <comment>no_shared_inventories</comment>
+    </data>
+    <data name="create_new_inventory" xml:space="preserve">
+        <value>Utwórz nowy inwentarz</value>
+        <comment>create_new_inventory</comment>
+    </data>
+    <data name="make_public" xml:space="preserve">
+        <value>Upublicznić</value>
+        <comment>make_public</comment>
+    </data>
+    <data name="public_inventory_tip" xml:space="preserve">
+        <value>Do publiczneg inwentarza może przystąpić każda osoba mająca link.</value>
+        <comment>public_inventory_tip</comment>
+    </data>
+    <data name="create_inventory" xml:space="preserve">
+        <value>Utwórz inwentarz</value>
+        <comment>create_inventory</comment>
+    </data>
+    <data name="cancel" xml:space="preserve">
+        <value>Anulować</value>
+        <comment>cancel</comment>
+    </data>
+    <data name="enter_inventory_name" xml:space="preserve">
+        <value>Wprowadź nazwę inwentarza</value>
+    </data>
+    <data name="enter_description" xml:space="preserve">
+        <value>Wprowadź opis (opcjonalnie)</value>
     </data>
 </root>
