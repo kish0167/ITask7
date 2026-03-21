@@ -81,4 +81,15 @@ public class UserRepository(ApplicationDbContext dbContext)
         foreach (var user in users) user.DeAdmin();
         return await DbContext.SaveChangesAsync();
     }
+
+    public async Task<bool> SetSalesForceId(string userId, string? salesForceId)
+    {
+        ApplicationUser? user = await DbContext.Users
+            .Where(u => u.Id == userId)
+            .FirstOrDefaultAsync();
+        if (user == null) return false;
+        user.SalesForceId = salesForceId;
+        int result = await DbContext.SaveChangesAsync();
+        return result > 0;
+    }
 }

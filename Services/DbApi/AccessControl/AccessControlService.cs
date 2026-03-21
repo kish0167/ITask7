@@ -71,6 +71,12 @@ public class AccessControlService(ApplicationDbContext dbContext, IInventoryRepo
         return !(await GetUser(claimsPrincipal))?.IsBlocked ?? false;
     }
 
+    public async Task<bool> UserCanBeConnectedToSalesForce(ClaimsPrincipal claimsPrincipal)
+    {
+        ApplicationUser? user = await GetUser(claimsPrincipal);
+        return user != null && user.SalesForceId == null;
+    }
+
     private async Task<ApplicationUser?> GetUser(ClaimsPrincipal claimsPrincipal)
     {
         return await _userManager.GetUserAsync(claimsPrincipal);

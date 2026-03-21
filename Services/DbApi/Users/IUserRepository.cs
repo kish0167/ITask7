@@ -12,4 +12,5 @@ public interface IUserRepository
     Task<int> UnblockAsync(List<string> ids);
     Task<int> MakeAdminAsync(List<string> ids);
     Task<int> RemoveAdminAsync(List<string> ids);
+    Task<bool> SetSalesForceId(string userId, string? salesForceId);
 }

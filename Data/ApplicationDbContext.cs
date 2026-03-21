@@ -131,6 +131,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.Property(e => e.IsAdmin).HasDefaultValue(false);
             entity.Property(e => e.IsBlocked).HasDefaultValue(false);
+            entity.Property(e => e.SalesForceId).HasDefaultValue(null);
             entity.Property(e => e.RowVersion).IsRowVersion();
         });
 

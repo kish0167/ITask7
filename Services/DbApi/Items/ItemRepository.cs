@@ -2,7 +2,6 @@
 using ITask7.Models.Inventories;
 using ITask7.Models.Users;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ITask7.Services.DbApi.Items;
 
@@ -35,7 +34,6 @@ public class ItemRepository(ApplicationDbContext dbContext)
     {
         Item item = new Item(inventory, user);
         await DbContext.Items.AddAsync(item);
-        //await DbContext.SaveChangesAsync();
         return item;
     }
 

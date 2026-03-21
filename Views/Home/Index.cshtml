@@ -5,191 +5,349 @@
 }
 
 <div class="container py-4">
-    <!-- Header -->
-    <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold text-primary">@Localizer["welcome"]</h1>
-        <p class="text-muted">@Localizer["welcome_subtitle"]</p>
-    </div>
+<!-- Header -->
+<div class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-primary">@Localizer["welcome"], @Model.User.Username</h1>
+    <p class="text-muted">@Localizer["welcome_subtitle"]</p>
+    @if (Model.User.SalesForceId == "-")
+    {
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#additionalInfoModal">
+            <i class="bi bi-person-plus me-2"></i>Complete Profile
+        </button>
+    }
+    else
+    {
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-success bg-opacity-10 border border-success">
+            <i class="bi bi-cloud-check-fill text-success fs-5"></i>
+            <span class="fw-semibold text-success">Connected to SalesForce</span>
+            
+            <!-- Unlink button -->
+            <form class="d-inline ms-1">
+                <input type="hidden" name="userId" value="@Model.User.Id" />
+                <button type="submit" class="btn btn-link text-success p-0 lh-1 ms-2 opacity-75 hover-opacity-100" 
+                        style="font-size: 1.1rem;"
+                        title="Unlink from SalesForce"
+                        id="unlink-sf">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
+            </form>
+        </div>
+    }
+</div>
 
-    <!-- Owned Inventories Section -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header border-bottom d-flex justify-content-between align-items-center bg-body-tertiary py-3">
-            <h5 class="mb-0 fw-semibold text-body">
-                <i class="bi bi-box-seam me-2 text-primary"></i>
-                @Localizer["my_inventories"]
-                @if (Model.OwnedInventories.Count > 0)
-                {
-                    <span class="badge rounded-pill bg-body text-primary-emphasis border border-primary-subtle ms-1">
-                        @Model.OwnedInventories.Count
-                    </span>
-                }
-            </h5>
-            <div class="d-flex align-items-center">
-                <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" 
-                        data-bs-toggle="modal" data-bs-target="#createInventoryModal">
-                    <i class="bi bi-plus-lg"></i>
-                    <span>@Localizer["new"]</span>
+<!-- Owned Inventories Section -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header border-bottom d-flex justify-content-between align-items-center bg-body-tertiary py-3">
+        <h5 class="mb-0 fw-semibold text-body">
+            <i class="bi bi-box-seam me-2 text-primary"></i>
+            @Localizer["my_inventories"]
+            @if (Model.OwnedInventories.Count > 0)
+            {
+                <span class="badge rounded-pill bg-body text-primary-emphasis border border-primary-subtle ms-1">
+                    @Model.OwnedInventories.Count
+                </span>
+            }
+        </h5>
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm"
+                    data-bs-toggle="modal" data-bs-target="#createInventoryModal">
+                <i class="bi bi-plus-lg"></i>
+                <span>@Localizer["new"]</span>
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.OwnedInventories.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" data-toggle="table" data-sortable="true">
+                    <thead class="table">
+                    <tr>
+                        <th data-sortable="true">@Localizer["name"]</th>
+                        <th>@Localizer["description"]</th>
+                        <th data-sortable="true">@Localizer["visibility"]</th>
+                        <th data-sortable="true">@Localizer["items"]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var inventory in Model.OwnedInventories)
+                    {
+                        <tr class="cursor-pointer" onclick="location.href='@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })'" style="cursor: pointer;">
+                            <td>
+                                <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })"
+                                   class="text-decoration-none fw-semibold text-primary-emphasis">
+                                    @inventory.Name
+                                </a>
+                            </td>
+                            <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
+                                @(string.IsNullOrEmpty(inventory.Description) ? "-" : inventory.Description)
+                            </td>
+                            <td>
+                                @if (inventory.IsPublic)
+                                {
+                                    <span class="badge bg-success">@Localizer["public"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Localizer["private"]</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-body-secondary border-warning text-body">@inventory.Items.Count</span>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                <p>@Localizer["no_owned_inventories"]</p>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createInventoryModal">
+                    <i class="bi bi-plus-lg me-1"></i>@Localizer["create_first_inventory"]
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Available Inventories Section -->
+<div class="card shadow-sm">
+    <div class="card-header border-bottom d-flex justify-content-between align-items-center bg-body-tertiary py-3">
+        <h5 class="mb-0 fw-semibold text-body">
+            <i class="bi bi-people me-2 text-success"></i>
+            @Localizer["available_inventories"]
+            @if (Model.AvailableInventories.Count > 0)
+            {
+                <span class="badge rounded-pill bg-body text-success-emphasis border border-success-subtle ms-1">
+                    @Model.AvailableInventories.Count
+                </span>
+            }
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.AvailableInventories.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" data-toggle="table" data-sortable="true">
+                    <thead class="table">
+                    <tr>
+                        <th data-sortable="true">@Localizer["name"]</th>
+                        <th>@Localizer["description"]</th>
+                        <th data-sortable="true">@Localizer["owner"]</th>
+                        <th data-sortable="true">@Localizer["items"]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var inventory in Model.AvailableInventories)
+                    {
+                        <tr class="cursor-pointer" style="cursor: pointer;">
+                            <td class="fw-semibold text-success">
+                                <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })"
+                                   class="text-decoration-none fw-semibold text-primary-emphasis">
+                                    @inventory.Name
+                                </a>
+                            </td>
+                            <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
+                                @inventory.Description
+                            </td>
+                            <td>
+                                <span class="badge border bg-body-secondary text-body-secondary rounded-pill px-2">
+                                    <i class="bi bi-person-circle me-1"></i>@inventory.CreatedBy
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-body-secondary border-warning text-body">@inventory.Items.Count</span>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-lock display-4 d-block mb-3"></i>
+                <p>@Localizer["no_shared_inventories"] </p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Create Inventory Modal -->
+<div class="modal fade" id="createInventoryModal" tabindex="-1" aria-labelledby="createInventoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="createInventoryModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>@Localizer["create_new_inventory"]
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createInventoryForm">
+                    <div class="mb-3">
+                        <label for="inventoryTitle" class="form-label fw-semibold">
+                            @Localizer["name"]<span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="inventoryTitle" name="Name" required maxlength="100" placeholder="@Localizer["enter_inventory_name"]">
+                    </div>
+                    <div class="mb-3">
+                        <label for="inventoryDescription" class="form-label fw-semibold">@Localizer["description"]</label>
+                        <textarea class="form-control" id="inventoryDescription" name="Description" rows="3" maxlength="500" placeholder="@Localizer["enter_description"]"></textarea>
+                    </div>
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="inventoryIsPublic" name="IsPublic" value="true">
+                        <label class="form-check-label fw-semibold" for="inventoryIsPublic">@Localizer["make_public"]</label>
+                        <div class="form-text text-muted">@Localizer["public_inventory_tip"]</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["cancel"]</button>
+                <button type="button" class="btn btn-primary" id="submitInventoryBtn">
+                    <i class="bi bi-check-lg me-1"></i>@Localizer["create_inventory"]
                 </button>
             </div>
         </div>
-        <div class="card-body p-0">
-            @if (Model.OwnedInventories.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0" data-toggle="table" data-sortable="true">
-                        <thead class="table">
-                        <tr>
-                            <th data-sortable="true">@Localizer["name"]</th>
-                            <th>@Localizer["description"]</th>
-                            <th data-sortable="true">@Localizer["visibility"]</th>
-                            <th data-sortable="true">@Localizer["items"]</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var inventory in Model.OwnedInventories)
-                        {
-                            <tr class="cursor-pointer" onclick="location.href='@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })'" style="cursor: pointer;">
-                                <td>
-                                    <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })"
-                                       class="text-decoration-none fw-semibold text-primary-emphasis">
-                                        @inventory.Name
-                                    </a>
-                                </td>
-                                <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
-                                    @(string.IsNullOrEmpty(inventory.Description) ? "-" : inventory.Description)
-                                </td>
-                                <td>
-                                    @if (inventory.IsPublic)
-                                    {
-                                        <span class="badge bg-success">@Localizer["public"]</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">@Localizer["private"]</span>
-                                    }
-                                </td>
-                                <td>
-                                    <span class="badge bg-body-secondary border-warning text-body">@inventory.Items.Count</span>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5 text-muted">
-                    <i class="bi bi-inbox display-4 d-block mb-3"></i>
-                    <p>@Localizer["no_owned_inventories"]</p>
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createInventoryModal">
-                        <i class="bi bi-plus-lg me-1"></i>@Localizer["create_first_inventory"]
-                    </button>
-                </div>
-            }
-        </div>
     </div>
+</div>
 
-    <!-- Available Inventories Section -->
-    <div class="card shadow-sm">
-        <div class="card-header border-bottom d-flex justify-content-between align-items-center bg-body-tertiary py-3">
-            <h5 class="mb-0 fw-semibold text-body">
-                <i class="bi bi-people me-2 text-success"></i>
-                @Localizer["available_inventories"]
-                @if (Model.AvailableInventories.Count > 0)
-                {
-                    <span class="badge rounded-pill bg-body text-success-emphasis border border-success-subtle ms-1">
-                        @Model.AvailableInventories.Count
-                    </span>
-                }
-            </h5>
-        </div>
-        <div class="card-body p-0">
-            @if (Model.AvailableInventories.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0" data-toggle="table" data-sortable="true">
-                        <thead class="table">
-                        <tr>
-                            <th data-sortable="true">@Localizer["name"]</th>
-                            <th>@Localizer["description"]</th>
-                            <th data-sortable="true">@Localizer["owner"]</th>
-                            <th data-sortable="true">@Localizer["items"]</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var inventory in Model.AvailableInventories)
-                        {
-                            <tr class="cursor-pointer" style="cursor: pointer;">
-                                <td class="fw-semibold text-success">
-                                    <a href="@Url.Action("Index", "InventoryEdit", new { inventoryId = inventory.Id })"
-                                       class="text-decoration-none fw-semibold text-primary-emphasis">
-                                        @inventory.Name
-                                    </a>
-                                </td>
-                                <td class="text-truncate" style="max-width: 250px;" title="@inventory.Description">
-                                    @inventory.Description
-                                </td>
-                                <td>
-                                    <span class="badge border bg-body-secondary text-body-secondary rounded-pill px-2">
-                                        <i class="bi bi-person-circle me-1"></i>@inventory.CreatedBy
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-body-secondary border-warning text-body">@inventory.Items.Count</span>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5 text-muted">
-                    <i class="bi bi-lock display-4 d-block mb-3"></i>
-                    <p>@Localizer["no_shared_inventories"] </p>
-                </div>
-            }
-        </div>
-    </div>
+<!-- Additional Information Modal -->
+<div class="modal fade" id="additionalInfoModal" tabindex="-1" aria-labelledby="additionalInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="additionalInfoModalLabel">
+                    <i class="bi bi-person-lines-fill me-2"></i>@Localizer["complete_profile"]
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="additionalInfoForm">
+                    @Html.Hidden("UserId", Model.User.Id)
+                    <!-- Account Information Section -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                            <i class="bi bi-building me-2"></i>@Localizer["account_information"]
+                        </h6>
 
-    <!-- Create Inventory Modal -->
-    <div class="modal fade" id="createInventoryModal" tabindex="-1" aria-labelledby="createInventoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="createInventoryModalLabel">
-                        <i class="bi bi-plus-circle me-2"></i>@Localizer["create_new_inventory"]
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="createInventoryForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label fw-semibold">
+                                    @Localizer["first_name"]<span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="firstName" name="FirstName" maxlength="50" placeholder="@Localizer["enter_first_name"]" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label fw-semibold">
+                                    @Localizer["last_name"]<span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="lastName" name="LastName" maxlength="50" placeholder="@Localizer["enter_last_name"]" required>
+                            </div>
+                        </div>
+                        
                         <div class="mb-3">
-                            <label for="inventoryTitle" class="form-label fw-semibold">@Localizer["name"]<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="inventoryTitle" name="Name" required maxlength="100" placeholder="@Localizer["enter_inventory_name"]">
+                            <label class="form-label fw-semibold">
+                                @Localizer["account_type"]<span class="text-danger">*</span>
+                            </label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="AccountType" id="accountTypePersonal" value="Personal" required>
+                                <label class="form-check-label" for="accountTypePersonal">
+                                    <i class="bi bi-person me-1"></i>@Localizer["personal_account"]
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="AccountType" id="accountTypeB2B" value="Business">
+                                <label class="form-check-label" for="accountTypeB2B">
+                                    <i class="bi bi-building me-1"></i>@Localizer["company_b2b"]
+                                </label>
+                            </div>
                         </div>
+
+                        <div class="mb-3" id="companyNameField" style="display: none;">
+                            <label for="companyName" class="form-label fw-semibold">
+                                @Localizer["company_name"]<span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="companyName" name="CompanyName" maxlength="100" placeholder="@Localizer["enter_company_name"]">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="industry" class="form-label fw-semibold">@Localizer["industry"]</label>
+                                <select class="form-select" id="industry" name="Industry">
+                                    <option value="" selected>@Localizer["select_industry"]</option>
+                                    <option value="technology">@Localizer["technology"]</option>
+                                    <option value="healthcare">@Localizer["healthcare"]</option>
+                                    <option value="finance">@Localizer["finance"]</option>
+                                    <option value="manufacturing">@Localizer["manufacturing"]</option>
+                                    <option value="retail">@Localizer["retail"]</option>
+                                    <option value="education">@Localizer["education"]</option>
+                                    <option value="consulting">@Localizer["consulting"]</option>
+                                    <option value="other">@Localizer["other"]</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
-                            <label for="inventoryDescription" class="form-label fw-semibold">@Localizer["description"]</label>
-                            <textarea class="form-control" id="inventoryDescription" name="Description" rows="3" maxlength="500" placeholder="@Localizer["enter_description"]"></textarea>
+                            <label for="website" class="form-label fw-semibold">@Localizer["website"]</label>
+                            <input type="url" class="form-control" id="website" name="Website" maxlength="200" placeholder="https://example.com">
                         </div>
-                        <div class="mb-3 form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="inventoryIsPublic" name="IsPublic" value="true">
-                            <label class="form-check-label fw-semibold" for="inventoryIsPublic">@Localizer["make_public"]</label>
-                            <div class="form-text text-muted">@Localizer["public_inventory_tip"]</div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                            <i class="bi bi-telephone me-2"></i>@Localizer["contact_information"]
+                        </h6>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="jobTitle" class="form-label fw-semibold">@Localizer["job_title"]</label>
+                                <input type="text" class="form-control" id="jobTitle" name="JobTitle" maxlength="100" placeholder="@Localizer["enter_job_title"]">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="department" class="form-label fw-semibold">@Localizer["department"]</label>
+                                <input type="text" class="form-control" id="department" name="Department" maxlength="100" placeholder="@Localizer["enter_department"]">
+                            </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["cancel"]</button>
-                    <button type="button" class="btn btn-primary" id="submitInventoryBtn">
-                        <i class="bi bi-check-lg me-1"></i>@Localizer["create_inventory"]
-                    </button>
-                </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label fw-semibold">@Localizer["phone"]</label>
+                                <input type="tel" class="form-control" id="phone" name="Phone" maxlength="20" placeholder="+1 (555) 123-4567">
+                            </div>
+                            @Html.Hidden("Email", Model.User.Email)
+                        </div>
+                    </div>
+
+                    <!-- GDPR Consent Section -->
+                    <div class="mb-3 p-3 bg-light border rounded">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="marketingConsent" name="MarketingConsent" value="true" required>
+                            <label class="form-check-label fw-semibold text-dark" for="marketingConsent">
+                                @Localizer["marketing_consent_label"]<span class="text-danger">*</span>
+                            </label>
+                            <div class="form-text text-muted mt-1">
+                                <i class="bi bi-shield-check me-1"></i>@Localizer["gdpr_consent_text"]
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["cancel"]</button>
+                <button type="button" class="btn btn-primary" id="submitAdditionalInfoBtn">
+                    <i class="bi bi-check-lg me-1"></i>@Localizer["save_profile"]
+                </button>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <style>
@@ -299,4 +457,49 @@
         document.getElementById('submitInventoryBtn').disabled = false;
         document.getElementById('submitInventoryBtn').innerHTML = '<i class="bi bi-check-lg me-1"></i>Create Inventory';
     });
+    
+    
+    document.addEventListener('DOMContentLoaded', function() {
+            // Toggle company name field based on account type selection
+            const accountTypeB2B = document.getElementById('accountTypeB2B');
+            const accountTypePersonal = document.getElementById('accountTypePersonal');
+            const companyNameField = document.getElementById('companyNameField');
+            const companyNameInput = document.getElementById('companyName');
+    
+            function toggleCompanyField() {
+                if (accountTypeB2B.checked) {
+                    companyNameField.style.display = 'block';
+                    companyNameInput.setAttribute('required', 'required');
+                } else {
+                    companyNameField.style.display = 'none';
+                    companyNameInput.removeAttribute('required');
+                    companyNameInput.value = '';
+                }
+            }
+    
+            accountTypeB2B.addEventListener('change', toggleCompanyField);
+            accountTypePersonal.addEventListener('change', toggleCompanyField);
+    
+            document.getElementById('submitAdditionalInfoBtn').addEventListener('click', async function() {
+                const form = document.getElementById('additionalInfoForm');
+                if (form.checkValidity()) {
+                    // Collect form data
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+                    
+                    // Handle checkbox separately (FormData doesn't include unchecked boxes)
+                    data.MarketingConsent = document.getElementById('marketingConsent').checked;
+                    
+                    await postData('SalesForceIntegration/ConnectToSalesForce', data);
+                    location.reload();
+                } else {
+                    form.reportValidity();
+                }
+            });
+            
+            document.getElementById('unlink-sf').addEventListener('click', async function (){
+                await postData('SalesForceIntegration/DisconnectFromSalesForce?userId=@Model.User.Id', {});
+                location.reload();
+            })
+        });
 </script>

@@ -27,7 +27,6 @@
 
     <ItemGroup>
       <Folder Include="Resources\Views\Shared\" />
-      <Folder Include="Services\CustomId\" />
     </ItemGroup>
 
     <ItemGroup>

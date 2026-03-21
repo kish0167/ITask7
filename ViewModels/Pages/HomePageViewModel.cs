@@ -7,13 +7,14 @@ public class HomePageViewModel
 {
     public List<InventoryViewModel> OwnedInventories { get; set; } = new();
     public List<InventoryViewModel> AvailableInventories { get; set; } = new();
-    public bool IsAdmin = false;
+    public UserViewModel User { get; set; }
+    
 
     public HomePageViewModel() { }
     
     public HomePageViewModel(ApplicationUser user)
     {
-        IsAdmin = user.IsAdmin;
+        User = user.ToViewModel();
         OwnedInventories.AddRange(user.CreatedInventories.Select(i => i.ToViewModel()));
         AvailableInventories.AddRange(user.Accesses.Select(a => a.Inventory.ToViewModel()));
     }

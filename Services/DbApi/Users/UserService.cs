@@ -35,4 +35,14 @@ public class UserService(IUserRepository userRepository) : IUserService
     {
         return await _userRepository.RemoveAdminAsync(ids);
     }
+
+    public async Task<bool> SetSalesForceId(string userId, string salesForceId)
+    {
+        return await _userRepository.SetSalesForceId(userId, salesForceId);
+    }
+
+    public async Task<bool> RemoveSalesForceId(string userId)
+    {
+        return await _userRepository.SetSalesForceId(userId, null);
+    }
 }

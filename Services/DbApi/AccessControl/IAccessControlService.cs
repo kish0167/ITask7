@@ -11,4 +11,5 @@ public interface IAccessControlService
     Task<bool> UserHasCreatorAccess(Guid inventoryId, ClaimsPrincipal claimsPrincipal);
     Task<bool> UserHasWriteAccess(Guid inventoryId, ClaimsPrincipal claimsPrincipal);
     Task<bool> UserHasAuthorizedAccess(ClaimsPrincipal claimsPrincipal);
+    Task<bool> UserCanBeConnectedToSalesForce(ClaimsPrincipal claimsPrincipal);
 }

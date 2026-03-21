@@ -12,6 +12,7 @@ using ITask7.Services.DbApi.FieldValues;
 using ITask7.Services.DbApi.Inventories;
 using ITask7.Services.DbApi.Items;
 using ITask7.Services.DbApi.Users;
+using ITask7.Services.Integrations.SalesForce;
 using ITask7.Services.Users;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -92,6 +93,19 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IAccessControlService, AccessControlService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISalesForceIntegrationService, SalesForceIntegrationService>();
+builder.Services.Configure<SalesForceOptions>(options =>
+{
+    options.ClientId = builder.Configuration["Integrations:SalesForceId"] ?? 
+                       Environment.GetEnvironmentVariable("SALESFORCE_CLIENT_ID") ??
+                       throw new Exception("salesforce client id not found");
+    options.ClientSecret = builder.Configuration["Integrations:SalesForceSecret"] ?? 
+                           Environment.GetEnvironmentVariable("SALESFORCE_CLIENT_SECRET") ??
+                           throw new Exception("salesforce client secret not found");
+    options.BaseUrl = builder.Configuration["Integrations:SalesForceBaseUrl"] ?? 
+                      Environment.GetEnvironmentVariable("SALESFORCE_BASE_URL") ??
+                      throw new Exception("salesforce base url not found");;
+});
 
 
 var app = builder.Build();

@@ -41,6 +41,7 @@
                         <input class="form-check-input select-all" type="checkbox">
                     </th>
                     <th>Username</th>
+                    <th>SalesForce ID</th>
                     <th class="pe-3">Status</th>
                 </tr>
             </thead>
@@ -54,8 +55,8 @@
                                    value="@user.Id">
                         </td>
                         <td class="fw-medium text-body">@user.Username</td>
+                        <td class="fw-medium text-body">@user.SalesForceId</td>
                         <td class="user-status pe-3" data-user-id="@user.Id">
-                            @* Using a neutral badge for the status text *@
                             <span class="badge border bg-body text-body-secondary fw-normal status-text">
                                 @user.Status
                             </span>

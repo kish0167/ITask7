@@ -10,6 +10,7 @@ public class ApplicationUser : IdentityUser, IVersionedEntity
 {
     public bool IsAdmin { get; set; } = false;
     public bool IsBlocked { get; set; } = false;
+    public string? SalesForceId { get; set; }
     public uint RowVersion { get; set; }
     
     public ICollection<Inventory> CreatedInventories { get; set; } = new List<Inventory>();
