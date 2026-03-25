@@ -4,3 +4,4 @@ appsettings.Development.json
 appsettings.json
 app.db
 bin
+Controllers/Integrations/OdooIntegrationController.cs

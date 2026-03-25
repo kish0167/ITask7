@@ -12,7 +12,7 @@
     @if (Model.User.SalesForceId == "-")
     {
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#additionalInfoModal">
-            <i class="bi bi-person-plus me-2"></i>Complete Profile
+            <i class="bi bi-person-plus me-2"></i>@Localizer["complete_profile"]
         </button>
     }
     else
@@ -281,14 +281,14 @@
                                 <label for="industry" class="form-label fw-semibold">@Localizer["industry"]</label>
                                 <select class="form-select" id="industry" name="Industry">
                                     <option value="" selected>@Localizer["select_industry"]</option>
-                                    <option value="technology">@Localizer["technology"]</option>
-                                    <option value="healthcare">@Localizer["healthcare"]</option>
-                                    <option value="finance">@Localizer["finance"]</option>
-                                    <option value="manufacturing">@Localizer["manufacturing"]</option>
-                                    <option value="retail">@Localizer["retail"]</option>
-                                    <option value="education">@Localizer["education"]</option>
-                                    <option value="consulting">@Localizer["consulting"]</option>
-                                    <option value="other">@Localizer["other"]</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="manufacturing">Manufacturing</option>
+                                    <option value="retail">Retail</option>
+                                    <option value="education">Education</option>
+                                    <option value="consulting">Consulting</option>
+                                    <option value="other">Other</option>
                                 </select>
                             </div>
                         </div>
@@ -460,7 +460,6 @@
     
     
     document.addEventListener('DOMContentLoaded', function() {
-            // Toggle company name field based on account type selection
             const accountTypeB2B = document.getElementById('accountTypeB2B');
             const accountTypePersonal = document.getElementById('accountTypePersonal');
             const companyNameField = document.getElementById('companyNameField');
@@ -483,13 +482,11 @@
             document.getElementById('submitAdditionalInfoBtn').addEventListener('click', async function() {
                 const form = document.getElementById('additionalInfoForm');
                 if (form.checkValidity()) {
-                    // Collect form data
                     const formData = new FormData(form);
                     const data = Object.fromEntries(formData.entries());
-                    
-                    // Handle checkbox separately (FormData doesn't include unchecked boxes)
+                   
                     data.MarketingConsent = document.getElementById('marketingConsent').checked;
-                    
+                  
                     await postData('SalesForceIntegration/ConnectToSalesForce', data);
                     location.reload();
                 } else {

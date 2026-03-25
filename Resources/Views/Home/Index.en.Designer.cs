@@ -87,6 +87,24 @@ namespace ITask7.Resources.Views.Home {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account information.
+        /// </summary>
+        internal static string account_information {
+            get {
+                return ResourceManager.GetString("account_information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account type.
+        /// </summary>
+        internal static string account_type {
+            get {
+                return ResourceManager.GetString("account_type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Available inventories.
         /// </summary>
         internal static string available_inventories {
@@ -101,6 +119,42 @@ namespace ITask7.Resources.Views.Home {
         internal static string cancel {
             get {
                 return ResourceManager.GetString("cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company.
+        /// </summary>
+        internal static string company_b2b {
+            get {
+                return ResourceManager.GetString("company_b2b", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company name.
+        /// </summary>
+        internal static string company_name {
+            get {
+                return ResourceManager.GetString("company_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complete profile.
+        /// </summary>
+        internal static string complete_profile {
+            get {
+                return ResourceManager.GetString("complete_profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact information.
+        /// </summary>
+        internal static string contact_information {
+            get {
+                return ResourceManager.GetString("contact_information", resourceCulture);
             }
         }
         
@@ -132,11 +186,38 @@ namespace ITask7.Resources.Views.Home {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Department.
+        /// </summary>
+        internal static string department {
+            get {
+                return ResourceManager.GetString("department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
         internal static string description {
             get {
                 return ResourceManager.GetString("description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to enter company name.
+        /// </summary>
+        internal static string enter_company_name {
+            get {
+                return ResourceManager.GetString("enter_company_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to enter department.
+        /// </summary>
+        internal static string enter_department {
+            get {
+                return ResourceManager.GetString("enter_department", resourceCulture);
             }
         }
         
@@ -150,11 +231,65 @@ namespace ITask7.Resources.Views.Home {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to enter first name.
+        /// </summary>
+        internal static string enter_first_name {
+            get {
+                return ResourceManager.GetString("enter_first_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter inventory name.
         /// </summary>
         internal static string enter_inventory_name {
             get {
                 return ResourceManager.GetString("enter_inventory_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to enter_job_title.
+        /// </summary>
+        internal static string enter_job_title {
+            get {
+                return ResourceManager.GetString("enter_job_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to enter_last_name.
+        /// </summary>
+        internal static string enter_last_name {
+            get {
+                return ResourceManager.GetString("enter_last_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First name.
+        /// </summary>
+        internal static string first_name {
+            get {
+                return ResourceManager.GetString("first_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure?.
+        /// </summary>
+        internal static string gdpr_consent_text {
+            get {
+                return ResourceManager.GetString("gdpr_consent_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Industry.
+        /// </summary>
+        internal static string industry {
+            get {
+                return ResourceManager.GetString("industry", resourceCulture);
             }
         }
         
@@ -168,11 +303,38 @@ namespace ITask7.Resources.Views.Home {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Job title.
+        /// </summary>
+        internal static string job_title {
+            get {
+                return ResourceManager.GetString("job_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last name.
+        /// </summary>
+        internal static string last_name {
+            get {
+                return ResourceManager.GetString("last_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Make public.
         /// </summary>
         internal static string make_public {
             get {
                 return ResourceManager.GetString("make_public", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I agree.
+        /// </summary>
+        internal static string marketing_consent_label {
+            get {
+                return ResourceManager.GetString("marketing_consent_label", resourceCulture);
             }
         }
         
@@ -222,6 +384,24 @@ namespace ITask7.Resources.Views.Home {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Personal account.
+        /// </summary>
+        internal static string personal_account {
+            get {
+                return ResourceManager.GetString("personal_account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone.
+        /// </summary>
+        internal static string phone {
+            get {
+                return ResourceManager.GetString("phone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Public inventories can be writed at by anyone with the link..
         /// </summary>
         internal static string public_inventory_tip {
@@ -231,11 +411,38 @@ namespace ITask7.Resources.Views.Home {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save profile.
+        /// </summary>
+        internal static string save_profile {
+            get {
+                return ResourceManager.GetString("save_profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to select industry.
+        /// </summary>
+        internal static string select_industry {
+            get {
+                return ResourceManager.GetString("select_industry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Visibility.
         /// </summary>
         internal static string visibility {
             get {
                 return ResourceManager.GetString("visibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Website.
+        /// </summary>
+        internal static string website {
+            get {
+                return ResourceManager.GetString("website", resourceCulture);
             }
         }
         

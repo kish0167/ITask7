@@ -96,4 +96,73 @@
     <data name="enter_description" xml:space="preserve">
         <value>Wprowadź opis (opcjonalnie)</value>
     </data>
+    <data name="account_information" xml:space="preserve">
+        <value>Informacje o koncie</value>
+    </data>
+    <data name="account_type" xml:space="preserve">
+        <value>Typ konta</value>
+    </data>
+    <data name="company_b2b" xml:space="preserve">
+        <value>Firma</value>
+    </data>
+    <data name="company_name" xml:space="preserve">
+        <value>Nazwa firmy</value>
+    </data>
+    <data name="complete_profile" xml:space="preserve">
+        <value>Uzupełnić profil</value>
+    </data>
+    <data name="contact_information" xml:space="preserve">
+        <value>Informacje kontaktowe</value>
+    </data>
+    <data name="department" xml:space="preserve">
+        <value>Dział</value>
+    </data>
+    <data name="first_name" xml:space="preserve">
+        <value>Imię</value>
+    </data>
+    <data name="gdpr_consent_text" xml:space="preserve">
+        <value>Czy jesteś pewien?</value>
+    </data>
+    <data name="job_title" xml:space="preserve">
+        <value>Tytuł pracy</value>
+    </data>
+    <data name="last_name" xml:space="preserve">
+        <value>Nazwisko</value>
+    </data>
+    <data name="marketing_consent_label" xml:space="preserve">
+        <value>Zgadzam się</value>
+    </data>
+    <data name="personal_account" xml:space="preserve">
+        <value>Konto osobiste</value>
+    </data>
+    <data name="phone" xml:space="preserve">
+        <value>Telefon</value>
+    </data>
+    <data name="save_profile" xml:space="preserve">
+        <value>Zapisz profil</value>
+    </data>
+    <data name="select_industry" xml:space="preserve">
+        <value>wybierz branżę</value>
+    </data>
+    <data name="website" xml:space="preserve">
+        <value>Strona internetowa</value>
+    </data>
+    <data name="enter_department" xml:space="preserve">
+        <value>wprowadź dział</value>
+    </data>
+    <data name="enter_first_name" xml:space="preserve">
+        <value>wprowadź imię</value>
+    </data>
+    <data name="enter_job_title" xml:space="preserve">
+        <value>wprowadź tytuł pracy</value>
+    </data>
+    <data name="enter_last_name" xml:space="preserve">
+        <value>wprowadź nazwisko</value>
+    </data>
+    <data name="industry" xml:space="preserve">
+        <value>Przemysł</value>
+    </data>
+    <data name="enter_company_name" xml:space="preserve">
+        <value>wprowadź nazwę firmy</value>
+    </data>
 </root>

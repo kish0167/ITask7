@@ -104,4 +104,96 @@
         <value>Enter description (optional)</value>
         <comment>enter_description</comment>
     </data>
+    <data name="complete_profile" xml:space="preserve">
+        <value>Complete profile</value>
+        <comment>complete_profile</comment>
+    </data>
+    <data name="account_information" xml:space="preserve">
+        <value>Account information</value>
+        <comment>account_information</comment>
+    </data>
+    <data name="first_name" xml:space="preserve">
+        <value>First name</value>
+        <comment>first_name</comment>
+    </data>
+    <data name="last_name" xml:space="preserve">
+        <value>Last name</value>
+        <comment>last_name</comment>
+    </data>
+    <data name="account_type" xml:space="preserve">
+        <value>Account type</value>
+        <comment>account_type</comment>
+    </data>
+    <data name="personal_account" xml:space="preserve">
+        <value>Personal account</value>
+        <comment>personal_account</comment>
+    </data>
+    <data name="company_b2b" xml:space="preserve">
+        <value>Company</value>
+        <comment>company_b2b</comment>
+    </data>
+    <data name="company_name" xml:space="preserve">
+        <value>Company name</value>
+        <comment>company_name</comment>
+    </data>
+    <data name="select_industry" xml:space="preserve">
+        <value>select industry</value>
+        <comment>select_industry</comment>
+    </data>
+    <data name="website" xml:space="preserve">
+        <value>Website</value>
+        <comment>website</comment>
+    </data>
+    <data name="contact_information" xml:space="preserve">
+        <value>Contact information</value>
+        <comment>contact_information</comment>
+    </data>
+    <data name="job_title" xml:space="preserve">
+        <value>Job title</value>
+        <comment>job_title</comment>
+    </data>
+    <data name="department" xml:space="preserve">
+        <value>Department</value>
+        <comment>department</comment>
+    </data>
+    <data name="phone" xml:space="preserve">
+        <value>Phone</value>
+        <comment>phone</comment>
+    </data>
+    <data name="marketing_consent_label" xml:space="preserve">
+        <value>I agree</value>
+        <comment>marketing_consent_label</comment>
+    </data>
+    <data name="gdpr_consent_text" xml:space="preserve">
+        <value>Are you sure?</value>
+        <comment>gdpr_consent_text</comment>
+    </data>
+    <data name="save_profile" xml:space="preserve">
+        <value>Save profile</value>
+        <comment>save_profile</comment>
+    </data>
+    <data name="enter_first_name" xml:space="preserve">
+        <value>enter first name</value>
+        <comment>enter_first_name</comment>
+    </data>
+    <data name="enter_last_name" xml:space="preserve">
+        <value>enter_last_name</value>
+        <comment>enter_last_name</comment>
+    </data>
+    <data name="industry" xml:space="preserve">
+        <value>Industry</value>
+        <comment>industry</comment>
+    </data>
+    <data name="enter_job_title" xml:space="preserve">
+        <value>enter_job_title</value>
+        <comment>enter_job_title</comment>
+    </data>
+    <data name="enter_department" xml:space="preserve">
+        <value>enter department</value>
+        <comment>enter_department</comment>
+    </data>
+    <data name="enter_company_name" xml:space="preserve">
+        <value>enter company name</value>
+        <comment>enter_company_name</comment>
+    </data>
 </root>
